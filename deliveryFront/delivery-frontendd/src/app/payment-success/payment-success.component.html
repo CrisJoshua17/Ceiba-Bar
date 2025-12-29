@@ -1,0 +1,48 @@
+<div class="container mt-5 text-center">
+    <div *ngIf="loading" class="d-flex flex-column align-items-center justify-content-center" style="height: 50vh;">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+            <span class="visually-hidden">Validando pago...</span>
+        </div>
+        <h4 class="mt-3">Confirmando tu pago con Stripe...</h4>
+        <p class="text-muted">Por favor no cierres esta ventana.</p>
+    </div>
+
+    <div *ngIf="success" class="card shadow-lg p-5 border-0 rounded-4 animate__animated animate__fadeIn">
+        <div class="card-body">
+            <i class="pi pi-check-circle text-success" style="font-size: 5rem;"></i>
+            <h2 class="mt-4 mb-3 fw-bold text-success">¡Pago Exitoso!</h2>
+            <p class="lead mb-4">Tu orden ha sido confirmada correctamente.</p>
+
+            <div class="alert alert-success d-inline-block px-5">
+                <strong>Orden ID:</strong> {{ orderId }}
+            </div>
+
+            <div class="mt-5">
+                <a routerLink="/customer/dashboard" class="btn btn-outline-primary btn-lg px-4 me-3">
+                    <i class="pi pi-home me-2"></i>Inicio
+                </a>
+                <a routerLink="/customer/orders" class="btn btn-primary btn-lg px-4">
+                    <i class="pi pi-list me-2"></i>Mis Pedidos
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="error" class="card shadow-lg p-5 border-0 rounded-4 animate__animated animate__shakeX">
+        <div class="card-body">
+            <i class="pi pi-times-circle text-danger" style="font-size: 5rem;"></i>
+            <h2 class="mt-4 mb-3 fw-bold text-danger">Error en el Pago</h2>
+            <p class="lead text-muted mb-4">{{ message }}</p>
+
+            <div class="alert alert-warning">
+                Si crees que esto es un error, por favor contacta a soporte o intenta nuevamente.
+            </div>
+
+            <div class="mt-5">
+                <a routerLink="/cart" class="btn btn-primary btn-lg px-4">
+                    <i class="pi pi-shopping-cart me-2"></i>Volver al Carrito
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,201 @@
+.container1 {
+  padding: 2rem;
+  background-color: #D4C9BE;
+  min-height: 100vh;
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+// Card principal
+::ng-deep .p-card {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .p-card .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  padding: 1.5rem !important;
+}
+
+// Card de imagen
+::ng-deep .p-card.cardImage {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 1rem !important;
+}
+
+::ng-deep .p-card.cardImage .p-card-body {
+  padding: 1rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+// Card de eliminar
+::ng-deep .p-card.card-Delete {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  color: black !important;
+}
+
+::ng-deep .p-card.card-Delete .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 1rem !important;
+}
+
+::ng-deep .p-card.card-Delete .p-card-body {
+  padding: 1rem !important;
+}
+
+// Card del formulario
+::ng-deep .p-card.form-card {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  color: black !important;
+  height: 100% !important;
+}
+
+::ng-deep .p-card.form-card .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 1.5rem !important;
+}
+
+::ng-deep .p-card.form-card .p-card-body {
+  padding: 1.5rem !important;
+}
+
+// Estilos para los campos del formulario
+.field {
+  margin-bottom: 1.5rem;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #495057;
+  }
+}
+
+.p-error {
+  color: #e24c4c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+// Botones
+::ng-deep .p-button.p-button-danger.p-ripple:hover {
+  background-color: rgba(125, 10, 10, 0.9) !important;
+}
+
+// Estilos responsive
+@media (max-width: 992px) {
+  .container1 {
+    padding: 1rem;
+  }
+  
+  .row {
+    flex-direction: column;
+  }
+  
+  .col-lg-4, .col-lg-8 {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+  
+  ::ng-deep .p-card.cardImage,
+  ::ng-deep .p-card.card-Delete,
+  ::ng-deep .p-card.form-card {
+    margin-bottom: 1rem;
+  }
+}
+
+// Asegurar que el card-body tenga el padding correcto
+.card-body {
+  padding: 1rem 0;
+}
+
+// Ajustes para el layout
+.row {
+  margin: 0;
+}
+
+.col-lg-4, .col-lg-8 {
+  padding: 0 1rem;
+}
+
+.buttonActu{
+    background-color: #0f0f0f !important;
+  border-color: #123458 !important;
+  color: white;
+  
+  &:hover {
+    background-color: #0f2b4a !important;
+    border-color: #0f0f0f !important;
+    color:white;
+  }
+}
+
+.input{
+    border: none;
+}
+// Agregar estos estilos a tu profile.component.scss
+
+.image-info {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 4px;
+  padding: 0.5rem;
+  
+  small {
+    color: #495057;
+  }
+}
+
+// Estilos para el file upload
+::ng-deep .p-fileupload .p-button {
+  background-color: #0f0f0f !important;
+  border-color: #123458 !important;
+  color: white;
+  
+  &:hover {
+    background-color: #0f2b4a !important;
+    border-color: #0f0f0f !important;
+    color:white;
+  }
+}
+
+// Estilos para mensajes de error de imagen
+.p-error {
+  color: #e24c4c;
+  font-size: 0.875rem;
+  display: block;
+}
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-600 {
+  color: #6c757d;
+}
+
+
+::ng-deep .p-dialog{
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  color: #0f0f0f !important;
+}

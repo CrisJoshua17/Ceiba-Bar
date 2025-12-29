@@ -1,0 +1,69 @@
+<app-navbar-simple></app-navbar-simple>
+<div class="containerBase w-100" [class.loading]="loading">
+    <div class="container w-100 containerLog">
+        <p-card class="cardLog text-start my-2">
+            <ng-template pTemplate="header">
+                <span class="customHeader mx-2">Iniciar Sesión</span>
+            </ng-template>
+            
+            <form class="my-2" #loginForm="ngForm">
+                <div class="p-fluid">
+                    <div class="field my-3">
+                        <label for="username" class="labelT">Usuario</label>
+                        <input id="username" type="email" pInputText [(ngModel)]="username" name="username" required class="inputFormUser"
+                            #userName="ngModel" required email pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"/>
+                        <div *ngIf="userName.invalid && (userName.dirty || userName.touched)" class="w-100 my-1">
+                            <p-message *ngIf="userName.errors?.['required']" severity="error">El email es requerido</p-message>
+                            <p-message *ngIf="userName.errors?.['pattern']" severity="error">El formato del email no es válido</p-message>
+                        </div>
+                    </div>
+            
+                    <div class="field my-3">
+                        <label for="password" class="labelT">Contraseña</label>
+                        <p-password id="password" [(ngModel)]="password" name="password" [feedback]="false" toggleMask="true" 
+                            class="inputFormPass" #passwordModel="ngModel" required></p-password>
+                        <div *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)" class="w-100 my-1">
+                            <p-message *ngIf="passwordModel.errors?.['required']" severity="error">Que no se te olvide la contraseña!</p-message>
+                        </div>
+                    </div>
+            
+                    <p-button
+                        label="Entrar"
+                        icon="pi pi-sign-in"
+                        type="button"
+                        class="w-full mt-3"
+                        [disabled]="loginForm.invalid || loading"
+                        (click)="loggin()">
+                    </p-button>
+
+
+                    <!-- Sección de registro -->
+                    <p class="mt-3">¿No cuentas con cuenta?</p>
+                    <p-button
+                        label="Registrate"
+                        icon="pi pi-user-plus"
+                        type="button"
+                        class="w-full mt-2"
+                        [styleClass]="'w-full registerButton'"
+                        [routerLink]="['/registro']">
+                    </p-button>
+                </div>
+            </form>
+        </p-card>
+    </div>
+
+    <!-- Overlay sobre toda la pantalla -->
+    <div *ngIf="loading" class="fullscreen-overlay">
+        <div class="spinner-container">
+            <p-progress-spinner 
+                strokeWidth="8" 
+                fill="transparent" 
+                animationDuration=".5s" 
+                [style]="{ width: '80px', height: '80px' }">
+            </p-progress-spinner>
+            <p class="mt-3 text-xl font-semibold">Procesando...</p>
+        </div>
+    </div>
+</div>
+
+<p-toast />

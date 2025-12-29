@@ -1,0 +1,547 @@
+<app-navbar-admin></app-navbar-admin>
+
+<div class="container1 grid-center">
+    <p-card>
+        <ng-template #header>
+            <div class="cardheader">
+                <h2 class="d-flex justify-content-center align-items-center">
+                    Dashboard De Administración de Productos
+                    <i class="pi pi-shopping-cart mx-3" style="font-size: 2rem"></i>
+                </h2>
+            </div>
+        </ng-template>
+
+        <p-tabs value="0">
+            <p-tablist>
+                <p-tab value="0">Bebidas Alcohólicas</p-tab>
+                <p-tab value="1">Bebidas no Alcohólicas</p-tab>
+                <p-tab value="2">Snacks</p-tab>
+                <p-tab value="3">Recetario</p-tab>
+                <p-tab value="4">Productos Disponibles</p-tab>
+                <p-tab value="5">Productos No Disponibles</p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                <!-- ===================== TAB BEBIDAS ALCOHOLICAS ===================== -->
+                <p-tabpanel value="0">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput" placeholder="Buscar bebida alcohólica..."
+                            [ngModel]="searchAlcholicDrinks()" (ngModelChange)="searchAlcholicDrinks.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchAlcholicDrinks()"
+                            (onClick)="clearSearch('alcoholicDrinks')" pTooltip="Limpiar búsqueda"
+                            [rounded]="true"></p-button>
+                        <p-button icon="pi pi-plus" [styleClass]="'buttonActu'"
+                            (onClick)="showCreateDialog('DRINK','ALCOHOLIC')" [rounded]="true"
+                            pTooltip="Crear bebida alcohólica"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredAlcholicDrinks()" [paginator]="true" [rows]="10"
+                            [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Disponible</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <span [class]="product.available ? 'text-green-600' : 'text-red-600'">
+                                            {{ product.available ? 'Sí' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchAlcholicDrinks() ? 'No se encontraron bebidas alcohólicas' : 'No hay
+                                        bebidas alcohólicas registradas' }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+
+                <!-- ===================== TAB BEBIDAS NO ALCOHOLICAS ===================== -->
+                <p-tabpanel value="1">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput" placeholder="Buscar bebida no alcohólica..."
+                            [ngModel]="searchNonAlcholicDrinks()"
+                            (ngModelChange)="searchNonAlcholicDrinks.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchNonAlcholicDrinks()"
+                            (onClick)="clearSearch('noAlcoholicDrinks')" pTooltip="Limpiar búsqueda"
+                            [rounded]="true"></p-button>
+                        <p-button icon="pi pi-plus" [styleClass]="'buttonActu'"
+                            (onClick)="showCreateDialog('DRINK','NON_ALCOHOLIC')" [rounded]="true"
+                            pTooltip="Crear bebida no alcohólica"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredNonAlcholicDrinks()" [paginator]="true" [rows]="10"
+                            [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Disponible</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <span [class]="product.available ? 'text-green-600' : 'text-red-600'">
+                                            {{ product.available ? 'Sí' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchNonAlcholicDrinks() ? 'No se encontraron bebidas no alcohólicas' : 'No
+                                        hay bebidas no alcohólicas registradas' }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+
+                <!-- ===================== TAB SNACKS ===================== -->
+                <p-tabpanel value="2">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput" placeholder="Buscar snack..."
+                            [ngModel]="searchSnacks()" (ngModelChange)="searchSnacks.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchSnacks()"
+                            (onClick)="clearSearch('snacks')" pTooltip="Limpiar búsqueda" [rounded]="true"></p-button>
+                        <p-button icon="pi pi-plus" [styleClass]="'buttonActu'" (onClick)="showCreateDialog('SNACK')"
+                            [rounded]="true" pTooltip="Crear snack"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredSnacks()" [paginator]="true" [rows]="10" [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Disponible</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <span [class]="product.available ? 'text-green-600' : 'text-red-600'">
+                                            {{ product.available ? 'Sí' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchSnacks() ? 'No se encontraron snacks' : 'No hay snacks registrados' }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+
+                <!-- ===================== TAB RECETARIO ===================== -->
+                <p-tabpanel value="3">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput" placeholder="Buscar receta..."
+                            [ngModel]="searchReceipts()" (ngModelChange)="searchReceipts.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchReceipts()"
+                            (onClick)="clearSearch('receipts')" pTooltip="Limpiar búsqueda" [rounded]="true"></p-button>
+                        <p-button icon="pi pi-plus" [styleClass]="'buttonActu'"
+                            (onClick)="showCreateDialog('RECETARIO')" [rounded]="true"
+                            pTooltip="Crear receta"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredReceipts()" [paginator]="true" [rows]="10" [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Precio</th>
+                                    <th>Disponible</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <span [class]="product.available ? 'text-green-600' : 'text-red-600'">
+                                            {{ product.available ? 'Sí' : 'No' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchReceipts() ? 'No se encontraron recetas' : 'No hay recetas registradas'
+                                        }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+
+                <!-- ===================== TAB PRODUCTOS DISPONIBLES ===================== -->
+                <p-tabpanel value="4">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput" placeholder="Buscar producto disponible..."
+                            [ngModel]="searchProductsAvalible()" (ngModelChange)="searchProductsAvalible.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchProductsAvalible()"
+                            (onClick)="clearSearch('productsAvalible')" pTooltip="Limpiar búsqueda"
+                            [rounded]="true"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredProductsAvailable()" [paginator]="true" [rows]="10"
+                            [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Tipo</th>
+                                    <th>Precio</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>{{ product.type }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchProductsAvalible() ? 'No se encontraron productos disponibles' : 'No
+                                        hay productos disponibles' }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+
+                <!-- ===================== TAB PRODUCTOS NO DISPONIBLES ===================== -->
+                <p-tabpanel value="5">
+                    <div class="my-3 d-flex align-items-center gap-2">
+                        <input pInputText type="text" class="w-75 myInput"
+                            placeholder="Buscar producto no disponible..." [ngModel]="searchProductsNoAvalible()"
+                            (ngModelChange)="searchProductsNoAvalible.set($event)" />
+                        <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchProductsNoAvalible()"
+                            (onClick)="clearSearch('productsNoAvalible')" pTooltip="Limpiar búsqueda"
+                            [rounded]="true"></p-button>
+                    </div>
+
+                    <div class="card">
+                        <p-table [value]="filteredProductsNotAvailable()" [paginator]="true" [rows]="10"
+                            [loading]="isLoading()">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Descripción</th>
+                                    <th>Tipo</th>
+                                    <th>Precio</th>
+                                    <th>Actualizar</th>
+                                    <th>Eliminar</th>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="body" let-product>
+                                <tr>
+                                    <td>
+                                        <p-avatar [image]="getImageUrl(product.image)" size="large" shape="circle" />
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.description }}</td>
+                                    <td>{{ product.type }}</td>
+                                    <td>${{ product.price }}</td>
+                                    <td>
+                                        <p-button [styleClass]="'buttonActu'" icon="pi pi-pencil"
+                                            (click)="showDialog(product)" [rounded]="true" class="mx-3"></p-button>
+                                    </td>
+                                    <td>
+                                        <p-button [styleClass]="'p-button-danger'" icon="pi pi-trash"
+                                            (click)="eliminar($event, product)" [rounded]="true"
+                                            class="mx-3"></p-button>
+                                    </td>
+                                </tr>
+                            </ng-template>
+
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="7" class="text-center p-3">
+                                        {{ searchProductsNoAvalible() ? 'No se encontraron productos no disponibles' :
+                                        'No hay productos no disponibles' }}
+                                    </td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </p-card>
+</div>
+
+<!-- ===================== MODAL EDITAR PRODUCTO ===================== -->
+<form [formGroup]="productForm">
+    <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '40rem' }" (onHide)="hideDialog()">
+        <ng-template pTemplate="header">
+            <div class="inline-flex items-center justify-center gap-2">
+                <p-avatar [image]="imagePreview || getImageUrl(selectedProduct?.image || null)" size="xlarge"
+                    shape="circle" class="mx-2" />
+                <div>
+                    <h4 class="font-bold whitespace-nowrap block">Editar Producto</h4>
+                    <span class="text-sm text-surface-500 capitalize">{{ selectedProduct?.type?.toLowerCase() }}</span>
+                </div>
+            </div>
+        </ng-template>
+
+        <div class="flex flex-col gap-4">
+            <!-- Campo para subir imagen -->
+            <div class="flex items-center gap-4">
+                <label class="font-semibold w-24 text-black mr-6">Foto</label>
+                <div class="flex-1">
+                    <p-fileUpload #fileUpload mode="basic" chooseLabel="Cambiar foto" accept="image/*"
+                        maxFileSize="1000000" (onSelect)="onFileSelect($event)" (onClear)="onFileRemove()"
+                        [auto]="false" styleClass="p-button-outlined p-button-sm w-full">
+                    </p-fileUpload>
+                    <small *ngIf="selectedFile" class="text-green-600 block mt-1">
+                        ✅ {{ selectedFile.name }}
+                    </small>
+                    <small class="text-surface-500 block mt-1">
+                        Formatos: JPG, PNG, GIF. Máx: 1MB
+                    </small>
+                </div>
+            </div>
+
+            <div class="form-row my-2 w-75">
+                <label for="name" class="font-semibold w-24 text-black mr-6">Nombre</label>
+                <input pInputText id="name" class="flex-auto mx-2" formControlName="name" />
+            </div>
+
+            <div class="form-row w-75">
+                <label for="description" class="font-semibold w-24 text-black mr-6">Descripción</label>
+                <input pInputText id="description" class="flex-auto mx-2" formControlName="description" />
+            </div>
+
+            <div class="form-row w-75">
+                <label for="price" class="font-semibold text-black">Precio</label>
+                <input pInputText id="price" type="number" class="flex-auto mx-2" formControlName="price" />
+            </div>
+
+            <div class="form-row w-75">
+                <label for="available" class="font-semibold w-24 text-black mr-6">Disponible</label>
+                <select id="available" class="flex-auto mx-2" formControlName="available">
+                    <option [value]="true">Sí</option>
+                    <option [value]="false">No</option>
+                </select>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" [text]="true" severity="danger" (click)="hideDialog()" />
+            <p-button label="Guardar" (click)="saveProduct()" [styleClass]="'buttonActu'" />
+        </ng-template>
+    </p-dialog>
+</form>
+
+<!-- ===================== MODAL CREAR PRODUCTO ===================== -->
+<form [formGroup]="createProductForm">
+    <p-dialog [(visible)]="visibleCreate" [modal]="true" [style]="{ width: '40rem' }" (onHide)="hideCreateDialog()"
+        [header]="getCreateDialogHeader()">
+        <div class="p-fluid">
+            <!-- Información del tipo de producto seleccionado -->
+            <div class="field my-3 p-3 bg-blue-50 rounded" *ngIf="selectedTypeForCreate">
+                <p class="text-blue-700 font-semibold mb-1">
+                    <i class="pi pi-info-circle mr-2"></i>
+                    Tipo de producto: {{ getProductTypeDisplayName() }}
+                </p>
+                <small class="text-blue-600">
+                    Este producto se creará como {{ getProductTypeDisplayName().toLowerCase() }}
+                </small>
+            </div>
+
+            <!-- Campo Nombre -->
+            <div class="field my-3">
+                <label for="createName" class="font-semibold text-black block mb-2">Nombre *</label>
+                <input pInputText id="createName" class="w-full" formControlName="name" placeholder="Ingrese nombre" />
+                <p-message *ngIf="createProductForm.get('name')?.invalid && createProductForm.get('name')?.touched"
+                    severity="error" class="block mt-1">
+                    El nombre es requerido
+                </p-message>
+            </div>
+
+            <!-- Campo Descripción -->
+            <div class="field my-3">
+                <label for="createDescription" class="font-semibold text-black block mb-2">Descripción *</label>
+                <input pInputText id="createDescription" class="w-full" formControlName="description"
+                    placeholder="Ingrese descripción" />
+                <p-message
+                    *ngIf="createProductForm.get('description')?.invalid && createProductForm.get('description')?.touched"
+                    severity="error" class="block mt-1">
+                    La descripción es requerida
+                </p-message>
+            </div>
+
+            <!-- Campo Precio -->
+            <div class="field my-3">
+                <label for="createPrice" class="font-semibold text-black block mb-2">Precio *</label>
+                <input pInputText id="createPrice" type="number" class="w-full" formControlName="price"
+                    placeholder="Ingrese precio" />
+                <p-message *ngIf="createProductForm.get('price')?.invalid && createProductForm.get('price')?.touched"
+                    severity="error" class="block mt-1">
+                    El precio es requerido
+                </p-message>
+            </div>
+
+            <!-- Campo Disponible -->
+            <div class="field my-3">
+                <label for="createAvailable" class="font-semibold text-black block mb-2">Disponible *</label>
+                <select id="createAvailable" class="w-full" formControlName="available">
+                    <option [value]="true">Sí</option>
+                    <option [value]="false">No</option>
+                </select>
+            </div>
+
+            <!-- Campo para subir imagen -->
+            <div class="field my-3">
+                <label class="font-semibold text-black block mb-2">Foto</label>
+                <p-fileUpload mode="basic" chooseLabel="Seleccionar foto" accept="image/*" maxFileSize="1000000"
+                    (onSelect)="onCreateFileSelect($event)" (onClear)="onCreateFileRemove()" [auto]="false"
+                    styleClass="p-button-outlined p-button-sm w-full">
+                </p-fileUpload>
+                <p-message *ngIf="createSelectedFile" class="text-green-600 block mt-1" severity="info">
+                    ✅ {{ createSelectedFile.name }}
+                </p-message>
+                <small class="text-surface-500 block mt-1">
+                    Formatos: JPG, PNG, GIF. Máx: 1MB
+                </small>
+            </div>
+        </div>
+
+        <ng-template pTemplate="footer">
+            <p-button label="Cancelar" [text]="true" severity="danger" (onClick)="hideCreateDialog()" />
+            <p-button label="Crear Producto" (onClick)="createProduct()" [styleClass]="'buttonActu'"
+                [disabled]="!createProductForm.valid" />
+        </ng-template>
+    </p-dialog>
+</form>
+
+<p-confirmdialog styleClass="deleteDialog"></p-confirmdialog>
+<p-toast></p-toast>

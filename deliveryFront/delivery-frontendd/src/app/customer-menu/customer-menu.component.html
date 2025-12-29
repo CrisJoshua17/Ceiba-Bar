@@ -1,0 +1,292 @@
+<app-navbar-customer></app-navbar-customer>
+<div class="menu-container">
+    <div class="header-controls">
+        <h2 class="text-black" style="margin-left: 2rem;">Menu</h2>
+        <p-selectbutton [(ngModel)]="layout" [options]="options" [allowEmpty]="false">
+            <ng-template #item let-item>
+                <i class="pi" [ngClass]="{ 'pi-bars': item === 'list', 'pi-table': item === 'grid' }"></i>
+            </ng-template>
+        </p-selectbutton>
+    </div>
+    <p-tabs [(value)]="activeTabIndex">
+        <p-tablist>
+            <p-tab [value]="0">Todos</p-tab>
+            <p-tab [value]="1">Bebidas</p-tab>
+            <p-tab [value]="2">Snacks</p-tab>
+            <p-tab [value]="3">Recetario</p-tab>
+        </p-tablist>
+
+        <!-- Contenido de cada pestaña -->
+        <p-tabpanel [value]="0">
+            <!-- Vista de Lista -->
+            <ng-template [ngIf]="layout === 'list'">
+                <div class="list-view">
+                    <div *ngFor="let item of getFilteredProducts(); let first = first" class="list-item"
+                        [class.with-border]="!first">
+                        <div class="item-image-container">
+                            <img class="item-image" [src]="item.image" [alt]="item.name" />
+                            <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
+                                [style.left.px]="4" [style.top.px]="4" />
+                        </div>
+                        <div class="item-content">
+                            <div class="item-info">
+                                <div class="item-details">
+                                    <span class="item-type">{{ item.category?.name || 'Sin categoría' }}</span>
+                                    <div class="item-name">{{ item.name }}</div>
+                                    <p class="item-description">{{ item.description }}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
+                                <div class="action-buttons">
+                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                        [disabled]="!item.available" (click)="addToCart(item)"
+                                        class="buy-button"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <!-- Vista de Grid -->
+            <ng-template [ngIf]="layout === 'grid'">
+                <div class="grid-view">
+                    <div *ngFor="let product of getFilteredProducts()" class="grid-item">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <div class="product-image-container">
+                                    <img class="product-image" [src]="product.image" [alt]="product.name" />
+                                    <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
+                                        class="status-tag" [style.left.px]="4" [style.top.px]="4" />
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <div class="product-header">
+                                    <div class="product-info">
+                                        <span class="product-type">{{ product.category?.name || 'Sin categoría'
+                                            }}</span>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <p class="product-description">{{ product.description }}</p>
+                                    </div>
+                                </div>
+                                <div class="product-footer">
+                                    <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
+                                    <div class="product-actions">
+                                        <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                            (click)="addToCart(product)" [disabled]="!product.available"
+                                            class="buy-button-full"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-tabpanel>
+
+        <!-- Pestaña Bebidas -->
+        <p-tabpanel [value]="1">
+            <ng-template [ngIf]="layout === 'list'">
+                <div class="list-view">
+                    <div *ngFor="let item of getFilteredProducts(); let first = first" class="list-item"
+                        [class.with-border]="!first">
+                        <div class="item-image-container">
+                            <img class="item-image" [src]="item.image" [alt]="item.name" />
+                            <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
+                                [style.left.px]="4" [style.top.px]="4" />
+                        </div>
+                        <div class="item-content">
+                            <div class="item-info">
+                                <div class="item-details">
+                                    <span class="item-type">{{ item.category?.name || 'Sin categoría' }}</span>
+                                    <div class="item-name">{{ item.name }}</div>
+                                    <p class="item-description">{{ item.description }}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
+                                <div class="action-buttons">
+                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                        [disabled]="!item.available" (click)="addToCart(item)"
+                                        class="buy-button"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template [ngIf]="layout === 'grid'">
+                <div class="grid-view">
+                    <div *ngFor="let product of getFilteredProducts()" class="grid-item">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <div class="product-image-container">
+                                    <img class="product-image" [src]="product.image" [alt]="product.name" />
+                                    <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
+                                        class="status-tag" [style.left.px]="4" [style.top.px]="4" />
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <div class="product-header">
+                                    <div class="product-info">
+                                        <span class="product-type">{{ product.category?.name || 'Sin categoría'
+                                            }}</span>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <p class="product-description">{{ product.description }}</p>
+                                    </div>
+                                </div>
+                                <div class="product-footer">
+                                    <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
+                                    <div class="product-actions">
+                                        <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                            (click)="addToCart(product)" [disabled]="!product.available"
+                                            class="buy-button-full"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-tabpanel>
+
+        <!-- Pestaña Snacks -->
+        <p-tabpanel [value]="2">
+            <ng-template [ngIf]="layout === 'list'">
+                <div class="list-view">
+                    <div *ngFor="let item of getFilteredProducts(); let first = first" class="list-item"
+                        [class.with-border]="!first">
+                        <div class="item-image-container">
+                            <img class="item-image" [src]="item.image" [alt]="item.name" />
+                            <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
+                                [style.left.px]="4" [style.top.px]="4" />
+                        </div>
+                        <div class="item-content">
+                            <div class="item-info">
+                                <div class="item-details">
+                                    <span class="item-type">{{ item.category?.name || 'Sin categoría' }}</span>
+                                    <div class="item-name">{{ item.name }}</div>
+                                    <p class="item-description">{{ item.description }}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
+                                <div class="action-buttons">
+                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                        [disabled]="!item.available" (click)="addToCart(item)"
+                                        class="buy-button"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template [ngIf]="layout === 'grid'">
+                <div class="grid-view">
+                    <div *ngFor="let product of getFilteredProducts()" class="grid-item">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <div class="product-image-container">
+                                    <img class="product-image" [src]="product.image" [alt]="product.name" />
+                                    <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
+                                        class="status-tag" [style.left.px]="4" [style.top.px]="4" />
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <div class="product-header">
+                                    <div class="product-info">
+                                        <span class="product-type">{{ product.category?.name || 'Sin categoría'
+                                            }}</span>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <p class="product-description">{{ product.description }}</p>
+                                    </div>
+                                </div>
+                                <div class="product-footer">
+                                    <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
+                                    <div class="product-actions">
+                                        <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                            (click)="addToCart(product)" [disabled]="!product.available"
+                                            class="buy-button-full"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-tabpanel>
+
+        <!-- Pestaña Recetario -->
+        <p-tabpanel [value]="3">
+            <ng-template [ngIf]="layout === 'list'">
+                <div class="list-view">
+                    <div *ngFor="let item of getFilteredProducts(); let first = first" class="list-item"
+                        [class.with-border]="!first">
+                        <div class="item-image-container">
+                            <img class="item-image" [src]="item.image" [alt]="item.name" />
+                            <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
+                                [style.left.px]="4" [style.top.px]="4" />
+                        </div>
+                        <div class="item-content">
+                            <div class="item-info">
+                                <div class="item-details">
+                                    <span class="item-type">{{ item.category?.name || 'Sin categoría' }}</span>
+                                    <div class="item-name">{{ item.name }}</div>
+                                    <p class="item-description">{{ item.description }}</p>
+                                </div>
+                            </div>
+                            <div class="item-actions">
+                                <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
+                                <div class="action-buttons">
+                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                        [disabled]="!item.available" (click)="addToCart(item)"
+                                        class="buy-button"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+
+            <ng-template [ngIf]="layout === 'grid'">
+                <div class="grid-view">
+                    <div *ngFor="let product of getFilteredProducts()" class="grid-item">
+                        <div class="product-card">
+                            <div class="product-image-wrapper">
+                                <div class="product-image-container">
+                                    <img class="product-image" [src]="product.image" [alt]="product.name" />
+                                    <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
+                                        class="status-tag" [style.left.px]="4" [style.top.px]="4" />
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <div class="product-header">
+                                    <div class="product-info">
+                                        <span class="product-type">{{ product.category?.name || 'Sin categoría'
+                                            }}</span>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <p class="product-description">{{ product.description }}</p>
+                                    </div>
+                                </div>
+                                <div class="product-footer">
+                                    <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
+                                    <div class="product-actions">
+                                        <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                            (click)="addToCart(product)" [disabled]="!product.available"
+                                            class="buy-button-full"></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-tabpanel>
+
+    </p-tabs>
+</div>
+
+<p-toast></p-toast>

@@ -1,0 +1,341 @@
+<app-navbar-admin></app-navbar-admin>
+
+<div class="container1 grid-center">
+  <p-card>
+    <ng-template #header>
+      <div class="cardheader">
+        <h2 class="d-flex justify-content-center align-items-center">
+          Dashboard De Administración de Usuarios
+          <i class="pi pi-user-edit mx-3" style="font-size: 2rem"></i>
+        </h2>
+      </div>
+    </ng-template>
+
+
+    <p-tabs value="0">
+      <p-tablist>
+        <p-tab value="0">Administradores</p-tab>
+        <p-tab value="1">Conductores</p-tab>
+        <p-tab value="2">Clientes</p-tab>
+      </p-tablist>
+
+      <p-tabpanels>
+        <!-- ===================== TAB ADMIN ===================== -->
+        <p-tabpanel value="0">
+
+          <div class="my-3 d-flex align-items-center gap-2">
+            <input pInputText type="text" class="w-75 myInput" placeholder="Buscar administrador..."
+              [ngModel]="searchAdmins()" (ngModelChange)="searchAdmins.set($event)" />
+            <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchAdmins()"
+              (onClick)="clearSearch('admins')" pTooltip="Limpiar búsqueda" [rounded]="true"></p-button>
+            <p-button icon="pi pi-user-plus" [styleClass]="'buttonActu'" (onClick)="showCreateDialog(UserRole.ADMIN)"
+              [rounded]="true"></p-button>
+
+          </div>
+
+          <div class="card">
+            <p-table [value]="filteredAdmins()" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Actualizar</th>
+                  <th>Eliminar</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-user>
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.phone || 'N/A' }}</td>
+                  <td>
+                    <p-button [styleClass]="'buttonActu'" icon="pi pi-user-edit" (click)="showDialog(user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                  <td>
+                    <p-button [styleClass]="'p-button-danger'" icon="pi pi-user-minus" (click)="eliminar($event,user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6" class="text-center p-3">
+                    {{ searchAdmins() ? 'No se encontraron administradores' : 'No hay administradores registrados' }}
+                  </td>
+                </tr>
+              </ng-template>
+
+            </p-table>
+          </div>
+
+        </p-tabpanel>
+
+        <!-- ===================== TAB DRIVERS ===================== -->
+        <p-tabpanel value="1">
+
+          <div class="my-3 d-flex align-items-center gap-2">
+            <input pInputText type="text" class="w-75 myInput" placeholder="Buscar conductor..."
+              [ngModel]="searchDrivers()" (ngModelChange)="searchDrivers.set($event)" />
+            <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchDrivers()"
+              (onClick)="clearSearch('drivers')" pTooltip="Limpiar búsqueda" [rounded]="true"></p-button>
+            <p-button icon="pi pi-user-plus" [styleClass]="'buttonActu'" (onClick)="showCreateDialog(UserRole.DRIVER)"
+              [rounded]="true"></p-button>
+          </div>
+
+          <div class="card">
+            <p-table [value]="filteredDrivers()" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Actualizar</th>
+                  <th>Eliminar</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-user>
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.phone || 'N/A' }}</td>
+                  <td>
+                    <p-button [styleClass]="'buttonActu'" icon="pi pi-user-edit" (click)="showDialog(user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                  <td>
+                    <p-button [styleClass]="'p-button-danger'" icon="pi pi-user-minus" (click)="eliminar($event,user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6" class="text-center p-3">
+                    {{ searchDrivers() ? 'No se encontraron conductores' : 'No hay conductores registrados' }}
+                  </td>
+                </tr>
+              </ng-template>
+
+            </p-table>
+          </div>
+
+        </p-tabpanel>
+
+        <!-- ===================== TAB CUSTOMERS ===================== -->
+        <p-tabpanel value="2">
+
+          <div class="my-3 d-flex align-items-center gap-2">
+            <input pInputText type="text" class="w-75 myInput" placeholder="Buscar cliente..."
+              [ngModel]="searchCustomers()" (ngModelChange)="searchCustomers.set($event)" />
+            <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchCustomers()"
+              (onClick)="clearSearch('customers')" pTooltip="Limpiar búsqueda" [rounded]="true"></p-button>
+            <p-button icon="pi pi-user-plus" [styleClass]="'buttonActu'" (onClick)="showCreateDialog(UserRole.CUSTOMER)"
+              [rounded]="true"></p-button>
+          </div>
+
+          <div class="card">
+            <p-table [value]="filteredCustomers()" [paginator]="true" [rows]="10">
+              <ng-template pTemplate="header">
+                <tr>
+                  <th>Nombre</th>
+                  <th>Apellido</th>
+                  <th>Email</th>
+                  <th>Teléfono</th>
+                  <th>Actualizar</th>
+                  <th>Eliminar</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-user>
+                <tr>
+                  <td>{{ user.name }}</td>
+                  <td>{{ user.lastName }}</td>
+                  <td>{{ user.email }}</td>
+                  <td>{{ user.phone || 'N/A' }}</td>
+                  <td>
+                    <p-button [styleClass]="'buttonActu'" icon="pi pi-user-edit" (click)="showDialog(user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                  <td>
+                    <p-button [styleClass]="'p-button-danger'" icon="pi pi-user-minus" (click)="eliminar($event,user)"
+                      [rounded]="true" class="mx-3"></p-button>
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="6" class="text-center p-3">
+                    {{ searchCustomers() ? 'No se encontraron clientes' : 'No hay clientes registrados' }}
+                  </td>
+                </tr>
+              </ng-template>
+
+            </p-table>
+          </div>
+
+        </p-tabpanel>
+
+      </p-tabpanels>
+
+    </p-tabs>
+  </p-card>
+</div>
+
+<form [formGroup]="userForm">
+  <p-dialog [(visible)]="visible" [modal]="true" [style]="{ width: '40rem' }" (onHide)="hideDialog()">
+    <ng-template pTemplate="header">
+      <div class="inline-flex items-center justify-center gap-2">
+        <p-avatar [image]="imagePreview || getImageUrl(selectedUser?.image || null)" size="xlarge" shape="circle"
+          class="mx-2" />
+        <div>
+          <h4 class="font-bold whitespace-nowrap block">Editar Usuario</h4>
+          <span class="text-sm text-surface-500 capitalize">{{ selectedUser?.role?.toLowerCase() }}</span>
+        </div>
+      </div>
+    </ng-template>
+
+    <div class="flex flex-col gap-4">
+      <!-- Campo para subir imagen -->
+      <div class="flex items-center gap-4">
+        <label class="font-semibold w-24 text-black mr-6">Foto</label>
+        <div class="flex-1">
+          <p-fileUpload mode="basic" chooseLabel="Cambiar foto" accept="image/*" maxFileSize="1000000"
+            (onSelect)="onFileSelect($event)" (onClear)="onFileRemove()" [auto]="false"
+            styleClass="p-button-outlined p-button-sm w-full">
+          </p-fileUpload>
+          <small *ngIf="selectedFile" class="text-green-600 block mt-1">
+            ✅ {{ selectedFile.name }}
+          </small>
+          <small class="text-surface-500 block mt-1">
+            Formatos: JPG, PNG, GIF. Máx: 1MB
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row my-2 w-75">
+        <label for="name" class="font-semibold w-24 text-black mr-6">Nombre</label>
+        <input pInputText id="name" class="flex-auto mx-2" formControlName="name" />
+      </div>
+
+      <div class="form-row w-75">
+        <label for="lastName" class="font-semibold w-24 text-black mr-6">Apellido</label>
+        <input pInputText id="lastName" class="flex-auto mx-2" formControlName="lastName" />
+      </div>
+
+      <div class="form-row w-75">
+        <label for="email" class="font-semibold text-black">Email</label>
+        <input pInputText id="email" class="flex-auto mx-2" formControlName="email" />
+      </div>
+
+      <div class="form-row w-75">
+        <label for="phone" class="font-semibold w-24 text-black mr-6">Teléfono</label>
+        <input pInputText id="phone" class="flex-auto mx-2" formControlName="phone" placeholder="Ingrese teléfono" />
+      </div>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" [text]="true" severity="danger" (click)="hideDialog()" />
+      <p-button label="Guardar" (click)="saveUser()" [styleClass]="'buttonActu'" />
+    </ng-template>
+  </p-dialog>
+</form>
+
+
+
+
+<!-- Modal para CREAR usuario -->
+<form [formGroup]="createUserForm">
+  <p-dialog [(visible)]="visibleCreate" [modal]="true" [style]="{ width: '40rem' }" (onHide)="hideCreateDialog()"
+    header="Crear Nuevo Usuario">
+    <div class="p-fluid">
+
+      <!-- Campo Nombre -->
+      <div class="field my-3">
+        <label for="createName" class="font-semibold text-black block mb-2">Nombre *</label>
+        <input pInputText id="createName" class="w-full" formControlName="name" placeholder="Ingrese nombre" />
+        <p-message *ngIf="createUserForm.get('name')?.invalid && createUserForm.get('name')?.touched" severity="error"
+          class="block mt-1">
+          El nombre es requerido
+        </p-message>
+      </div>
+
+      <!-- Campo Apellido -->
+      <div class="field my-3">
+        <label for="createLastName" class="font-semibold text-black block mb-2">Apellido *</label>
+        <input pInputText id="createLastName" class="w-full" formControlName="lastName"
+          placeholder="Ingrese apellido" />
+        <p-message *ngIf="createUserForm.get('lastName')?.invalid && createUserForm.get('lastName')?.touched"
+          severity="error" class="block mt-1">
+          El apellido es requerido
+        </p-message>
+      </div>
+
+      <!-- Campo Email -->
+      <div class="field my-3">
+        <label for="createEmail" class="font-semibold text-black block mb-2">Email *</label>
+        <input pInputText id="createEmail" class="w-full" formControlName="email" placeholder="Ingrese email" />
+        <p-message *ngIf="createUserForm.get('email')?.invalid && createUserForm.get('email')?.touched" severity="error"
+          class="block mt-1">
+          {{ createUserForm.get('email')?.errors?.['required'] ? 'El email es requerido' : 'Email inválido' }}
+        </p-message>
+      </div>
+
+      <!-- Campo Teléfono -->
+      <div class="field my-3">
+        <label for="createPhone" class="font-semibold text-black block mb-2">Teléfono</label>
+        <input pInputText id="createPhone" class="w-full" formControlName="phone" placeholder="Ingrese teléfono" />
+      </div>
+
+      <!-- Campo Contraseña -->
+      <div class="field my-3">
+        <label for="createPassword" class="font-semibold text-black block mb-2">Contraseña *</label>
+        <input pInputText id="createPassword" type="password" class="w-full" formControlName="password"
+          placeholder="Ingrese contraseña" />
+        <p-message *ngIf="createUserForm.get('password')?.invalid && createUserForm.get('password')?.touched"
+          severity="error" class="block mt-1">
+          La contraseña es requerida (mínimo 6 caracteres)
+        </p-message>
+      </div>
+
+      <!-- Campo para subir imagen -->
+      <div class="field my-3">
+        <label class="font-semibold text-black block mb-2">Foto</label>
+        <p-fileUpload mode="basic" chooseLabel="Seleccionar foto" accept="image/*" maxFileSize="1000000"
+          (onSelect)="onCreateFileSelect($event)" (onClear)="onCreateFileRemove()" [auto]="false"
+          styleClass="p-button-outlined p-button-sm w-full">
+        </p-fileUpload>
+        <p-message *ngIf="createSelectedFile" class="text-green-600 block mt-1" severity="info">
+          ✅ {{ createSelectedFile.name }}
+        </p-message>
+        <small class="text-surface-500 block mt-1">
+          Formatos: JPG, PNG, GIF. Máx: 1MB
+        </small>
+      </div>
+
+    </div>
+
+    <ng-template pTemplate="footer">
+      <p-button label="Cancelar" [text]="true" severity="danger" (onClick)="hideCreateDialog()" />
+      <p-button label="Crear Usuario" (onClick)="createUser()" [styleClass]="'buttonActu'"
+        [disabled]="!createUserForm.valid" />
+    </ng-template>
+  </p-dialog>
+</form>
+
+
+
+
+<p-confirmdialog styleClass="deleteDialog"></p-confirmdialog>
+
+<p-toast></p-toast>

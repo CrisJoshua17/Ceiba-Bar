@@ -1,0 +1,503 @@
+.container1 {
+  padding: 2rem;
+  background-color: #D4C9BE;
+  min-height: 100vh;
+  width: 100% !important;
+  margin: 0 !important;
+  max-width: 100% !important;
+}
+
+// Card principal
+::ng-deep .p-card {
+  background-color: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .p-card .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: none !important;
+  padding: 1.5rem !important;
+}
+
+// ===== ESTILOS PARA LAS TABS =====
+::ng-deep .p-tabs .p-tablist {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 12px 12px 0 0 !important;
+  padding: 0.5rem !important;
+}
+
+::ng-deep .p-tabs .p-tablist .p-tab {
+  margin-right: 0.5rem !important;
+  &:hover{
+    color: #0f0f0f;
+  }
+}
+
+::ng-deep .p-tablist-active-bar {
+    z-index: 1;
+    display: block;
+    position: absolute;
+    inset-block-end:  #123458 !important;
+    height:  #123458 !important;
+    background: #fcfeff !important;
+    transition: 250ms 
+cubic-bezier(0.35, 0, 0.25, 1);
+}
+
+
+::ng-deep .p-tab-active {
+    border-color: #123458 !important;
+    color:  #123458 !important;
+}
+
+
+.myInput{
+background-color: rgba(241, 239, 236, 0.8) !important;
+border:1px solid black;
+color:black
+}
+
+
+// ===== ESTILOS PARA EL CONTENEDOR DE LAS TABLAS =====
+::ng-deep .p-tabpanels {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  border-radius: 0 0 12px 12px !important;
+  overflow: hidden !important;
+  margin-top: 0 !important;
+}
+
+// ===== ESTILOS ESPECÍFICOS PARA LAS TABLAS PRIMENG =====
+::ng-deep .p-datatable {
+  background: transparent !important;
+  
+  // Header de la tabla
+  .p-datatable-thead > tr > th {
+    background-color: #123458 !important;
+    color: white !important;
+    border: none !important;
+    padding: 1rem 1.5rem !important;
+    font-weight: 600 !important;
+    font-size: 0.95rem !important;
+    text-align: left !important;
+  }
+
+  // Filas de la tabla
+  .p-datatable-tbody > tr {
+    background-color: transparent !important;
+    transition: all 0.3s ease !important;
+    
+    > td {
+      background-color: transparent !important;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      padding: 1rem 1.5rem !important;
+      color: #495057 !important;
+    }
+
+    // Efecto hover en filas
+    &:hover {
+      background-color: rgba(18, 52, 88, 0.05) !important;
+      transform: translateY(-2px) !important;
+      
+      > td {
+        color: #123458 !important;
+        background-color: rgba(18, 52, 88, 0.02) !important;
+      }
+    }
+
+    // Alternar colores de filas
+    &:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.3) !important;
+      
+      &:hover {
+        background-color: rgba(18, 52, 88, 0.08) !important;
+      }
+    }
+  }
+}
+
+// ===== ESTILOS PARA EL PAGINADOR =====
+::ng-deep .p-paginator {
+  background-color: rgba(241, 239, 236, 0.8) !important;
+  border: none !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 1rem !important;
+  
+  .p-paginator-element {
+    background: transparent !important;
+    border: 1px solid rgba(18, 52, 88, 0.2) !important;
+    color: #123458 !important;
+    border-radius: 6px !important;
+    min-width: 2.5rem !important;
+    height: 2.5rem !important;
+    
+    &:hover {
+      background-color: #123458 !important;
+      color: white !important;
+      border-color: #123458 !important;
+    }
+    
+    &.p-highlight {
+      background-color: #123458 !important;
+      color: white !important;
+      border-color: #123458 !important;
+    }
+  }
+  
+  .p-paginator-pages .p-paginator-page {
+    background: transparent !important;
+    border: 1px solid rgba(18, 52, 88, 0.2) !important;
+    color: #123458 !important;
+    
+    &.p-highlight {
+      background-color: #123458 !important;
+      color: white !important;
+      border-color: #123458 !important;
+    }
+    
+    &:hover {
+      background-color: rgba(18, 52, 88, 0.1) !important;
+    }
+  }
+}
+
+// ===== ESTILOS ESPECÍFICOS PARA LOS INPUTS DE BÚSQUEDA =====
+::ng-deep .p-input-icon-left {
+  width: 100% !important;
+  
+  .p-inputtext {
+    width: 100% !important;
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(18, 52, 88, 0.3) !important;
+    border-radius: 8px !important;
+    padding: 0.75rem 1rem 0.75rem 3rem !important;
+    color: #495057 !important;
+    transition: all 0.3s ease !important;
+    font-size: 1rem !important;
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(18, 52, 88, 0.2) !important;
+      border-color: #123458 !important;
+      outline: none !important;
+    }
+    
+    &:hover {
+      border-color: #123458 !important;
+      background-color: rgba(255, 255, 255, 1) !important;
+    }
+    
+    &::placeholder {
+      color: #6c757d !important;
+    }
+  }
+  
+  .pi-search {
+    color: #123458 !important;
+    left: 1rem !important;
+    font-size: 1.1rem !important;
+    z-index: 1 !important;
+  }
+}
+
+// ===== ESTILOS RESPONSIVE =====
+@media (max-width: 768px) {
+  .container1 {
+    padding: 1rem !important;
+  }
+  
+  ::ng-deep .p-tabs .p-tablist .p-tab .p-tab-link {
+    padding: 0.75rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+  
+  ::ng-deep .p-datatable {
+    .p-datatable-thead > tr > th,
+    .p-datatable-tbody > tr > td {
+      padding: 0.75rem 1rem !important;
+      font-size: 0.9rem !important;
+    }
+  }
+  
+  ::ng-deep .p-input-icon-left .p-inputtext {
+    padding: 0.6rem 0.8rem 0.6rem 2.5rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+// ===== MANTENER TUS ESTILOS EXISTENTES (los que funcionan bien) =====
+
+// Card de imagen
+::ng-deep .p-card.cardImage {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  padding: 1rem !important;
+}
+
+::ng-deep .p-card.cardImage .p-card-body {
+  padding: 1rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+
+// Card de eliminar
+::ng-deep .p-card.card-Delete {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  color: black !important;
+}
+
+::ng-deep .p-card.card-Delete .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 1rem !important;
+}
+
+::ng-deep .p-card.card-Delete .p-card-body {
+  padding: 1rem !important;
+}
+
+// Card del formulario
+::ng-deep .p-card.form-card {
+  background-color: rgba(241, 239, 236, 0.6) !important;
+  border: none !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
+  color: black !important;
+  height: 100% !important;
+}
+
+::ng-deep .p-card.form-card .p-card-header {
+  color: black !important;
+  background: transparent !important;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  padding: 1.5rem !important;
+}
+
+::ng-deep .p-card.form-card .p-card-body {
+  padding: 1.5rem !important;
+}
+
+.form-row {
+  display: flex;
+  align-items: end;
+  margin: 0.75rem 0;
+
+  label {
+    width: 120px; /* 👈 ancho fijo para alinear */
+    font-weight: 600;
+    color: #000;
+  }
+
+  input {
+    flex: 1; /* 👈 el input ocupa todo lo demás */
+     background-color:white!important;
+     color:black;
+  }
+}
+.p-error {
+  color: #e24c4c;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+// ===== ESTILOS PARA LOS BOTONES EN LAS TABLAS =====
+::ng-deep .buttonActu {
+  background-color: #D4C9BE !important;
+  color: rgb(15, 15, 15) !important;
+  border: 1px solid black !important;
+  &:hover {
+    background-color: #0f2b4a !important;
+    border-color: #0f2b4a !important;
+    color:white !important;
+     border: 1px solid black;
+  }
+}
+
+::ng-deep .p-button.p-button-danger {
+  background-color: #c41212 !important;
+  border-color: #c41212 !important;
+  color: white;
+  
+  &:hover {
+    background-color: #ff0000 !important;
+    border-color: #ff0000 !important;
+  }
+}
+
+
+
+.text-sm {
+  font-size: 0.875rem;
+}
+
+.text-600 {
+  color: #6c757d;
+}
+
+::ng-deep .p-dialog{
+   background-color: #D4C9BE !important;
+}
+
+ ::ng-deep .deleteDialog{
+   background-color: #0f0f0f !important;
+   .p-button-outlined.p-button-secondary{
+    color:white;
+    &:hover{
+      color:rgb(17, 17, 17) !important;
+      background-color: #D4C9BE !important; 
+    }
+   }.p-ripple.p-button.p-component.p-confirmdialog-accept-button.p-button {
+     background-color: #c41212 !important;
+  border-color: #c41212 !important;
+  color: white !important;
+  
+  &:hover {
+    background-color: #ff0000 !important;
+    border-color: #ff0000 !important;
+    color: white !important;
+  }
+   }
+}
+
+
+// Estilos para el file upload
+::ng-deep .p-fileupload .p-button {
+  background-color: #0f0f0f !important;
+  border-color: #123458 !important;
+  color: white;
+   border: 1px solid black;
+  
+  &:hover {
+    background-color: #0f2b4a !important;
+    border-color: #0f0f0f !important;
+     border: 1px solid black !important;
+    color:white;
+  }
+}
+
+::ng-deep .p-button-outlined {
+    background: transparent;
+    border-color:transparent;
+    color: black;
+    &:hover{
+       background: transparent;
+    border-color:transparent;
+     color: black !important;
+    }
+}
+.p-button-outlined:not(:disabled):active {
+  background-color: rgb(18, 52, 88,0.5) !important;
+}
+.p-button-outlined:not(:disabled):hover {
+  color: #123458 !important;
+}
+
+.ng-star-inserted{
+  color: #0f0f0f 
+}
+
+
+// ===== ESTILOS PARA EL MODAL DE CREACIÓN =====
+::ng-deep .p-dialog {
+  background-color: #D4C9BE !important;
+  
+  .p-dialog-content {
+    background-color: #D4C9BE !important;
+    padding: 1.5rem !important;
+  }
+}
+
+// ===== ESTILOS PARA LOS CAMPOS DEL FORMULARIO =====
+.field {
+  margin-bottom: 1.5rem !important;
+  
+  label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #000;
+  }
+  
+  input {
+    width: 100% !important;
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ced4da !important;
+    border-radius: 6px !important;
+    padding: 0.75rem !important;
+    
+    &:focus {
+      outline: none;
+      border-color: #123458 !important;
+      box-shadow: 0 0 0 2px rgba(18, 52, 88, 0.2) !important;
+    }
+    
+    &:hover {
+      border-color: #123458 !important;
+    }
+  }
+}
+
+// ===== ESTILOS PARA LOS MENSAJES DE ERROR =====
+::ng-deep .p-message {
+  display: block !important;
+  width: 100% !important;
+  margin-top: 0.5rem !important;
+  
+  &.p-message-error {
+    background: transparent !important;
+    border: none !important;
+    color: #e24c4c !important;
+    padding: 0 !important;
+    
+    .p-message-icon {
+      display: none !important;
+    }
+    
+    .p-message-text {
+      font-size: 0.875rem !important;
+      padding: 0 !important;
+    }
+  }
+}
+
+// ===== ESTILOS PARA FILE UPLOAD =====
+::ng-deep .p-fileupload {
+  .p-button {
+    background-color: #0f0f0f !important;
+    border-color: #123458 !important;
+    color: white;
+    border: 1px solid black;
+    
+    &:hover {
+      background-color: #0f2b4a !important;
+      border-color: #0f0f0f !important;
+      border: 1px solid black !important;
+      color: white;
+    }
+  }
+}
+
+// ===== ESTILOS RESPONSIVE PARA EL MODAL =====
+@media (max-width: 768px) {
+  ::ng-deep .p-dialog {
+    width: 95% !important;
+    margin: 1rem !important;
+    
+    .p-dialog-content {
+      padding: 1rem !important;
+    }
+  }
+}

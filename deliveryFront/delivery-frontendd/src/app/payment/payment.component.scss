@@ -1,0 +1,73 @@
+
+hr {
+  border: none;
+  border-top: 3px solid black;
+}
+
+::ng-deep .p-card {
+  background-color: rgba(241, 239, 236, 0.95)!important;
+  color: black!important;
+}
+
+::ng-deep .p-panel {
+  background-color: rgba(241, 239, 236, 0.95)!important;
+  color: black!important;
+}
+
+::ng-deep .p-panel-header {
+    background-color: rgba(241, 239, 236, 0.95)!important;
+    font-size: 20px!important;
+    font-weight: bold!important;
+    color: black!important;
+
+}
+
+.totalRow {
+    background-color: rgba(241, 239, 236, 0.95)!important;
+    font-weight: bold!important;
+    color: black!important;
+}
+
+.input{
+    background-color: rgba(241, 239, 236, 0.95) !important;
+    color: black !important;
+    border: 1px solid black !important;
+}
+
+.input:disabled {
+    background-color: rgba(200, 200, 200, 0.35) !important;
+    color: #555 !important;
+    cursor: not-allowed;
+}
+
+.cardPedido{
+    border: 1px solid black !important;
+}
+
+.cardPedido2{
+    border-top: none !important;
+}
+
+::ng-deep .p-datatable {
+    color: black !important;
+    
+    
+    .p-datatable-table {
+        background-color: rgba(241, 239, 236, 0.95) !important;
+        
+        thead tr th {
+            background-color: rgba(241, 239, 236, 0.95) !important;
+            color: black !important;
+            font-weight: bold;
+        }
+        
+        tbody tr td {
+            background-color: rgba(241, 239, 236, 0.95) !important;
+            color: black !important;
+        }
+        
+        tbody tr:hover {
+            background-color: rgba(231, 229, 226, 0.95) !important;
+        }
+    }
+}

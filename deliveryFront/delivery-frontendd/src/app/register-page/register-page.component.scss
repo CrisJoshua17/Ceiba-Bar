@@ -1,0 +1,130 @@
+  .containerBase{
+      background-color: #F1EFEC;
+      min-height: 100vh;
+      max-width: 100% !important;
+      
+  }
+
+  .containerLog{
+      display: flex;
+      flex-direction: column;
+      align-items: center; 
+      justify-content: center;
+      min-height: 100vh;
+      padding-top: 10px;
+  }
+
+  .cardLog{
+      background-color: #D4C9BE;
+      min-height: 500px;
+      overflow-y: auto; 
+      width: 500px;
+      font-size: medium;
+      display: flex;
+      flex-direction: column;
+  }
+  .labelT{
+    font-size: 20px;
+  }
+
+  .inputFormUser{
+  display: flex;
+  background-color: #F1EFEC;
+  border-radius: 10px;
+  color:black;
+  border: none;
+  :focus{
+      border: 2px solid #0c0c0c !important;
+      box-shadow: none !important;
+  }
+
+  }
+
+  ::ng-deep .customHeader {
+      font-size: 2.0rem;
+      font-weight: bold;
+      
+  }
+
+  ::ng-deep .inputFormPass .p-password-input {
+    background-color: #F1EFEC;
+    border-radius: 10px;
+    color: black;
+    border: none;
+  }
+  .field label {
+    display: block;
+    margin-bottom: 0.5rem; /* separa label del input */
+    font-weight: 500;
+  }
+
+  ::ng-deep .p-password-input:focus {
+    background-color: #F1EFEC !important;
+    border: 2px solid #0c0c0c !important; /* color de foco personalizado */
+    box-shadow: none !important;
+  }
+
+  /* Quitar el color gris del autocompletado */
+  ::ng-deep input:-webkit-autofill,
+  ::ng-deep input:-webkit-autofill:hover,
+  ::ng-deep input:-webkit-autofill:focus,
+  ::ng-deep .p-password-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px #F1EFEC inset !important;
+    box-shadow: 0 0 0px 1000px rgba(212, 201, 190, 0.45) inset !important;
+    -webkit-text-fill-color: black !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+
+  ::ng-deep .p-button{
+      background-color: #123458 !important;
+      color:#D4C9BE;
+      border: none;
+          &:hover {
+              transform: translateY(-3px) scale(1.1);
+    }
+  }
+
+  ::ng-deep .p-button.registerButton {
+    background-color: #0c0c0c !important;
+    border: none !important;
+    color:#D4C9BE;
+  }
+
+  ::ng-deep .p-button.registerButton:hover {
+    transform: translateY(-3px) scale(1.1);
+    color:#D4C9BE;
+  }
+
+
+  .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(241, 239, 236, 0.8); // Color semitransparente 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      backdrop-filter: blur(2px); // Blur adicional para el overlay
+  }
+
+  .spinner-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(212, 201, 190, 0.85);
+      padding: 2rem;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      
+      p {
+          color: #123458;
+          font-weight: 600;
+          margin-top: 1.5rem;
+          font-size: 1.2rem;
+      }
+  }

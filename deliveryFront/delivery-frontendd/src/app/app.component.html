@@ -1,0 +1,10 @@
+<router-outlet />
+<!-- Overlay sobre toda la pantalla -->
+<div *ngIf="loading()" class="fullscreen-overlay">
+    <div class="spinner-container">
+        <p-progress-spinner strokeWidth="8" fill="transparent" animationDuration=".5s"
+            [style]="{ width: '80px', height: '80px' }">
+        </p-progress-spinner>
+        <p class="loading-text">Procesando...</p>
+    </div>
+</div>

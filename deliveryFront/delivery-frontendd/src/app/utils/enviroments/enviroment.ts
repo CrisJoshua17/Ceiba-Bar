@@ -1,0 +1,9 @@
+export const BASE_ENDPOINT_MICRO_AUTH='http://localhost:8095/api/auth';
+export const BASE_ENDPOINT_MICRO_CUSTOMER='http://localhost:8088/api/customers';
+export const BASE_ENDPOINT_MICRO_USERS='http://localhost:8089/api/users'
+export const BASE_ENDPOINT_MICRO_PRODUCTS='http://localhost:8087/api/products'
+export const BASE_PATH_IMAGES ="http://localhost:8089";
+export const BASE_PATH_IMAGES_PRODUCTS ="http://localhost:8087";
+export const BASE_ENDPOINT_MICRO_PAYMENTS="http://localhost:8092/api/payments";
+export const BASE_ENDPOINT_MICRO_ORDERS="http://localhost:8099/api/orders";
+export const BASE_ENDPOINT_MICRO_DRIVERS='http://localhost:8096/api/drivers';

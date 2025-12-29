@@ -1,0 +1,181 @@
+<app-navbar-home></app-navbar-home>
+
+<div class="container1 p-0 m-0 w-100">
+  <div class="container-fluid p-0 m-0 bg-black w-100 myHello">
+    <div class="d-flex justify-content-center align-items-center main-container">
+
+      <!-- Sección de texto - Siempre visible -->
+      <div class="col-12 col-lg-4 mx-5 text-content">
+        <br>
+        <br>
+        <h3 class="text-white welcome text-center">Bienvenidos a Ceiba</h3>
+        <br>
+        <p class="presentacion-text my-3">
+          {{texts.presentacion}}
+        </p>
+      </div>
+
+      <!-- Sección de imágenes - Solo visible en pantallas grandes -->
+      <div class="col-6 d-none d-lg-block">
+        <!-- Grid de imágenes -->
+        <div class="gallery-grid mt my-3">
+          <div class="row w-75 mx-auto">
+            <div class="col-4 mb-2" *ngFor="let image of images; let i = index">
+              <div class="gallery-item">
+                <div class="gallery-icon">
+                  <img [src]="image.thumbnailImageSrc" [alt]="image.alt" class="grid-image" (click)="showImage(i)">
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container-fluid p-0 m-0 w-100 myInvite">
+    <div class="tarros-container">
+      <img class="imgTarros my-3" src="assets/images/tarros.png" alt="tarros" data-aos="flip-up" data-aos-delay="200">
+      <p class="invitacion-text my-3" data-aos="fade-up" data-aos-delay="200">
+        {{texts.invitacion}}
+      </p>
+    </div>
+  </div>
+
+
+  <div class="container-fluid p-0 m-0 bg-black w-100 ">
+    <div class="d-flex justify-content-center align-items-center main-container">
+
+      <!-- Sección de texto - Siempre visible -->
+      <div class="col-12 col-lg-4 mx-5 text-content" data-aos="zoom-in" data-aos-delay="200">
+        <br>
+        <br>
+        <h3 class="text-white textHistory text-center" data-aos="zoom-in">Nuestra Historia</h3>
+        <br>
+        <p class="presentacion-text my-3">
+          {{texts.historia}}
+        </p>
+      </div>
+
+      <!-- Sección de imágenes - Solo visible en pantallas grandes -->
+      <div class="col-6 d-none d-lg-block">
+        <!-- Grid de imágenes -->
+        <div class="mt my-3">
+          <div class="card bg-black" data-aos="zoom-in" data-aos-delay="200">
+            <p-galleria #galleria [value]="imagesHistory" [(activeIndex)]="activeIndexGalleria"
+              [responsiveOptions]="responsiveOptions" [showItemNavigators]="true" [showThumbnails]="true"
+              [circular]="true" [autoPlay]="false" [numVisible]="3"
+              [containerStyle]="{ 'max-width': '600px', 'max-height': '500px' }">
+
+              <ng-template #item let-item>
+                <img [src]="item.itemImageSrc" [alt]="item.alt" style=" display: block; border-radius: 8px;" />
+              </ng-template>
+
+              <ng-template #thumbnail let-item>
+                <img [src]="item.thumbnailImageSrc" [alt]="item.alt"
+                  style="width: 60px; height: 60px; object-fit: cover; border-radius: 6px;" />
+              </ng-template>
+            </p-galleria>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="container-fluid p-0 m-0 w-100 myInvite">
+    <div class="tarros-container" data-aos="zoom-in">
+      <h3 class="text-white textHistory text-center">{{texts.tituloRecetario}}</h3>
+      <p class="recetario-text text-white my-3" data-aos="fade-up" data-aos-delay="200">
+        {{texts.textoRecetario}}
+      </p>
+      <img class="imgMojito my-3" src="assets/images/mojitos.png" alt="tarros" data-aos="flip-up" data-aos-delay="200">
+    </div>
+  </div>
+
+  <!-- CAROUSEL DE PRODUCTOS -->
+  <div class="p-4" style="background: #D4C9BE; color: #0c0c0c">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="text-center py-5">
+      <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
+      <p class="mt-2">Cargando productos...</p>
+    </div>
+
+    <!-- Empty State -->
+    <div *ngIf="!isLoading && products.length === 0" class="text-center py-5">
+      <i class="pi pi-info-circle" style="font-size: 2rem"></i>
+      <p class="mt-2">No hay productos disponibles en este momento</p>
+    </div>
+
+    <!-- Products Carousel -->
+    <div *ngIf="!isLoading && products.length > 0">
+      <p-carousel [value]="products" [numVisible]="5" [numScroll]="1" [circular]="true"
+        [responsiveOptions]="carouselResponsiveOptions" [showNavigators]="true" [showIndicators]="false">
+
+        <ng-template pTemplate="item" let-product>
+          <div
+            class="border border-surface-300 rounded-lg m-1 p-3 shadow-sm hover:shadow-md transition-shadow min-w-56 max-w-64 product-card">
+            <div class="mb-2 relative">
+              <img [src]="product.image" [alt]="product.name"
+                class="w-full h-32 md:h-36 object-cover rounded-lg product-image"
+                (error)="product.image = 'assets/images/defaultProduct.jpg'" />
+            </div>
+            <div class="font-bold text-lg mb-1 product-name">{{ product.name }}</div>
+            <div class="text-sm text-gray-600 mb-3 line-clamp-2 product-description">{{ product.description }}</div>
+            <div class="flex justify-between items-end">
+              <div class="font-bold text-xl product-price">${{ product.price }}</div>
+              <div class="d-flex justify-content-end">
+                <p-button icon="pi pi-shopping-cart" size="small" class="buttonCarrito" [disabled]="!product.available"
+                  (onClick)="addToCart(product)">
+                </p-button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-carousel>
+    </div>
+  </div>
+
+
+</div>
+
+
+
+
+
+
+
+
+<!-- Modal con Galleria -->
+<p-dialog [(visible)]="displayModal" [modal]="true"
+  [style]="{ width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh', margin: 0 }"
+  [contentStyle]="{ padding: 0, height: '100%', background: 'rgba(0, 0, 0, 0.95)' }" [dismissableMask]="true"
+  [closable]="true" (onHide)="hideGallery()" class="lightbox-dialog">
+
+  <ng-template pTemplate="header">
+    <span class="text-xl font-bold text-white">Galería de Imágenes</span>
+  </ng-template>
+
+  <div class="swiper-lightbox">
+    <swiper-container #swiper slides-per-view="1" space-between="0" centered-slides="true" navigation="true"
+      pagination-type="fraction" zoom="true" keyboard-enabled="true" [initialSlide]="activeIndex"
+      class="swiper-lightbox-container">
+
+      <swiper-slide *ngFor="let image of images; let i = index" class="swiper-slide elementor-lightbox-item"
+        [attr.data-swiper-slide-index]="i">
+        <div class="swiper-zoom-container">
+          <img [src]="image.itemImageSrc" [alt]="i === activeIndex ? image.alt : ''" class="elementor-lightbox-image"
+            [class.swiper-slide-active]="i === activeIndex">
+        </div>
+      </swiper-slide>
+
+    </swiper-container>
+  </div>
+</p-dialog>
+
+
+
+<p-toast></p-toast>

@@ -1,0 +1,174 @@
+@if(!full()){
+<nav class="navbar navbar-expand-lg w-100 myNavbar">
+    <div class="container-fluid">
+
+        <a class="navbar-brand mx-auto" routerLink="/">
+            <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
+        </a>
+
+
+        <button class="cart-button" (click)="cartDrawerVisible = true">
+            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+                <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
+            </i>
+        </button>
+        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler">
+            <br>
+            <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
+
+            <div class="sidebar-header my-2">
+                <h3 class="text-white">Panel Cliente</h3>
+            </div>
+
+            <button pButton label="Iniciar Sesión" class="logout-btn" routerLink="/login">
+                <i class="pi pi-sign-out"></i>
+            </button>
+        </p-drawer>
+
+        <button pButton icon="pi pi-bars" class="open-sidebar-btn" (click)="visible = true">
+        </button>
+
+    </div>
+</nav>
+
+}@else {
+
+<nav class="navbar navbar-expand-lg w-100 myNavbar">
+    <div class="container-fluid">
+
+        <a class="navbar-brand mx-auto" routerLink="/customer/dashboard">
+            <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
+        </a>
+
+
+        <button class="cart-button" (click)="cartDrawerVisible = true">
+            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+                <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
+            </i>
+        </button>
+        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler">
+            <br>
+            <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
+
+            <div class="sidebar-header my-2">
+                <h3 class="text-white">Panel Cliente</h3>
+            </div>
+
+            <!-- Menú manual sin bucle -->
+            <div class="custom-sidebar-menu">
+                <ul class="p-menu-list" style="list-style: none; padding: 0; margin: 0;">
+
+                    <!-- Item Menu -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;" [routerLink]="['/menu/customer']">
+                                <span class="p-menu-item-icon pi pi-shopping-cart"></span>
+                                <span class="p-menu-item-text">Menú</span>
+                            </a>
+                        </div>
+                    </li>
+
+                    <!-- Item Pedidos -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;">
+                                <span class="p-menu-item-icon pi pi-truck"></span>
+                                <span class="p-menu-item-text">Pedidos</span>
+                            </a>
+                        </div>
+                    </li>
+
+                    <!-- Item Perfil -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0;">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;" [routerLink]="['/my-profile']">
+                                <span class="p-menu-item-icon pi pi-cog"></span>
+                                <span class="p-menu-item-text">Perfil</span>
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+
+            <button pButton label="Cerrar Sesión" class="logout-btn" (click)="cerrarSesion()">
+                <i class="pi pi-sign-out"></i>
+            </button>
+        </p-drawer>
+
+        <button pButton icon="pi pi-bars" class="open-sidebar-btn" (click)="visible = true">
+        </button>
+
+    </div>
+</nav>
+}
+
+
+
+
+<!-- Right Drawer (Sidebar) del carrito -->
+<p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
+    [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}">
+    <ng-template pTemplate="header">
+        <div class="sidebar-header">
+            <h3 class="text-white">Tu Carrito 🛒</h3>
+            <span class="cart-count">{{ cartService.cartItemsCount() }} items</span>
+        </div>
+    </ng-template>
+    <!-- Contenido del carrito -->
+    <div class="cart-content">
+        <!-- Si el carrito está vacío -->
+        @if(cartService.getCartItems().length === 0){
+        <div class="empty-cart">
+            <i class="pi pi-shopping-cart empty-icon"></i>
+            <p class="productText">Tu carrito está vacío</p>
+            <p-button label="Seguir Comprando"
+                [style]="{'background-color':'#123458', 'color':'white', 'border':'none'}"
+                (onClick)="cartDrawerVisible = false"></p-button>
+        </div>
+        }
+        @else {
+        <!-- Lista de productos -->
+        <div class="cart-items">
+            <div class="cart-item" *ngFor="let item of cartService.getCartItems()">
+                <!-- Imagen del producto -->
+                <div class="cart-product-image mr-3">
+                    <img [src]="getImageUrl(item.product.image)" [alt]="item.product.name"
+                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
+                </div>
+                <!-- Info del producto -->
+                <div class="item-info">
+                    <h4 class="productText">{{ item.product.name }}</h4>
+                    <p class="item-price">{{ item.product.price | currency:'MXN':'symbol':'1.2-2' }}</p>
+                </div>
+                <!-- Controles (+ - eliminar) -->
+                <div class="item-controls">
+                    <div class="quantity-controls">
+                        <button (click)="decreaseQuantity(item.product.id)" class="qty-btn">-</button>
+                        <span class="quantity">{{ item.quantity }}</span>
+                        <button (click)="increaseQuantity(item.product.id)" class="qty-btn">+</button>
+                    </div>
+                    <button (click)="removeFromCart(item.product.id)" class="remove-btn">
+                        <i class="pi pi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- Footer del carrito -->
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong class="productText">Total: {{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2'
+                    }}</strong>
+            </div>
+            <div class="cart-actions">
+                <p-button label="Limpiar Carrito"
+                    [style]="{'background-color':'#D4C9BE', 'color':'black', 'border':'none'}" (onClick)="clearCart()"
+                    class="mr-2" size="small"></p-button>
+                <p-button label="Finalizar Compra"
+                    [style]="{'background-color':'#123458', 'color':'white', 'border':'1px solid white'}"
+                    (onClick)="cartService.finalizarCompra()" size="small"></p-button>
+            </div>
+        </div>
+        }
+    </div>
+</p-drawer>

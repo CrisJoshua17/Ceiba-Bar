@@ -1,0 +1,87 @@
+<app-navbar-home></app-navbar-home>
+
+<div class="menu-container">
+    <p-dataview #dv [value]="products" [layout]="layout">
+        <ng-template #header>
+            <div class="header-controls">
+                <h2 class="header-title text-center text-black">Menu Snacks</h2>
+                <p-selectbutton [(ngModel)]="layout" [options]="options" [allowEmpty]="false">
+                    <ng-template #item let-item>
+                        <i class="pi" [ngClass]="{ 'pi-bars': item === 'list', 'pi-table': item === 'grid' }"></i>
+                    </ng-template>
+                </p-selectbutton>
+            </div>
+        </ng-template>
+
+        <!-- Vista de Lista -->
+        <ng-template #list let-items>
+            <div class="list-view">
+                <div *ngFor="let item of items; let first = first" class="list-item" [class.with-border]="!first">
+                    <div class="item-image-container">
+                        <img class="item-image" [src]="item.image" [alt]="item.name" />
+                        <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
+                            [style.left.px]="4" [style.top.px]="4" />
+                    </div>
+
+                    <div class="item-content">
+                        <div class="item-info">
+                            <div class="item-details">
+                                <span class="item-type">{{ item.type }}</span>
+                                <div class="item-name">{{ item.name }}</div>
+                            </div>
+
+                        </div>
+
+                        <div class="item-actions">
+                            <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
+                            <div class="action-buttons">
+                                <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                    [disabled]="item.available === false" (click)="addToCart(item)"
+                                    class="buy-button"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+
+        <!-- Vista de Grid -->
+        <ng-template #grid let-items>
+            <div class="grid-view">
+                <div *ngFor="let product of items" class="grid-item">
+                    <div class="product-card">
+                        <div class="product-image-wrapper">
+                            <div class="product-image-container">
+                                <img class="product-image" [src]="product.image" [alt]="product.name" />
+                                <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
+                                    class="status-tag" [style.left.px]="4" [style.top.px]="4" />
+                            </div>
+                        </div>
+
+                        <div class="product-details">
+                            <div class="product-header">
+                                <div class="product-info">
+                                    <span class="product-type">{{ product.type }}</span>
+                                    <div class="product-name">{{ product.name }}</div>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
+                                <div class="product-actions">
+                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
+                                        (click)="addToCart(product)" [disabled]="product.available === false"
+                                        class="buy-button-full"></button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ng-template>
+    </p-dataview>
+</div>
+
+
+<p-toast></p-toast>

@@ -1,0 +1,435 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700&display=swap');
+/* ===== ESTILOS BASE DEL NAVBAR ===== */
+.myNavbar {
+  height: 92px;
+  background-color: #123458;
+  font-family: 'Ubuntu', sans-serif;
+  padding: 0 1rem;
+}
+.myNavbar .myLogo {
+  height: 55px;
+  width: 55px;
+  font-weight: 700;
+}
+.myNavbar .nav-item:first-child .nav-link,
+.myNavbar .list-group-item.bg-primary .nav-link {
+  color: black !important;
+  font-weight: 700;
+}
+.myNavbar .dropdown-menu {
+  background-color: #0d1f3a;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+.myNavbar .dropdown-menu .dropdown-item {
+  color: white;
+  padding: 0.5rem 2rem;
+  font-weight: 500;
+}
+.myNavbar .dropdown-menu .dropdown-item:hover {
+  background-color: rgba(255,255,255,0.15);
+}
+.myNavbar .dropdown-toggle {
+  color: black !important;
+  font-weight: 500;
+}
+.myNavbar .dropdown-toggle:hover {
+  transform: scale(1.1);
+}
+/* ===== BOTÓN ABRIR DRAWER ===== */
+::ng-deep .open-sidebar-btn {
+  background-color: #123458 !important;
+  border: 1px solid black !important;
+  border-radius: 50% !important;
+  width: 50px !important;
+  height: 50px !important;
+  color: white !important;
+  transition: transform 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+::ng-deep .open-sidebar-btn:hover {
+  background-color: #005fa3 !important;
+  transform: scale(1.1);
+  border-color: black !important;
+}
+/* ===== DRAWER/CONTAINER ===== */
+/* Solo afecta al drawer de la IZQUIERDA (Menú) */
+::ng-deep p-drawer[position="left"] .p-drawer {
+  width: 280px !important;
+  background-color: #123458 !important;
+  background: #123458 !important;
+  --p-drawer-background: #123458;
+  border: none !important;
+}
+::ng-deep p-drawer[position="left"] .p-drawer-content {
+  background-color: #123458 !important;
+  font-family: 'Ubuntu', sans-serif !important;
+}
+::ng-deep p-drawer[position="left"] .p-drawer-header {
+  background-color: #123458 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.2) !important;
+  padding: 1rem !important;
+}
+::ng-deep .p-drawer .p-drawer-close {
+  color: white !important;
+}
+/* ===== DRAWER DERECHA (CARRITO) ===== */
+::ng-deep p-drawer[position="right"] .p-drawer {
+  width: 450px !important;
+}
+/* Fondo del drawer del carrito */
+::ng-deep p-drawer[position="right"] .p-drawer-content {
+  background-color: #123458 !important;
+  color: #D4C9BE !important;
+  padding: 0 !important; /* Reset padding to handle it in .cart-content */
+}
+::ng-deep p-drawer[position="right"] .p-drawer-header {
+  background-color: #123458 !important;
+  border-bottom: 1px solid rgba(212, 201, 190, 0.3) !important;
+  padding: 1.5rem !important;
+}
+/* ===== SIDEBAR MENU - ESTRUCTURA BASE ===== */
+::ng-deep .custom-sidebar-menu .p-menu {
+  width: 100% !important;
+  background: #123458 !important;
+  border: none !important;
+  padding: 0 !important;
+}
+::ng-deep .custom-sidebar-menu .p-menu .p-menu-list {
+  padding: 0 !important;
+  background: transparent !important;
+}
+::ng-deep .custom-sidebar-menu .p-menu .p-menu-item {
+  margin: 0.25rem 0 !important;
+  border-bottom: 1px solid rgba(255,255,255,0.2) !important;
+}
+::ng-deep .custom-sidebar-menu .p-menu .p-menu-item:last-child {
+  border-bottom: none !important;
+}
+/* ===== BOTÓN CERRAR SESIÓN ===== */
+::ng-deep .logout-btn {
+  width: 100% !important;
+  margin-top: 1rem !important;
+  background-color: #D4C9BE !important;
+  border: none !important;
+}
+::ng-deep .logout-btn:hover {
+  background-color: #F1EFEC !important;
+}
+.custom-sidebar-menu .p-menu-item-link {
+  padding: 1rem !important;
+  border-radius: 10px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 1rem !important;
+  color: white !important;
+  font-size: 1.1rem !important;
+  font-weight: 500 !important;
+  transition: all 0.25s ease !important;
+  background: transparent !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+}
+.custom-sidebar-menu .p-menu-item-link:hover {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+.custom-sidebar-menu .p-menu-item-icon {
+  font-size: 1.5rem !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  transition: color 0.25s ease !important;
+}
+.custom-sidebar-menu .p-menu-item-text {
+  color: white !important;
+  font-weight: 500 !important;
+  transition: color 0.25s ease !important;
+}
+.custom-sidebar-menu .p-menu-item-link:hover .p-menu-item-icon,
+.custom-sidebar-menu .p-menu-item-link:hover .p-menu-item-text {
+  color: #0a0a0a !important;
+  transform: translateX(6px) !important;
+}
+.fullscreen-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(241, 239, 236, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    backdrop-filter: blur(2px);
+}
+.spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(212, 201, 190, 0.85);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    
+    p {
+        color: #123458;
+        font-weight: 600;
+        margin-top: 1.5rem;
+        font-size: 1.2rem;
+    }
+}
+// OFFCANVAS SIDEBAR
+.offcanvas {
+  width: 280px !important;
+  background-color: #123458;
+  font-family: 'Ubuntu', sans-serif;
+  .offcanvas-header {
+    background-color: #123458;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+  }
+  .list-group-item {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    &:last-child { border-bottom: none; }
+  }
+  // Dropdown en sidebar
+ .dropdown-menu {
+    background-color: #0d1f3a;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    margin-top: 0.5rem;
+    width: 100%;
+    .dropdown-item {
+      color: white;
+      padding: 0.5rem 2rem;
+      font-weight: 500;
+      &:hover {
+        background-color: rgba(255,255,255,0.15);
+      }
+    }
+}
+  // Efecto hover en sidebar
+  .hover-scale {
+    transition: all 0.3s ease;
+    &:hover {
+      background-color: rgba(255,255,255,0.1);
+      transform: translateX(8px) scale(1.05);
+      font-weight: 600;
+    }
+  }
+}
+// ICONOS SOCIALES
+.social-icon {
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+  &:hover {
+    transform: translateY(-3px) scale(1.1);
+  }
+}
+.cart-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+  
+  &:hover {
+    background-color: rgba(20, 20, 20, 0.1);
+  }
+}
+/* ===== ESTILOS DEL CARRITO (NUEVOS) ===== */
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  
+  h3 {
+    margin: 0;
+    color: #D4C9BE !important;
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+  ::ng-deep .seguirBoton .p-button {
+    background-color: #D4C9BE !important;
+    border: none !important;
+    color: black !important;
+  }
+  
+  .cart-count {
+    background: #D4C9BE;
+    color: #123458;
+    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+  }
+}
+.cart-content {
+  padding: 1.5rem;
+  height: 100%;
+}
+.empty-cart {
+  text-align: center;
+  padding: 2rem 0;
+  
+  .empty-icon {
+    font-size: 3rem;
+    color: #9ca3af;
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: #6b7280;
+    margin-bottom: 1.5rem;
+  }
+}
+.cart-items {
+  .cart-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background-color 0.2s ease;
+    
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    &:first-child {
+      border-top: none;
+    }
+  }
+  .cart-product-image {
+    flex-shrink: 0;
+    
+    img {
+      width: 90px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border: 2px solid rgba(212, 201, 190, 0.2);
+    }
+  }
+}
+  
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  
+  h4 {
+    margin: 0;
+    color: #D4C9BE;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+  
+  .item-price {
+    margin: 0;
+    color: #10b981;
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+}
+  
+.item-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+  
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 4px;
+  border: 1px solid rgba(212, 201, 190, 0.3);
+  
+  .qty-btn {
+    background: rgba(18, 52, 88, 0.8);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    &:hover {
+      background: #D4C9BE;
+      color: #123458;
+      transform: scale(1.1);
+    }
+  }
+  
+  .quantity {
+    padding: 0 16px;
+    font-weight: 700;
+    color: #D4C9BE;
+    font-size: 1rem;
+  }
+}
+  
+.productText{
+  color:#D4C9BE;
+}
+.remove-btn {
+  background: white;
+  border: 1px solid #fee2e2;
+  color: #ef4444;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+  
+  i {
+    font-size: 1rem;
+  }
+  &:hover {
+    background: #ef4444;
+    color: white;
+    transform: scale(1.1);
+    box-shadow: 0 4px 6px rgba(239, 68, 68, 0.25);
+  }
+}
+.cart-footer {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, #123458 90%, transparent);
+  padding: 2rem 1.5rem;
+  border-top: 2px solid rgba(212, 201, 190, 0.3);
+  
+  .cart-total {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+    color: #D4C9BE;
+    font-weight: 700;
+  }
+  
+  .cart-actions {
+    display: flex;
+    gap: 0.75rem;
+    
+    ::ng-deep .p-button {
+      flex: 1;
+      justify-content: center;
+    }
+  }
+}

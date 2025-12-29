@@ -1,0 +1,124 @@
+<app-navbar-simple></app-navbar-simple>
+
+<div class="containerBase w-100">
+  <div class="container w-100 containerLog">
+    <p-card class="cardLog text-start">
+      <ng-template pTemplate="header">
+        <span class="customHeader mx-2">Registro</span>
+      </ng-template>
+      
+      
+      <form class="my-2" [formGroup]="registerForm" (ngSubmit)="register()">
+        <div class="p-fluid">
+
+          <!-- Nombre -->
+          <div class="field my-3">
+            <label for="name" class="labelT">Nombre</label>
+            <input
+              id="name"
+              type="text"
+              pInputText
+              formControlName="name"
+              class="inputFormUser"
+            />
+            <div *ngIf="name?.invalid && (name?.dirty || name?.touched)" class="w-100 my-1">
+              <p-message *ngIf="name?.errors?.['required']" severity="error">El nombre es requerido</p-message>
+              <p-message *ngIf="name?.errors?.['minlength']" severity="error">Debe tener al menos 2 caracteres</p-message>
+              <p-message *ngIf="name?.errors?.['maxlength']" severity="error">Máximo 30 caracteres</p-message>
+            </div>
+          </div>
+
+          <!-- Apellido -->
+          <div class="field my-3">
+            <label for="lastname" class="labelT">Apellido</label>
+            <input
+              id="lastname"
+              type="text"
+              pInputText
+              formControlName="lastname"
+              class="inputFormUser"
+            />
+            <div *ngIf="lastname?.invalid && (lastname?.dirty || lastname?.touched)" class="w-100 my-1">
+              <p-message *ngIf="lastname?.errors?.['required']" severity="error">El apellido es requerido</p-message>
+              <p-message *ngIf="lastname?.errors?.['minlength']" severity="error">Debe tener al menos 2 caracteres</p-message>
+              <p-message *ngIf="lastname?.errors?.['maxlength']" severity="error">Máximo 30 caracteres</p-message>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="field my-3">
+            <label for="username" class="labelT">Email</label>
+            <input
+              id="username"
+              type="email"
+              pInputText
+              formControlName="username"
+              class="inputFormUser"
+            />
+            <div *ngIf="username?.invalid && (username?.dirty || username?.touched)" class="w-100 my-1">
+              <p-message *ngIf="username?.errors?.['required']" severity="error">El email es requerido</p-message>
+              <p-message *ngIf="username?.errors?.['pattern']" severity="error">Formato de email inválido</p-message>
+            </div>
+          </div>
+
+          <!-- Teléfono -->
+          <div class="field my-3">
+            <label for="phone" class="labelT">Teléfono</label>
+            <input
+              id="phone"
+              type="text"
+              pInputText
+              formControlName="phone"
+              class="inputFormUser"
+            />
+            <div *ngIf="phone?.invalid && (phone?.dirty || phone?.touched)" class="w-100 my-1">
+              <p-message *ngIf="phone?.errors?.['pattern']" severity="error">Formato de celular inválido (10 dígitos)</p-message>
+            </div>
+          </div>
+
+          <!-- Contraseña -->
+          <div class="field my-3">
+            <label for="password" class="labelT">Contraseña</label>
+            <p-password
+              id="password"
+              formControlName="password"
+              [feedback]="false"
+              toggleMask="true"
+              class="inputFormPass"
+            ></p-password>
+            <div *ngIf="password?.invalid && (password?.dirty || password?.touched)" class="w-100 my-1">
+              <p-message *ngIf="password?.errors?.['required']" severity="error">¡Que no se te olvide la contraseña!</p-message>
+              <p-message *ngIf="password?.errors?.['minlength']" severity="error">Debe tener mínimo 4 caracteres</p-message>
+              <p-message *ngIf="password?.errors?.['maxlength']" severity="error">Máximo 20 caracteres</p-message>
+            </div>
+          </div>
+
+          <!-- Botón de envío -->
+          <p-button
+            label="¡Únete!"
+            icon="pi pi-user-plus"
+            type="submit"
+            class="w-full mt-3"
+            [disabled]="registerForm.invalid"
+            [styleClass]="'w-full registerButton'"
+          ></p-button>
+        </div>
+      </form>
+    </p-card>
+  </div>
+</div>
+
+<!-- Overlay sobre toda la pantalla -->
+<div *ngIf="loading" class="fullscreen-overlay">
+  <div class="spinner-container">
+    <p-progress-spinner 
+      strokeWidth="8" 
+      fill="transparent" 
+      animationDuration=".5s" 
+      [style]="{ width: '80px', height: '80px' }">
+    </p-progress-spinner>
+    <p class="mt-3 text-xl font-semibold">Procesando...</p>
+  </div>
+</div>
+
+<p-toast />

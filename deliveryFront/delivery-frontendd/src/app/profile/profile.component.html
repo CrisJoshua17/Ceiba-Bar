@@ -1,0 +1,245 @@
+@if(rol === 'ADMIN') {
+<app-navbar-admin></app-navbar-admin>
+}@else if (rol === 'CUSTOMER') {
+<app-navbar-customer></app-navbar-customer>
+}@else if (rol === 'DRIVER') {
+<app-navbar-driver></app-navbar-driver>
+}@else {
+<app-navbar-simple></app-navbar-simple>
+}
+
+<div class="container1">
+  <p-card>
+    <ng-template #header>
+      <div class="cardheader">
+        <h2 class="d-flex justify-content-center">
+          Editar Perfil
+          <i class="pi pi-spin pi-cog mx-3" style="font-size: 2rem"></i>
+        </h2>
+      </div>
+    </ng-template>
+
+    <div class="card-body">
+      <div class="row">
+        <!-- Columna izquierda - Imagen y eliminar -->
+        <div class="col-lg-4">
+          <div class="row mb-4">
+            <p-card class="cardImage">
+              <p-image [src]="selectedImage || getImageUrl(userData?.user?.image)" alt="Image" width="250"
+                [preview]="true" style="border-radius: 50%; overflow: hidden;">
+              </p-image>
+            </p-card>
+          </div>
+
+          <div class="row">
+            <p-card header="Eliminar perfil" class="card-Delete">
+              <div class="col">
+                <div class="row">
+                  <p class="m-0">Se eliminará permanentemente.</p>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                  <p-button icon="pi pi-trash" [rounded]="true" [text]="true" [raised]="true" severity="danger"
+                    (click)="eliminar($event)" />
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- Columna derecha - Formulario -->
+        <div class="col-lg-8">
+          <p-card header="Datos del Usuario" subheader="Complete el formulario para actualizar su perfil"
+            class="form-card">
+            <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+              <div class="p-fluid">
+                <div class="row">
+                  <!-- Columna izquierda del formulario -->
+                  <div class="col-md-6">
+                    <!-- Campo Nombre -->
+                    <div class="field">
+                      <label for="nombre">Nombre</label>
+                      <input id="nombre" type="text" pInputText formControlName="nombre"
+                        [class]="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched ? 'ng-invalid ng-dirty' : ''">
+                      <small *ngIf="userForm.get('nombre')?.invalid && userForm.get('nombre')?.touched" class="p-error">
+                        <div *ngIf="userForm.get('nombre')?.errors?.['required']">El nombre es requerido</div>
+                        <div *ngIf="userForm.get('nombre')?.errors?.['minlength']">Mínimo 3 caracteres</div>
+                      </small>
+                    </div>
+
+                    <!-- Campo Apellido -->
+                    <div class="field">
+                      <label for="apellido">Apellido</label>
+                      <input id="apellido" type="text" pInputText formControlName="apellido"
+                        [class]="userForm.get('apellido')?.invalid && userForm.get('apellido')?.touched ? 'ng-invalid ng-dirty' : ''">
+                      <small *ngIf="userForm.get('apellido')?.invalid && userForm.get('apellido')?.touched"
+                        class="p-error">
+                        <div *ngIf="userForm.get('apellido')?.errors?.['required']">El apellido es requerido</div>
+                        <div *ngIf="userForm.get('apellido')?.errors?.['minlength']">Mínimo 3 caracteres</div>
+                      </small>
+                    </div>
+
+                    <!-- Campo Email -->
+                    <div class="field">
+                      <label for="email">Email</label>
+                      <input id="email" type="email" pInputText formControlName="email"
+                        [class]="userForm.get('email')?.invalid && userForm.get('email')?.touched ? 'ng-invalid ng-dirty' : ''">
+                      <small *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched" class="p-error">
+                        <div *ngIf="userForm.get('email')?.errors?.['required']">El email es requerido</div>
+                        <div *ngIf="userForm.get('email')?.errors?.['email']">Email inválido</div>
+                      </small>
+                    </div>
+                  </div>
+
+                  <!-- Columna derecha del formulario -->
+                  <div class="col-md-6">
+                    <!-- Campo Teléfono -->
+                    <div class="field">
+                      <label for="telefono">Teléfono</label>
+                      <input id="telefono" type="text" pInputText formControlName="telefono"
+                        [class]="userForm.get('telefono')?.invalid && userForm.get('telefono')?.touched ? 'ng-invalid ng-dirty' : ''">
+                      <small *ngIf="userForm.get('telefono')?.invalid && userForm.get('telefono')?.touched"
+                        class="p-error">
+                        Formato: 9 dígitos
+                      </small>
+                    </div>
+
+                    <!-- Campo Imagen -->
+                    <div class="field">
+                      <label for="imagen">Imagen de Perfil</label>
+                      <p-fileUpload #fileUpload mode="basic" name="profileImage" chooseLabel="Seleccionar imagen"
+                        accept="image/*" maxFileSize="1000000" [auto]="false" (onSelect)="onImageSelect($event)"
+                        [showCancelButton]="false" [showUploadButton]="false" chooseIcon="pi pi-image">
+                      </p-fileUpload>
+
+
+                      <!-- Información de la imagen seleccionada -->
+                      <div *ngIf="selectedFile" class="image-info mt-2">
+                        <small class="text-sm text-600">
+                          <i class="pi pi-file"></i> {{ selectedFile.name }}
+                          ({{ (selectedFile.size / 1024).toFixed(2) }} KB)
+                        </small>
+                      </div>
+
+
+
+                      <!-- Mensajes de error -->
+                      <small *ngIf="imageError" class="p-error mt-2">
+                        {{ imageError }}
+                      </small>
+
+                      <small *ngIf="!imageError" class="text-sm text-600 mt-2">
+                        Formatos permitidos: JPG, PNG, GIF. Máximo 1MB
+                      </small>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="col-12">
+                      <button pButton type="button" label="Agregar Direccion" icon="pi pi-map" *ngIf="rol=='CUSTOMER'"
+                        class="p-button-secondary" (click)="showDialog()"></button>
+
+                      <div class="card flex justify-center" *ngIf="rol=='CUSTOMER'">
+                        <p-select [options]="addresses" [(ngModel)]="selectAddress" [checkmark]="true"
+                          [ngModelOptions]="{standalone: true}" optionLabel="alias" [showClear]="true"
+                          placeholder="Select a City" class="w-full md:w-56" />
+                      </div>
+                      <div class="flex justify-content-between mt-4">
+
+
+                        <button pButton type="button" label="Limpiar" icon="pi pi-times" class="p-button-secondary"
+                          (click)="onReset()">
+                        </button>
+
+                        <button pButton type="submit" label="Actualizar" icon="pi pi-check"
+                          [disabled]="userForm.invalid || hasImageError" class="buttonActu mx-2">
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </p-card>
+</div>
+
+<p-toast></p-toast>
+<p-confirmdialog />
+
+
+<p-dialog [visible]="visible" (onHide)="visible = false" [style]="{ width: '35rem', height: '25rem' }">
+  <ng-template #header>
+    <h3>Dirección</h3>
+  </ng-template>
+  <ng-template #content>
+    <form [formGroup]="addressForm" class="form-card">
+      <div>
+        <label for="alias">
+          <h5>Alias</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="alias">
+        </div>
+      </div>
+      <div>
+        <label for="street">
+          <h5>Calle con número</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="street">
+        </div>
+      </div>
+
+      <div>
+        <label for="city">
+          <h5>Colonia</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="colonia">
+        </div>
+      </div>
+      <div>
+        <label for="delegacion">
+          <h5>Delegación</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="delegacion">
+        </div>
+      </div>
+      <div>
+        <label for="state">
+          <h5>Estado</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="state">
+        </div>
+      </div>
+      <div>
+        <label for="postalCode">
+          <h5>Codigo Postal</h5>
+        </label>
+        <div class="field">
+          <input type="text" pInputText formControlName="postalCode">
+        </div>
+      </div>
+
+      <div>
+        <label for="state">
+          <h5>¿Dirección es predeterminada?</h5>
+        </label>
+        <div class="field">
+          <p-checkbox [binary]="true" formControlName="isDefault"></p-checkbox>
+        </div>
+      </div>
+    </form>
+
+    <ng-template #footer>
+      <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary"
+        (click)="visible = false"></button>
+      <button pButton type="button" label="Guardar" icon="pi pi-check" (click)="agregarAddress()"></button>
+    </ng-template>
+
+  </ng-template>
+</p-dialog>

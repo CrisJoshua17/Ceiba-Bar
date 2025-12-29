@@ -1,0 +1,63 @@
+<nav class="navbar navbar-expand-lg w-100 myNavbar">
+    <div class="container-fluid">
+
+        <a class="navbar-brand mx-auto" routerLink="/drivers/dashboard">
+            <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
+        </a>
+
+        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler">
+            <br>
+            <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
+
+            <div class="sidebar-header my-2">
+                <h3 class="text-white">Panel Driver</h3>
+            </div>
+
+            <!-- Menú manual sin bucle -->
+            <div class="custom-sidebar-menu">
+                <ul class="p-menu-list" style="list-style: none; padding: 0; margin: 0;">
+
+
+                    <!-- Item Historial -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;">
+                                <span class="p-menu-item-icon pi pi-history"></span>
+                                <span class="p-menu-item-text">Historial</span>
+                            </a>
+                        </div>
+                    </li>
+
+                    <!-- Item Entregas -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;">
+                                <span class="p-menu-item-icon pi pi-truck"></span>
+                                <span class="p-menu-item-text">Entregas</span>
+                            </a>
+                        </div>
+                    </li>
+
+                    <!-- Item Perfil -->
+                    <li class="p-menu-item" style="margin: 0.25rem 0;">
+                        <div class="p-menu-item-content">
+                            <a class="p-menu-item-link" style="cursor: pointer;">
+                                <span class="p-menu-item-icon pi pi-cog"></span>
+                                <span class="p-menu-item-text">Perfil</span>
+                            </a>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+
+            <button pButton label="Cerrar Sesión" class="logout-btn" (click)="cerrarSesion()">
+                <i class="pi pi-sign-out"></i>
+            </button>
+        </p-drawer>
+
+        <button pButton icon="pi pi-bars" class="open-sidebar-btn" (click)="visible = true">
+        </button>
+
+    </div>
+</nav>

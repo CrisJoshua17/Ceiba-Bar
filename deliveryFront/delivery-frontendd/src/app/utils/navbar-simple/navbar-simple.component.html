@@ -1,0 +1,90 @@
+<nav class="navbar navbar-expand-lg w-100 myNavbar">
+  <div class="container-fluid">
+    
+    <!-- Logo siempre centrado -->
+    <a class="navbar-brand mx-auto" routerLink="/">
+      <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
+    </a>
+
+    <!-- Redes sociales siempre al final -->
+    <div class="social-icons-container">
+      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-facebook social-icon facebook"></i>
+      </a>
+      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-whatsapp social-icon whatsapp"></i>
+      </a>
+      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-instagram social-icon instagram"></i>
+      </a>
+    </div>
+
+  </div>
+</nav>
+
+<!-- OFFCANVAS SIDEBAR -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
+  <div class="offcanvas-header text-white">
+    <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">Menú</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-0">
+    <ul class="list-group list-group-flush">
+      <!-- INICIO -->
+      <li class="list-group-item">
+        <a routerLink="/" class="nav-link text-white fw-bold d-block py-3 px-4 hover-scale">
+          INICIO
+        </a>
+      </li>
+
+      <!-- PROMOCIONES -->
+      <li class="list-group-item">
+        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
+          PROMOCIONES
+        </a>
+      </li>
+
+      <!-- MENÚ con dropdown -->
+      <li class="list-group-item hover-parent">
+        <a class="nav-link dropdown-toggle text-black d-block py-3 px-4" routerLink="#" role="button"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          MENÚ
+        </a>
+        <ul class="dropdown-menu w-100">
+          <li><a class="dropdown-item" routerLink="#">Drinks</a></li>
+          <li><a class="dropdown-item" routerLink="#">Snacks</a></li>
+        </ul>
+      </li>
+
+      <!-- TIENDA EN LÍNEA -->
+      <li class="list-group-item">
+        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
+          TIENDA EN LÍNEA
+        </a>
+      </li>
+
+      <!-- CONTACTO -->
+      <li class="list-group-item">
+        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
+          CONTACTO
+        </a>
+      </li>
+    </ul>
+
+    <!-- Iconos en sidebar -->
+    <div class="p-4 border-top d-flex justify-content-center gap-3">
+      <i class="pi pi-user social-icon" [routerLink]="['/login']"></i>
+      <i class="pi pi-shopping-cart social-icon" pBadge value="0"></i>
+      
+      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-facebook social-icon facebook"></i>
+      </a>
+      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-whatsapp social-icon whatsapp"></i>
+      </a>
+      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer">
+        <i class="pi pi-instagram social-icon instagram"></i>
+      </a>
+    </div>
+  </div>
+</div>

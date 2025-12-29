@@ -1,0 +1,142 @@
+<app-navbar-customer></app-navbar-customer>
+
+<div class="my-5 mx-5">
+    <p-card class="py-2">
+        <ng-template #header>
+            <h2 class="mx-2">Checkout <i class="pi pi-shopping-cart" style="font-size: 2rem"></i></h2>
+        </ng-template>
+        <hr>
+        <ng-template #content>
+            <div class="row">
+                <div class="col-6">
+                    <p-card>
+                        <ng-template #title> Detalles de facturación </ng-template>
+                        <hr>
+
+                        <ng-template #content>
+                            <form [formGroup]="form">
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="name">Nombre</label>
+                                        <input type="text" formControlName="name" placeholder="Nombre" class="input">
+                                    </div>
+
+                                    <div class="col-6">
+                                        <label for="lastName">Apellidos</label>
+                                        <input type="text" formControlName="lastName" placeholder="Apellido"
+                                            class="input">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="street" class="py-2">Dirección de la calle completa</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="street" placeholder="Dirección"
+                                        class="input w-75">
+                                </div>
+                                <div>
+                                    <label for="colonia" class="py-2">Colonia</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="colonia" placeholder="Colonia"
+                                        class="input w-75">
+                                </div>
+                                <div>
+                                    <label for="delegacion" class="py-2">Delegación</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="delegacion" placeholder="Delegación"
+                                        class="input w-75">
+                                </div>
+                                <div>
+                                    <label for="cp" class="py-2">Código Postal</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="cp" placeholder="Código Postal" class="input">
+                                </div>
+
+                                <div>
+                                    <label for="email" class="py-2">Correo Electrónico</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="email" placeholder="Correo Electrónico"
+                                        class="input">
+                                </div>
+                                <div>
+                                    <label for="phone" class="py-2">Teléfono</label>
+                                </div>
+                                <div>
+                                    <input type="text" formControlName="phone" placeholder="Teléfono" class="input">
+                                </div>
+
+                                <div>
+                                    <h4 class="py-2"> Información Adicional</h4>
+                                </div>
+                                <hr>
+                                <div>
+                                    <label for="notes" class="py-2">Notas del pedido</label>
+                                </div>
+                                <div>
+                                    <textarea formControlName="notes" placeholder="Notas del pedido"
+                                        class="w-75 input"></textarea>
+                                </div>
+
+                            </form>
+
+                        </ng-template>
+                    </p-card>
+                </div>
+                <div class="col-6">
+                    <p-panel class="cardPedido" [toggleable]="true">
+                        <ng-template #header> Tu pedido </ng-template>
+                        <hr>
+                        <ng-template #content>
+                            <p-table [value]="cartItems()">
+                                <ng-template #header>
+                                    <tr class="text-center">
+                                        <th>Producto</th>
+                                        <th>Subtotal</th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template #body let-product>
+                                    <tr class="text-center">
+                                        <td>{{ product.product.name }} x {{ product.quantity }}</td>
+                                        <td>{{ product.product.price * product.quantity | currency:'MXN':'symbol-narrow'
+                                            }}</td>
+                                    </tr>
+                                </ng-template>
+                                <ng-template #footer>
+                                    <tr class="text-center totalRow">
+                                        <td class="totalRow"><strong>Total</strong></td>
+                                        <td class="totalRow"><strong>{{ getTotal() | currency:'MXN':'symbol-narrow'
+                                                }}</strong></td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </ng-template>
+                    </p-panel>
+
+                    <p-panel class="cardPedido2" [toggleable]="true">
+                        <ng-template #header> Pago </ng-template>
+                        <hr>
+                        <ng-template #content>
+                            <div class="d-flex">
+                                <p>Pago con Stripe </p> <i class="pi pi-credit-card mx-3 my-1"
+                                    style="color: slateblue; font-size: 1.5rem"></i>
+                            </div>
+                            <p>Tus datos personales se utilizarán para procesar tu pedido,
+                                mejorar tu experiencia en esta web y otros propósitos descritos en nuestra política de
+                                privacidad.</p>
+
+                            <br>
+                            <button class="btn btn-primary w-100" (click)="payWithStripe()">Stripe</button>
+                            <br>
+                        </ng-template>
+                    </p-panel>
+                </div>
+            </div>
+        </ng-template>
+    </p-card>
+</div>
