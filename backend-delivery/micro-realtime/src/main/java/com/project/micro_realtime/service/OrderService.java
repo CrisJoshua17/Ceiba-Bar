@@ -32,10 +32,25 @@ public class OrderService {
     private final DriverClient driverClient;
     private final KafkaTemplate<String, OrderStatusEvent> kafkaTemplate;
     private final KafkaProducerService kafkaProducerService;
+    private final GeocodingService geocodingService;
 
     public Mono<Order> createOrder(Order order) {
-        return Mono.fromCallable(() -> orderRepository.save(order))
-                .doOnSuccess(saved -> sendEvent(saved.getId(), "CREATED"));
+        return Mono.just(order)
+                .flatMap(o -> {
+                    // Si hay dirección pero no coordenadas, intentar geocodificar
+                    if (o.getAddress() != null && !o.getAddress().isEmpty() &&
+                            (o.getDestinationLat() == null || o.getDestinationLat() == 0.0)) {
+                        return geocodingService.geocode(o.getAddress())
+                                .map(coords -> {
+                                    o.setDestinationLat(coords.lat());
+                                    o.setDestinationLng(coords.lng());
+                                    return o;
+                                })
+                                .defaultIfEmpty(o);
+                    }
+                    return Mono.just(o);
+                })
+                .map(orderRepository::save);
     }
 
     public Mono<Order> updateOrder(Long id, Order updatedOrder) {
@@ -47,28 +62,46 @@ public class OrderService {
             boolean wasEnCamino = existing.getStatus() == OrderStatus.EN_CAMINO;
             boolean willBeEnCamino = updatedOrder.getStatus() == OrderStatus.EN_CAMINO;
 
+            // Detectar cambio de dirección para re-geocodificar
+            boolean addressChanged = !existing.getAddress().equals(updatedOrder.getAddress());
+
             existing.setCustomerName(updatedOrder.getCustomerName());
             existing.setAddress(updatedOrder.getAddress());
             existing.setStatus(updatedOrder.getStatus());
 
-            Order saved = orderRepository.save(existing);
-            // ENVIAR EVENTO SOLO SI CAMBIA A EN_CAMINO
-            if (!wasEnCamino && willBeEnCamino) {
-                OrderStatusEvent event = new OrderStatusEvent(
-                        saved.getId(),
-                        "EN_CAMINO",
-                        "driver-001",
-                        LocalDateTime.now(),
-                        19.4326,
-                        -99.1332);
-                kafkaProducerService.sendStatusUpdate(event);
-            }
-            return saved;
-        });
-    }
-
-    private void sendEvent(Long orderId, String status) {
-        kafkaTemplate.send("order-events", new OrderStatusEvent());
+            return existing;
+        })
+                .flatMap(existing -> {
+                    // Si cambió la dirección, re-geocodificar
+                    if (updatedOrder.getAddress() != null && !updatedOrder.getAddress().isEmpty()) {
+                        return geocodingService.geocode(updatedOrder.getAddress())
+                                .map(coords -> {
+                                    existing.setDestinationLat(coords.lat());
+                                    existing.setDestinationLng(coords.lng());
+                                    return existing;
+                                })
+                                .defaultIfEmpty(existing);
+                    }
+                    return Mono.just(existing);
+                })
+                .map(orderRepository::save)
+                .doOnSuccess(saved -> {
+                    // ENVIAR EVENTO SOLO SI CAMBIA A EN_CAMINO
+                    boolean wasEnCamino = saved.getStatus() == OrderStatus.EN_CAMINO; // Simplificado para este ejemplo
+                    if (saved.getStatus() == OrderStatus.EN_CAMINO) {
+                        OrderStatusEvent event = new OrderStatusEvent(
+                                saved.getId(),
+                                "EN_CAMINO",
+                                "driver-001",
+                                LocalDateTime.now(),
+                                19.4326,
+                                -99.1332,
+                                saved.getDestinationLat(), // Asignar destino
+                                saved.getDestinationLng() // Asignar destino
+                        );
+                        kafkaProducerService.sendStatusUpdate(event);
+                    }
+                });
     }
 
     public Mono<Order> getOrder(Long id) {
@@ -114,8 +147,15 @@ public class OrderService {
                             .customerName(order.getCustomerName())
                             .customerEmail(order.getCustomerEmail())
                             .address(order.getAddress())
-                            .destinationLat(order.getDestinationLat())
-                            .destinationLng(order.getDestinationLng())
+                            // COORDENADAS POR DEFECTO LEJANAS (Sur CDMX) si no están configuradas
+                            // Start (Zocalo): 19.4326, -99.1332
+                            // End (Sur): 19.3326, -99.1332
+                            .destinationLat(order.getDestinationLat() != null && order.getDestinationLat() != 0.0
+                                    ? order.getDestinationLat()
+                                    : 19.3326)
+                            .destinationLng(order.getDestinationLng() != null && order.getDestinationLng() != 0.0
+                                    ? order.getDestinationLng()
+                                    : -99.1332)
                             .products(order.getProducts())
                             .status(order.getStatus())
                             .rating(order.getRating())

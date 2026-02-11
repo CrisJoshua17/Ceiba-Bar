@@ -50,6 +50,9 @@ public class KafkaConsumerService {
                         tracking.setDriverId(event.getDriverId());
                         tracking.setLat(newLat);
                         tracking.setLng(newLng);
+                        // Guardar coordenadas de destino para que el frontend las tenga
+                        tracking.setDeliveryLat(event.getDeliveryLat());
+                        tracking.setDeliveryLng(event.getDeliveryLng());
                         tracking.setTimestamp(
                                 event.getTimestamp() != null ? event.getTimestamp() : LocalDateTime.now());
 

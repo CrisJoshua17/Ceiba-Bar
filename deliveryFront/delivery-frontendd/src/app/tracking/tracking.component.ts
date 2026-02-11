@@ -82,7 +82,10 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
             if (isOwner || isAdmin || isDriver) {
               this.isVerified = true;
-              if (this.mapElement) this.initMap();
+              // Esperar a que el *ngIf renderice el mapa
+              setTimeout(() => {
+                if (this.mapElement) this.initMap();
+              }, 100);
               
               // AUTO-PROCESS: Si ya tiene dirección y no ha sido enviada en esta sesión
               if (order.address && !this.addressSent) {
@@ -125,8 +128,30 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       next: (resp) => {
         if (resp.success) {
           this.isVerified = true;
-          // Pequeño delay para asegurar que el div del mapa se renderice
-          setTimeout(() => this.initMap(), 100);
+          const order = resp.data;
+          
+          // Inicializar datos de la orden
+          if (order.address) {
+             this.address = order.address;
+             // Si ya está en camino, activar inmediatamente
+             if (order.status === 'EN_CAMINO') {
+                this.addressSent = true;
+                this.status = 'Repartidor en camino...';
+             } else if (order.status === 'PAGADO' || order.status === 'CREATED') {
+                // Si aún no inicia, intentar enviar dirección para asegurar flujo
+                 setTimeout(() => this.sendAddress(), 1000);
+             }
+          }
+
+          // Inicializar mapa y tracking
+          setTimeout(() => {
+             this.initMap();
+             this.waitForMapInitialization().then(() => {
+                this.loadDestination();
+                this.connectWebSocket();
+             });
+          }, 100);
+
         } else {
           alert(resp.message);
         }
@@ -257,10 +282,11 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: (data) => {
           console.log('🎯 Datos del destino:', data);
-          if (data.deliveryLat && data.deliveryLng) {
+          
+          if (data && data.deliveryLat && data.deliveryLng) {
             this.setupDestination(data.deliveryLat, data.deliveryLng);
           } else {
-            console.warn('⚠️ No hay coordenadas de destino en la respuesta');
+            console.warn('⚠️ No hay coordenadas de destino disponibles');
           }
         },
         error: (err) => {

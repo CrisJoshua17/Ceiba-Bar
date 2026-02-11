@@ -12,4 +12,6 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addResourceHandler("/images/**")
                 .addResourceLocations("file:uploads/images/");
     }
+
+    // NOTA: NO configurar CORS aquí, el Gateway lo maneja centralizadamente
 }

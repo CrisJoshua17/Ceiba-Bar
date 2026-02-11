@@ -17,7 +17,7 @@ public class GatewayConfig {
                                                 .path("/api/products/**")
                                                 .and()
                                                 .method("GET", "OPTIONS")
-                                                .uri("lb://micro_productos"))
+                                                .uri("lb://micro-productos"))
 
                                 // ========== AUTH ROUTES (No requieren validación) ==========
                                 .route("auth-login", r -> r
@@ -88,7 +88,7 @@ public class GatewayConfig {
                                 // ========== WEBSOCKET ROUTES (Sin autenticación por ahora) ==========
                                 .route("websocket-tracking", r -> r
                                                 .path("/ws/tracking")
-                                                .uri("lb://micro-realtime"))
+                                                .uri("lb:ws://micro-realtime"))
 
                                 .build();
         }

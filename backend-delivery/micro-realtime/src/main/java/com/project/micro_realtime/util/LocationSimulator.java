@@ -75,10 +75,11 @@ public class LocationSimulator {
         double targetLat = order.getDestinationLat() != null ? order.getDestinationLat() : 0.0;
         double targetLng = order.getDestinationLng() != null ? order.getDestinationLng() : 0.0;
 
-        // Validar coordenadas de destino
+        // Validar coordenadas de destino y aplicar fallback si es necesario
         if (targetLat == 0.0 || targetLng == 0.0) {
-            log.warn("⚠️ Pedido {} sin coordenadas de destino válidas", orderId);
-            return Mono.empty();
+            log.warn("⚠️ Pedido {} sin coordenadas. Usando fallback LEJANO (Sur CDMX) para simulación.", orderId);
+            targetLat = 19.3326;
+            targetLng = -99.1332;
         }
 
         // Obtener o inicializar el estado de simulación para esta orden

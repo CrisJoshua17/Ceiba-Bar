@@ -44,7 +44,7 @@ import lombok.extern.log4j.Log4j2;
 @RequestMapping("/api/products")
 @RequiredArgsConstructor
 @Log4j2
-@CrossOrigin(origins = "*")
+// NOTA: CORS manejado por el Gateway, NO agregar @CrossOrigin aquí
 public class ProductController {
 
     private final ProductService productService;

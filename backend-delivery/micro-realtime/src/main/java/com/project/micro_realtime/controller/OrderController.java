@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.micro_realtime.dto.OrderResponseDto;
 import com.project.micro_realtime.feign.AuthClient;
 import com.project.micro_realtime.model.Order;
+import com.project.micro_realtime.model.OrderStatus;
 import com.project.micro_realtime.service.OrderService;
 
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,16 @@ public class OrderController {
         return orderService.getOrder(id)
                 .flatMap(order -> {
                     if (email.equalsIgnoreCase(order.getCustomerEmail())) {
-                        return successResponse("Identidad verificada", true, HttpStatus.OK);
+                        // Si tiene dirección y no está EN_CAMINO, activarlo para el simulador
+                        if (order.getAddress() != null && !order.getAddress().isEmpty()
+                                && order.getStatus() != OrderStatus.EN_CAMINO
+                                && order.getStatus() != OrderStatus.ENTREGADO) {
+                            order.setStatus(OrderStatus.EN_CAMINO);
+                            return orderService.updateOrder(id, order)
+                                    .flatMap(updated -> successResponse("Identidad verificada y tracking activado",
+                                            updated, HttpStatus.OK));
+                        }
+                        return successResponse("Identidad verificada", order, HttpStatus.OK);
                     } else {
                         return Mono.error(new RuntimeException("El email no coincide con el registro del pedido"));
                     }
