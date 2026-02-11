@@ -1,8 +1,10 @@
 package com.project.micro_realtime.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.project.micro_realtime.model.OrderStatus;
+import com.project.micro_realtime.dto.ProductDto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,4 +33,5 @@ public class DeliveryDto {
     private String customerName;
     private String customerEmail;
     private String address;
+    private List<ProductDto> products;
 }

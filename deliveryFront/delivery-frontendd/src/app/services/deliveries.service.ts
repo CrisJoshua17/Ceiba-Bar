@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AssignDriverRequest, DeliveryResponse } from '../model/Dtos';
+import { API_GATEWAY } from '../utils/enviroments/enviroment';
 
 
 @Injectable({
@@ -9,7 +10,7 @@ import { AssignDriverRequest, DeliveryResponse } from '../model/Dtos';
 })
 export class DeliveriesService {
 
-  private baseEndpoint = 'http://localhost:8099/api/deliveries';
+  private baseEndpoint = `${API_GATEWAY}/api/delivery`;
 
   constructor(private http: HttpClient) { }
 

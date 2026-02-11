@@ -47,7 +47,8 @@ import { CheckboxModule } from 'primeng/checkbox';
     TableModule,
     FormsModule,
     SelectModule,
-    CheckboxModule
+    CheckboxModule,
+    
 ],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss',

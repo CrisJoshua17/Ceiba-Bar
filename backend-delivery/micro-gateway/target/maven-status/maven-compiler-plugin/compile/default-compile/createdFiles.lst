@@ -1,0 +1,4 @@
+com\project\micro_gateway\config\AuthenticationFilter$ValidationResponse.class
+com\project\micro_gateway\config\GatewayConfig.class
+com\project\micro_gateway\config\AuthenticationFilter.class
+com\project\micro_gateway\MicroGatewayApplication.class

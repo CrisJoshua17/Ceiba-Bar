@@ -1,0 +1,159 @@
+<app-navbar-driver></app-navbar-driver>
+
+<div class="container1">
+    <p-card>
+        <ng-template #header>
+            <div class="cardheader">
+                <h2 class="text-center">
+                    Gestión de Pedidos
+                    <i class="pi pi-box scale-150 mx-3"></i>
+                </h2>
+            </div>
+        </ng-template>
+
+        <div class="search-bar mb-4">
+            <span class="p-input-icon-left w-75">
+                <input pInputText type="text" class="w-75 myInput"
+                    placeholder="Buscar por ID, cliente, email o estado..." [ngModel]="searchTerm()"
+                    (ngModelChange)="searchTerm.set($event)" />
+                <i class="pi pi-search mx-2"></i>
+            </span>
+        </div>
+
+        <p-tabs value="0">
+            <p-tablist>
+                <p-tab value="0">Todos</p-tab>
+                <p-tab value="1">En Camino</p-tab>
+                <p-tab value="2">Entregados</p-tab>
+                <p-tab value="3">Cancelados</p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <ng-container *ngTemplateOutlet="orderTable; context: { $implicit: filteredAll() }"></ng-container>
+                </p-tabpanel>
+
+                <p-tabpanel value="1">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredProcessing() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredDelivered() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredCancelled() }"></ng-container>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </p-card>
+</div>
+
+<ng-template #orderTable let-orders>
+    <div class="card overflow-hidden">
+        <p-table [value]="orders" [paginator]="true" [rows]="10" [loading]="isLoading()" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 80px">ID</th>
+                    <th>Cliente</th>
+                    <th>Email</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-order>
+                <tr>
+                    <td><strong>#{{ order.orderId }}</strong></td>
+                    <td>{{ order.customerName }}</td>
+                    <td>{{ order.customerEmail }}</td>
+                    <td>
+                        <div class="address-truncate" [pTooltip]="order.address">
+                            {{ order.address }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <!-- Acciones según estado actual -->
+                            @if (order.status === 'EN_CAMINO') {
+                            <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
+                                (click)="showDialog(order)"></button>
+                            <button pButton icon="pi pi-times" label="Cancelar"
+                                class="p-button-sm p-button-danger p-button-outlined"
+                                (click)="updateStatus(order, 'CANCELADO')   "></button>
+                            } @else {
+                            <span class="text-muted small italic">Sin acciones</span>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-5">
+                        <i class="pi pi-inbox block mb-2" style="font-size: 2rem; color: #ccc;"></i>
+                        <p class="text-600">No se encontraron pedidos con estos criterios.</p>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</ng-template>
+
+<p-toast></p-toast>
+<p-confirmdialog></p-confirmdialog>
+
+<p-dialog [(visible)]="visible" [style]="{ width: '35rem', height: '25rem' }">
+    <ng-template #header>
+        <h3 #title>Detalle de la Orden</h3>
+    </ng-template>
+    <ng-template #content>
+        <h5>Nombre del cliente: </h5>
+        <p>{{ selectedOrder?.customerName }}</p>
+        <h5>Email del cliente: </h5>
+        <p>{{ selectedOrder?.customerEmail }}</p>
+        <h5>Dirección del cliente: </h5>
+        <p>{{ selectedOrder?.address }}</p>
+        <br>
+        <h4 #subtitle>Detalles de los productos</h4>
+        <p-table [value]="selectedOrder?.products || []" [paginator]="true" [rows]="10" [loading]="isLoading()">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-product>
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.price }}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-5">
+                        <i class="pi pi-inbox block mb-2" style="font-size: 2rem; color: #ccc;"></i>
+                        <p class="text-600">No se encontraron productos con estos criterios.</p>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-template>
+    <ng-template #footer>
+
+        <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary"
+            (click)="visible = false"></button>
+        <button pButton type="button" label="Guardar" icon="pi pi-check" class="buttonActu"
+            (click)="selectedOrder && updateStatus(selectedOrder, 'ENTREGADO')"></button>
+    </ng-template>
+</p-dialog>

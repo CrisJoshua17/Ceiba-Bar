@@ -18,6 +18,9 @@ import { PaymentComponent } from './payment/payment.component';
 import { PaymentSuccessComponent } from './payment-success/payment-success.component';
 import { PaymentCancelComponent } from './payment-cancel/payment-cancel.component';
 import { PedidosAdminComponent } from './pedidos-admin/pedidos-admin.component';
+import { DriversDeliveriesComponent } from './drivers-deliveries/drivers-deliveries.component';
+import { DriversHistoryComponent } from './drivers-history/drivers-history.component';
+import { CustomerDeliveryComponent } from './customer-delivery/customer-delivery.component';
 
 export const routes: Routes = [
     { path: 'map/:id', component: TrackingComponent },
@@ -28,7 +31,10 @@ export const routes: Routes = [
      {path:'registro', component:RegisterPageComponent},
      {path:'admin/dashboard', component:AdminDashboardComponent},
      {path:'customer/dashboard', component:DashboardCustomerComponent},
+     {path:'customer/deliverys', component:CustomerDeliveryComponent},
       {path:'drivers/dashboard', component:DriversDashboardComponent},
+      {path:'drivers/deliveries', component:DriversDeliveriesComponent},
+      {path:'drivers/history', component:DriversHistoryComponent},
      {path:'my-profile', component:ProfileComponent},
      {path:'admin/users', component:AdminUsersComponent},
      {path:'admin/products', component:AdminProductsComponent},
@@ -40,5 +46,6 @@ export const routes: Routes = [
        {path: 'payments/pago-exitoso', component: PaymentSuccessComponent},
        {path: 'payments/pago-cancelado', component: PaymentCancelComponent},
        {path:'admin/orders', component:PedidosAdminComponent},
+
        
 ];

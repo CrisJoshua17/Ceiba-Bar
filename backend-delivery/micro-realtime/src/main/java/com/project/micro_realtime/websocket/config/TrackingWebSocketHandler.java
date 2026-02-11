@@ -1,16 +1,14 @@
 package com.project.micro_realtime.websocket.config;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.micro_realtime.model.OrderTracking;
 import com.project.micro_realtime.repository.TrackingRepository;
@@ -28,104 +26,102 @@ public class TrackingWebSocketHandler implements WebSocketHandler {
 
     private final TrackingRepository trackingRepository;
     private final ObjectMapper objectMapper;
-    private final Map<String, Sinks.Many<OrderTracking>> sinks = new ConcurrentHashMap<>();
+
+    // Mapa: OrderId -> Sink (Canal de difusión para esa orden)
+    // Sinks.Many permite múltiples suscriptores (multicast)
+    private final Map<Long, Sinks.Many<OrderTracking>> orderSinks = new ConcurrentHashMap<>();
 
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         String query = session.getHandshakeInfo().getUri().getQuery();
-        if (query == null || !query.startsWith("orderId=")) {
+        if (query == null || !query.contains("orderId=")) {
             return session.close();
         }
 
-        String orderIdStr = query.split("=")[1];
-        Long orderId = Long.parseLong(orderIdStr);
-
-        log.info("🔌 Nueva conexión WebSocket para orderId: {}", orderId);
-
-        Sinks.Many<OrderTracking> sink = Sinks.many().multicast().onBackpressureBuffer();
-        sinks.put(session.getId(), sink);
-
-        // Enviar la última posición al conectar
-        trackingRepository.findTopByOrderIdOrderByTimestampDesc(orderId)
-                .doOnSuccess(lastPosition -> {
-                    if (lastPosition != null) {
-                        log.info("📤 Enviando última posición al cliente: {}", lastPosition);
-                        sink.tryEmitNext(lastPosition);
-                    }
-                })
-                .subscribe();
-
-        Flux<String> output = sink.asFlux()
-                .map(this::toJson)
-                .doOnError(error -> log.error("Error sending WebSocket message", error));
-
-        return session.send(output.map(session::textMessage))
-                .and(session.receive().doOnNext(message -> {
-                    // Opcional: manejar mensajes del cliente
-                    log.info("📥 Mensaje recibido del cliente: {}", message.getPayloadAsText());
-                }).then())
-                .doFinally(signal -> {
-                    log.info("🔌 Cerrando conexión WebSocket para orderId: {}", orderId);
-                    sinks.remove(session.getId());
-                    sink.tryEmitComplete();
-                });
-    }
-
-    @Scheduled(fixedRate = 3000)
-    public void broadcastLatest() {
-        if (sinks.isEmpty()) {
-            return;
+        // Extraer orderId de la query string (formato simple)
+        String orderIdStr = query.split("orderId=")[1].split("&")[0];
+        Long orderId;
+        try {
+            orderId = Long.parseLong(orderIdStr);
+        } catch (NumberFormatException e) {
+            return session.close();
         }
 
-        log.info("📡 Broadcast de últimas posiciones - Clientes conectados: {}", sinks.size());
+        log.info("🔌 Nuevo cliente conectado a tracking de Orden ID: {}", orderId);
 
-        // Obtener solo los trackings más recientes por orderId
-        trackingRepository.findAll()
-                .collectList()
-                .doOnSuccess(allTrackings -> {
-                    if (allTrackings.isEmpty()) {
-                        return;
+        // Obtener o crear el Sink para este orderId
+        Sinks.Many<OrderTracking> sink = orderSinks.computeIfAbsent(orderId, id -> {
+            log.info("📢 Creando nuevo canal de difusión para Orden ID: {}", id);
+            return Sinks.many().multicast().onBackpressureBuffer();
+        });
+
+        // Flujo de mensajes para este cliente
+        Flux<String> updatesFlux = sink.asFlux()
+                .map(this::toJson)
+                .doOnNext(json -> log.debug("📤 Enviando a cliente (Orden {}): {}", orderId, json));
+
+        // Enviar la última posición conocida inmediatamente al conectar
+        Mono<Void> sendInitialPosition = trackingRepository.findTopByOrderIdOrderByTimestampDesc(orderId)
+                .flatMap(last -> {
+                    try {
+                        String json = objectMapper.writeValueAsString(last);
+                        return session.send(Mono.just(session.textMessage(json)));
+                    } catch (JsonProcessingException e) {
+                        return Mono.error(e);
                     }
+                }).then();
 
-                    // Agrupar por orderId y tomar el más reciente de cada uno
-                    Map<Long, OrderTracking> latestByOrderId = allTrackings.stream()
-                            .collect(Collectors.toMap(
-                                    OrderTracking::getOrderId,
-                                    Function.identity(),
-                                    (existing, replacement) -> existing.getTimestamp()
-                                            .isAfter(replacement.getTimestamp()) ? existing : replacement));
+        // Mantener la sesión abierta y enviar actualizaciones
+        return sendInitialPosition.then(
+                session.send(updatesFlux.map(session::textMessage))
+                        .and(session.receive()
+                                .doOnNext(msg -> log.debug("Mensaje recibido (ignorado): {}", msg.getPayloadAsText()))
+                                .then())
+                        .doFinally(signal -> {
+                            log.info("🔌 Cliente desconectado de Orden ID: {}", orderId);
+                            // No removemos el sink inmediatamente para permitir reconexiones rápidas
+                            // o múltiples clientes. Podría limpiarse con un job programado si queda vacío
+                            // mucho tiempo.
+                        }));
+    }
 
-                    // Enviar solo trackings recientes (últimos 2 minutos)
-                    LocalDateTime twoMinutesAgo = LocalDateTime.now().minusMinutes(2);
+    /**
+     * Método público llamado por KafkaConsumerService cuando llega un nuevo evento.
+     * Envía la actualización solo a los clientes suscritos a ese orderId.
+     */
+    public void sendUpdate(OrderTracking tracking) {
+        if (tracking == null || tracking.getOrderId() == null)
+            return;
 
-                    latestByOrderId.values().stream()
-                            .filter(tracking -> tracking.getTimestamp().isAfter(twoMinutesAgo))
-                            .forEach(tracking -> {
-                                sinks.values().forEach(sink -> {
-                                    if (sink.currentSubscriberCount() > 0) {
-                                        log.info(
-                                                "📤 Enviando actualización para orderId: {} - Estado: {} - Posición: ({}, {})",
-                                                tracking.getOrderId(), tracking.getStatus(), tracking.getLat(),
-                                                tracking.getLng());
-                                        sink.tryEmitNext(tracking);
-                                    }
-                                });
-                            });
+        Sinks.Many<OrderTracking> sink = orderSinks.get(tracking.getOrderId());
+        if (sink != null) {
+            // Emitir el nuevo tracking a todos los suscriptores de este orderId
+            Sinks.EmitResult result = sink.tryEmitNext(tracking);
 
-                    log.info("✅ Broadcast completado - Trackings recientes enviados: {}",
-                            latestByOrderId.values().stream()
-                                    .filter(tracking -> tracking.getTimestamp().isAfter(twoMinutesAgo))
-                                    .count());
-                })
-                .doOnError(error -> log.error("❌ Error en broadcastLatest", error))
-                .subscribe();
+            if (result.isFailure()) {
+                log.warn("⚠️ Fallo al emitir actualización para Orden {}: {}", tracking.getOrderId(), result);
+            } else {
+                log.info("🚀 Actualización enviada a suscriptores de Orden {}: ({}, {})",
+                        tracking.getOrderId(), tracking.getLat(), tracking.getLng());
+            }
+        } else {
+            log.debug("📭 Recibido update para Orden {}, pero no hay clientes conectados.", tracking.getOrderId());
+        }
+    }
+
+    /**
+     * Verifica si una orden tiene suscriptores activos (WebSocket conectados).
+     */
+    public boolean hasActiveSubscribers(Long orderId) {
+        Sinks.Many<OrderTracking> sink = orderSinks.get(orderId);
+        return sink != null && sink.currentSubscriberCount() > 0;
     }
 
     private String toJson(OrderTracking tracking) {
         try {
             return objectMapper.writeValueAsString(tracking);
         } catch (Exception e) {
-            log.error("Error serializando OrderTracking a JSON", e);
+            log.error("Error serializando tracking", e);
             return "{}";
         }
     }

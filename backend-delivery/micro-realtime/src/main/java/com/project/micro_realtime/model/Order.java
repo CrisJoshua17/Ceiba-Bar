@@ -1,9 +1,11 @@
 package com.project.micro_realtime.model;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.project.micro_realtime.dto.ProductDto;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -30,10 +32,21 @@ public class Order {
    private String address;
    private Double destinationLat;
    private Double destinationLng;
+
    @ElementCollection(fetch = FetchType.EAGER)
    private List<ProductDto> products;
 
    @Enumerated(EnumType.STRING)
    private OrderStatus status = OrderStatus.CREATED;
+
+   // ========== RATING FIELDS ==========
+   @Column(name = "rating")
+   private Integer rating; // 1-5 estrellas
+
+   @Column(name = "feedback", length = 500)
+   private String feedback; // Comentario del cliente
+
+   @Column(name = "rated_at")
+   private LocalDateTime ratedAt; // Fecha de calificación
 
 }

@@ -2,6 +2,12 @@
   "configurations": [
     {
       "type": "java",
+      "name": "MicroGatewayApplication",
+      "request": "launch",
+      "mainClass": "main.java.com.project.micro_gateway.MicroGatewayApplication"
+    },
+    {
+      "type": "java",
       "name": "Spring Boot-EurekaApplication<eureka>",
       "request": "launch",
       "cwd": "${workspaceFolder}",
@@ -41,7 +47,8 @@
       "mainClass": "com.project.micro_drivers.MicroDriversApplication",
       "projectName": "micro-drivers",
       "args": "",
-      "envFile": "${workspaceFolder}/.env"
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=49181 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=micro-drivers"
     },
     {
       "type": "java",
@@ -73,8 +80,8 @@
       "mainClass": "com.project.micro_payments.MicroPaymentsApplication",
       "projectName": "micro_payments",
       "args": "",
-      "envFile": "${workspaceFolder}/.env",
-      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62843 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=micro_payments"
+      "envFile": "${workspaceFolder}/backend-delivery/micro_payments/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=62863 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=micro_payments"
     },
     {
       "type": "java",
@@ -83,6 +90,17 @@
       "cwd": "${workspaceFolder}",
       "mainClass": "com.project.micro_realtime.MicroRealtimeApplication",
       "projectName": "micro-realtime",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env",
+      "vmArgs": " -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=58512 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -Dspring.jmx.enabled=true -Djava.rmi.server.hostname=localhost -Dspring.application.admin.enabled=true -Dspring.boot.project.name=micro-realtime"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-MicroGatewayApplication<micro-gateway>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.project.micro_gateway.MicroGatewayApplication",
+      "projectName": "micro-gateway",
       "args": "",
       "envFile": "${workspaceFolder}/.env"
     }

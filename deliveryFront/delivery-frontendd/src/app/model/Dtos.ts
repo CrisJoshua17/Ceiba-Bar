@@ -185,6 +185,16 @@ export interface OrderDto {
     destinationLng: number;
     products: ProductDto[];
     status?: string;
+    // Rating fields
+    rating?: number; // 1-5 stars
+    feedback?: string;
+    ratedAt?: string;
+    // Delivery fields (enriched)
+    driverId?: number;
+    driverName?: string;
+    assignedAt?: string;
+    completedAt?: string;
+    deliveryTime?: string;
 }
 
 export interface CheckoutRequest {
@@ -206,4 +216,21 @@ export interface DeliveryResponse {
   data: any;
   timestamp: string;
   status: number;
+}
+
+export interface DeliveryDto {
+    id: number; // Delivery ID
+    orderId: number;
+    driverId: number;
+    status: string; // Order Status
+    customerName: string;
+    customerEmail: string;
+    address: string;
+    assignedAt: string;
+    startedAt?: string;
+    completedAt?: string;
+    notes?: string;
+    deliveryLatitude?: number;
+    deliveryLongitude?: number;
+    products?: any[]; // For dialog display
 }

@@ -28,6 +28,12 @@
               <p-image [src]="selectedImage || getImageUrl(userData?.user?.image)" alt="Image" width="250"
                 [preview]="true" style="border-radius: 50%; overflow: hidden;">
               </p-image>
+              @if (rol === 'DRIVER') {
+              <p class="d-flex justify-content-start mt-4 text-black font-weight-bold">Calificacion:
+                {{userData?.driver?.rating || 5}} <i class="pi pi-star-fill mx-3"
+                  style="color: #FFD700; font-size: 2rem;"></i></p>
+              }
+
             </p-card>
           </div>
 

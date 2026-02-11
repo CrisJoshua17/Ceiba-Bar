@@ -6,15 +6,20 @@ import { Subject, takeUntil, filter } from 'rxjs';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Tracking } from '../model/Tracking';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
+import { BASE_ENDPOINT_MICRO_ORDERS, BASE_ENDPOINT_MICRO_DELIVERY, BASE_ENDPOINT_MICRO_TRACKING, WS_TRACKING } from '../utils/enviroments/enviroment';
+
+import { NavbarCustomerComponent } from '../navbar-customer/navbar-customer.component';
+import { NavbarDriverComponent } from '../navbar-driver/navbar-driver.component';
+import { NavbarAdminComponent } from '../navbar-admin/navbar-admin.component';
 
 @Component({
   selector: 'app-tracking',
   templateUrl: './tracking.component.html',
   styleUrls: ['./tracking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule]
+  imports: [CommonModule, FormsModule, NavbarCustomerComponent, NavbarDriverComponent, NavbarAdminComponent]
 })
 export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('map') mapElement!: ElementRef;
@@ -22,6 +27,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   private route = inject(ActivatedRoute);
   private usersService = inject(UsersService);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   orderId: number = 0;
   address = '';
@@ -65,21 +71,57 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     if (userData && userData.user) {
       this.isGuest = false;
       // Si está logueado, verificamos si la orden le pertenece
-      this.http.get<any>(`http://localhost:8092/api/orders/${this.orderId}`).subscribe({
+      this.http.get<any>(`${BASE_ENDPOINT_MICRO_ORDERS}/${this.orderId}`).subscribe({
         next: (response) => {
-          if (response.success && response.data.userId === userData.user.id) {
-            this.isVerified = true;
-            if (this.mapElement) this.initMap();
+          if (response.success) {
+            const order = response.data;
+            // Verificar pertenencia (o si es admin/driver)
+            const isOwner = order.userId === userData.user.id;
+            const isAdmin = userData.user.role === 'ADMIN';
+            const isDriver = userData.user.role === 'DRIVER';
+
+            if (isOwner || isAdmin || isDriver) {
+              this.isVerified = true;
+              if (this.mapElement) this.initMap();
+              
+              // AUTO-PROCESS: Si ya tiene dirección y no ha sido enviada en esta sesión
+              if (order.address && !this.addressSent) {
+                this.address = order.address;
+                
+                if (order.status === 'EN_CAMINO') {
+                  this.addressSent = true;
+                  this.status = 'Repartidor en camino...';
+                  this.waitForMapInitialization().then(() => {
+                    this.loadDestination();
+                    this.connectWebSocket();
+                  });
+                } else if (order.status === 'PAGADO' || order.status === 'CREATED') {
+                   // Si tiene dirección pero no ha iniciado, lo iniciamos automáticamente
+                   setTimeout(() => this.sendAddress(), 1000);
+                }
+              }
+            }
           }
         }
       });
     }
   }
 
+  get currentUserRole() {
+    return this.usersService.userData()?.user?.role;
+  }
+
+  goBack() {
+    const role = this.currentUserRole;
+    if (role === 'ADMIN') this.router.navigate(['/admin/dashboard']);
+    else if (role === 'DRIVER') this.router.navigate(['/drivers/dashboard']);
+    else this.router.navigate(['/customer/deliverys']);
+  }
+
   verifyGuest() {
     if (!this.emailInput.trim()) return;
     this.verifying = true;
-    this.http.get<any>(`http://localhost:8095/api/orders/${this.orderId}/verify?email=${this.emailInput}`).subscribe({
+    this.http.get<any>(`${BASE_ENDPOINT_MICRO_ORDERS}/${this.orderId}/verify?email=${this.emailInput}`).subscribe({
       next: (resp) => {
         if (resp.success) {
           this.isVerified = true;
@@ -166,7 +208,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.status = 'Enviando dirección...';
 
     this.http.post(
-      `http://localhost:8095/api/delivery/${this.orderId}/address`,
+      `${BASE_ENDPOINT_MICRO_DELIVERY}/${this.orderId}/address`,
       { address: this.address },
       { responseType: 'text' }
     ).subscribe({
@@ -211,7 +253,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.http.get<Tracking>(`http://localhost:8095/api/tracking/${this.orderId}/latest`)
+    this.http.get<Tracking>(`${BASE_ENDPOINT_MICRO_TRACKING}/${this.orderId}/latest`)
       .subscribe({
         next: (data) => {
           console.log('🎯 Datos del destino:', data);
@@ -277,7 +319,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     console.log('🔌 Conectando WebSocket para orderId:', this.orderId);
 
-    this.ws$ = webSocket(`ws://localhost:8095/ws/tracking?orderId=${this.orderId}`);
+    this.ws$ = webSocket(`${WS_TRACKING}?orderId=${this.orderId}`);
 
     this.ws$.pipe(
       takeUntil(this.destroy$),

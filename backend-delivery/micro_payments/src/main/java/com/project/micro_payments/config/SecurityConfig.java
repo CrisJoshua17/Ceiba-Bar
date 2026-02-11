@@ -19,7 +19,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Deshabilitar CSRF para APIs
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Configurar CORS en Security
+                .cors(cors -> cors.disable()) // Deshabilitar CORS en Security (Manejado por Gateway)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/payments/checkout", "/api/payments/validate/**", "/api/payments/webhook")
                         .permitAll() // Endpoints publicos

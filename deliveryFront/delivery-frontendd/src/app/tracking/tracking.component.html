@@ -1,8 +1,18 @@
-<div class="container">
-  <h2>Seguimiento en Vivo - Pedido #{{ orderId }}</h2>
+<!-- Navbars condicionales -->
+<app-navbar-admin *ngIf="currentUserRole === 'ADMIN'"></app-navbar-admin>
+<app-navbar-driver *ngIf="currentUserRole === 'DRIVER'"></app-navbar-driver>
+<app-navbar-customer *ngIf="currentUserRole === 'CUSTOMER'"></app-navbar-customer>
 
-  <!-- Verificación para invitados -->
-  <div *ngIf="!isVerified" class="verification-wrapper">
+<div class="container">
+  <div class="header-tracking">
+    <button class="btn-back" (click)="goBack()">
+      <i class="pi pi-arrow-left"></i> Volver
+    </button>
+    <h2>Seguimiento en Vivo - Pedido #{{ orderId }}</h2>
+  </div>
+
+  <!-- Verificación para invitados (solo si no hay datos de usuario) -->
+  <div *ngIf="!isVerified && isGuest" class="verification-wrapper">
     <div class="verification-card">
       <i class="pi pi-lock-open mb-3" style="font-size: 2rem; color: #6366f1;"></i>
       <h3>Verifica tu identidad</h3>
@@ -18,28 +28,32 @@
   </div>
 
   <div *ngIf="isVerified" class="tracking-content">
-    <!-- Formulario de dirección -->
+    <!-- Formulario de dirección (Solo si no se ha enviado) -->
     <div *ngIf="!addressSent" class="form">
+      <p class="info-text">Indica la dirección de entrega para comenzar el rastreo:</p>
       <input [(ngModel)]="address" placeholder="Ej: Insurgentes Sur 300, CDMX" class="input"
         (keyup.enter)="sendAddress()" />
-      <button (click)="sendAddress()" class="btn" [disabled]="!address.trim()">
-        Enviar Dirección
+      <button (click)="sendAddress()" class="btn" [disabled]="!address.trim() || loading">
+        {{ loading ? 'Procesando...' : 'Enviar Dirección' }}
       </button>
     </div>
 
     <!-- Estado -->
-    <div *ngIf="addressSent" class="status">
-      <p><strong>Estado:</strong> {{ status }}</p>
+    <div *ngIf="addressSent" class="status-card">
+      <div class="status-header">
+        <span class="pulse"></span>
+        <p><strong>Estado:</strong> {{ status }}</p>
+      </div>
 
       <div class="route-info" *ngIf="distance !== null">
         <p>
-          Distancia restante:
+          Distancia estimada:
           <strong>{{ distance | number:'1.2-2' }} km</strong>
         </p>
       </div>
     </div>
 
     <!-- Mapa -->
-    <div #map class="map"></div>
+    <div #map class="map-container"></div>
   </div>
 </div>

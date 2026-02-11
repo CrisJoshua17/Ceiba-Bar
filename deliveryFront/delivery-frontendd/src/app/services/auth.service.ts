@@ -16,7 +16,13 @@ public baseEndpoint=BASE_ENDPOINT_MICRO_AUTH;
         return this.http.post<Response>(this.baseEndpoint+'/login',user);
     }
 
-      getToken(): string | null {
+  logout() {
+    localStorage.removeItem('token');
+  }
+
+  getToken(): string | null {
     return localStorage.getItem('token');
   }
+
+  
 }

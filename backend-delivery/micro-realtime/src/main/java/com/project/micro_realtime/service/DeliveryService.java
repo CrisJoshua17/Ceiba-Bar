@@ -1,7 +1,6 @@
 package com.project.micro_realtime.service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.project.micro_realtime.dto.AssignDriverRequest;
 import com.project.micro_realtime.dto.DeliveryDto;
 import com.project.micro_realtime.dto.DriverDto;
+import com.project.micro_realtime.dto.LatLng;
 import com.project.micro_realtime.feign.DriverClient;
 import com.project.micro_realtime.model.Delivery;
 import com.project.micro_realtime.model.Order;
@@ -35,8 +35,12 @@ public class DeliveryService {
     @Transactional
     public DeliveryDto assignDriver(AssignDriverRequest request) {
         // Validar que la orden existe
-        Order order = orderRepository.findById(request.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + request.getOrderId()));
+        Long orderId = request.getOrderId();
+        if (orderId == null)
+            throw new IllegalArgumentException("Order ID cannot be null");
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + orderId));
 
         // Validar que la orden está en estado CREATED o PAGADO
         if (order.getStatus() != OrderStatus.CREATED && order.getStatus() != OrderStatus.PREPARING) {
@@ -48,25 +52,35 @@ public class DeliveryService {
         delivery.setOrderId(request.getOrderId());
         delivery.setDriverId(request.getDriverId());
         delivery.setNotes(request.getNotes());
+        delivery.setStatus(OrderStatus.EN_CAMINO);
 
         // Obtener coordenadas de la dirección del cliente si aún no las tiene
         if ((order.getDestinationLat() == null || order.getDestinationLat() == 0) &&
                 order.getAddress() != null && !order.getAddress().trim().isEmpty()) {
             try {
-                geocodingService.geocode(order.getAddress())
-                        .doOnNext(coords -> {
-                            order.setDestinationLat(coords.lat());
-                            order.setDestinationLng(coords.lng());
-                            System.out.println(" Coordenadas obtenidas para: " + order.getAddress() +
-                                    " -> (" + coords.lat() + ", " + coords.lng() + ")");
-                        })
-                        .doOnError(error -> {
-                            System.err.println(" No se pudieron obtener coordenadas para: " + order.getAddress());
-                        })
-                        .block(); // Bloquear para esperar el resultado antes de guardar
+                // Bloquear y obtener coordenadas explícitamente
+                LatLng coords = geocodingService.geocode(order.getAddress()).block();
+
+                if (coords != null) {
+                    order.setDestinationLat(coords.lat());
+                    order.setDestinationLng(coords.lng());
+
+                    // Asignar también a la delivery
+                    delivery.setDeliveryLatitude(coords.lat());
+                    delivery.setDeliveryLongitude(coords.lng());
+
+                    System.out.println(" Coordenadas obtenidas y guardadas: " + coords.lat() + ", " + coords.lng());
+                } else {
+                    System.err.println(" Geocoding retornó null para: " + order.getAddress());
+                }
             } catch (Exception e) {
-                System.err.println("Error en geocoding, continuando sin coordenadas: " + e.getMessage());
+                System.err.println("Error en geocoding: " + e.getMessage());
+                e.printStackTrace();
             }
+        } else {
+            // Si ya tenía coordenadas, copiarlas a la delivery
+            delivery.setDeliveryLatitude(order.getDestinationLat());
+            delivery.setDeliveryLongitude(order.getDestinationLng());
         }
 
         Delivery savedDelivery = deliveryRepository.save(delivery);
@@ -151,6 +165,8 @@ public class DeliveryService {
      * Obtiene todas las entregas de un driver
      */
     public List<DeliveryDto> getDriverDeliveries(Long driverId) {
+        if (driverId == null)
+            throw new IllegalArgumentException("Driver ID cannot be null");
         List<Delivery> deliveries = deliveryRepository.findByDriverId(driverId);
         return deliveries.stream()
                 .map(delivery -> {
@@ -164,6 +180,8 @@ public class DeliveryService {
      * Obtiene las entregas activas de un driver (no completadas)
      */
     public List<DeliveryDto> getDriverActiveDeliveries(Long driverId) {
+        if (driverId == null)
+            throw new IllegalArgumentException("Driver ID cannot be null");
         List<Delivery> deliveries = deliveryRepository.findByDriverId(driverId);
         return deliveries.stream()
                 .filter(delivery -> delivery.getCompletedAt() == null) // Solo las no completadas
@@ -215,11 +233,11 @@ public class DeliveryService {
             System.err.println("Error obteniendo datos del driver: " + e.getMessage());
         }
 
-        // Agregar información básica de la orden si existe
         if (order != null) {
             dto.setCustomerName(order.getCustomerName());
             dto.setCustomerEmail(order.getCustomerEmail());
             dto.setAddress(order.getAddress());
+            dto.setProducts(order.getProducts());
         }
 
         return dto;

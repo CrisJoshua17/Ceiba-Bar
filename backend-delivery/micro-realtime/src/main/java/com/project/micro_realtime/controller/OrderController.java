@@ -1,6 +1,7 @@
 package com.project.micro_realtime.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.micro_realtime.dto.OrderResponseDto;
 import com.project.micro_realtime.feign.AuthClient;
 import com.project.micro_realtime.model.Order;
 import com.project.micro_realtime.service.OrderService;
@@ -34,16 +36,15 @@ public class OrderController {
     @PostMapping
     public Mono<ResponseEntity<?>> create(@RequestBody Order order) {
         return orderService.createOrder(order)
-                .flatMap(createdOrder -> successResponse("Orden creada exitosamente", createdOrder, HttpStatus.CREATED))
-                .onErrorResume(e -> errorResponse("Error al crear la orden: " + e.getMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR));
+                .flatMap(
+                        createdOrder -> successResponse("Orden creada exitosamente", createdOrder, HttpStatus.CREATED));
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<?>> get(@PathVariable Long id) {
         return orderService.getOrder(id)
                 .flatMap(order -> successResponse("Orden encontrada", order, HttpStatus.OK))
-                .switchIfEmpty(errorResponse("Orden no encontrada con ID: " + id, HttpStatus.NOT_FOUND));
+                .switchIfEmpty(Mono.error(new RuntimeException("Orden no encontrada con ID: " + id)));
     }
 
     @GetMapping("/{id}/verify")
@@ -54,11 +55,10 @@ public class OrderController {
                     if (email.equalsIgnoreCase(order.getCustomerEmail())) {
                         return successResponse("Identidad verificada", true, HttpStatus.OK);
                     } else {
-                        return errorResponse("El email no coincide con el registro del pedido",
-                                HttpStatus.UNAUTHORIZED);
+                        return Mono.error(new RuntimeException("El email no coincide con el registro del pedido"));
                     }
                 })
-                .switchIfEmpty(errorResponse("Orden no encontrada", HttpStatus.NOT_FOUND));
+                .switchIfEmpty(Mono.error(new RuntimeException("Orden no encontrada")));
     }
 
     @GetMapping("/all")
@@ -101,6 +101,14 @@ public class OrderController {
         }
     }
 
+    @GetMapping("/user/{userId}")
+    public Mono<ResponseEntity<?>> getByUserId(@PathVariable Long userId) {
+        return orderService.getOrdersWithDetailsByUserId(userId)
+                .collectList()
+                .flatMap(orders -> successResponse("Órdenes del usuario obtenidas", orders, HttpStatus.OK))
+                .switchIfEmpty(successResponse("No hay órdenes para este usuario", new ArrayList<>(), HttpStatus.OK));
+    }
+
     @PutMapping("/{id}")
     public Mono<ResponseEntity<?>> update(@PathVariable Long id, @RequestBody Order order) {
         return orderService.updateOrder(id, order)
@@ -117,6 +125,16 @@ public class OrderController {
                 .switchIfEmpty(errorResponse("Orden no encontrada con ID: " + id, HttpStatus.NOT_FOUND))
                 .onErrorResume(e -> errorResponse("Error al eliminar la orden: " + e.getMessage(),
                         HttpStatus.INTERNAL_SERVER_ERROR));
+    }
+
+    // ========== RATING ENDPOINT ==========
+    @PostMapping("/{id}/rate")
+    public Mono<ResponseEntity<?>> rateOrder(@PathVariable Long id,
+            @RequestBody com.project.micro_realtime.dto.RatingRequest ratingRequest) {
+        return orderService.rateOrder(id, ratingRequest)
+                .flatMap(ratedOrder -> successResponse("Calificación registrada exitosamente", ratedOrder,
+                        HttpStatus.OK))
+                .onErrorResume(e -> errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
     private Mono<ResponseEntity<?>> successResponse(String message, Object data, HttpStatus status) {

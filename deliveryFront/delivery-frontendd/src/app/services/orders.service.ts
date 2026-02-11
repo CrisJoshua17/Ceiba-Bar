@@ -32,4 +32,8 @@ public baseEndpointOrders =BASE_ENDPOINT_MICRO_ORDERS;
     return this.http.put<ApiResponseAll<OrderDto>>(`${this.baseEndpointOrders}/${id}`, order);
   }
 
+  getOrdersByUserId(userId: number){
+    return this.http.get<ApiResponseAll<OrderDto[]>>(`${this.baseEndpointOrders}/user/${userId}`);
+  }
+
 }

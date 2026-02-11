@@ -1,0 +1,206 @@
+<app-navbar-customer></app-navbar-customer>
+
+<div class="container1">
+    <p-card>
+        <ng-template #header>
+            <div class="cardheader">
+                <h2 class="text-center">
+                    Gestión de Pedidos
+                    <i class="pi pi-box scale-150 mx-3"></i>
+                </h2>
+            </div>
+        </ng-template>
+
+        <div class="search-bar mb-4">
+            <span class="p-input-icon-left w-75">
+                <input pInputText type="text" class="w-75 myInput" placeholder="Buscar por ID" [ngModel]="searchTerm()"
+                    (ngModelChange)="searchTerm.set($event)" />
+                <i class="pi pi-search mx-2"></i>
+            </span>
+        </div>
+
+        <p-tabs value="0">
+            <p-tablist>
+                <p-tab value="0">Todos</p-tab>
+                <p-tab value="1">En Camino</p-tab>
+                <p-tab value="2">Entregados</p-tab>
+                <p-tab value="3">Cancelados</p-tab>
+            </p-tablist>
+
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <ng-container *ngTemplateOutlet="orderTable; context: { $implicit: filteredAll() }"></ng-container>
+                </p-tabpanel>
+
+                <p-tabpanel value="1">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredProcessing() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredDelivered() }"></ng-container>
+                </p-tabpanel>
+                <p-tabpanel value="3">
+                    <ng-container
+                        *ngTemplateOutlet="orderTable; context: { $implicit: filteredCancelled() }"></ng-container>
+                </p-tabpanel>
+            </p-tabpanels>
+        </p-tabs>
+    </p-card>
+</div>
+
+<ng-template #orderTable let-orders>
+    <div class="card overflow-hidden">
+        <p-table [value]="orders" [paginator]="true" [rows]="10" [loading]="isLoading()" responsiveLayout="scroll">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th style="width: 80px">ID</th>
+                    <th>Dirección</th>
+                    <th>Estado</th>
+                    <th>Repartidor</th>
+                    <th>Tiempo</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-order>
+                <tr>
+                    <td><strong>#{{ order.id }}</strong></td>
+                    <td>
+                        <div class="address-truncate" [pTooltip]="order.address">
+                            {{ order.address }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge" [ngClass]="getStatusClass(order.status)">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="flex align-items-center gap-2">
+                            <span [class.text-muted]="!order.driverName">
+                                {{ order.driverName || 'Por asignar' }}
+                            </span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="flex align-items-center gap-2">
+                            <span>{{ order.deliveryTime || '-' }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2">
+                            <!-- Acciones según estado actual -->
+                            @if (order.status === 'EN_CAMINO') {
+                            <button pButton icon="pi pi-map-marker" label="Ver Mapa" class="p-button-sm p-button-info"
+                                (click)="viewOnMap(order)"></button>
+                            <button pButton icon="pi pi-times" label="Cancelar"
+                                class="p-button-sm p-button-danger p-button-outlined"
+                                (click)="updateStatus(order, 'CANCELADO')   "></button>
+                            } @else if (order.status === 'ENTREGADO') {
+                            @if (order.rating) {
+                            <!-- Ya fue calificado - mostrar estrellas -->
+                            <div class="flex flex-column align-items-center gap-1">
+                                <p-rating [ngModel]="order.rating || 0" [readonly]="true"></p-rating>
+                                <small class="text-muted">Calificado</small>
+                            </div>
+                            } @else {
+                            <!-- Aún no calificado - mostrar botón -->
+                            <button pButton icon="pi pi-star" label="Calificar" class="p-button-sm p-button-warning"
+                                (click)="openRatingDialog(order)"></button>
+                            }
+                            } @else {
+                            <span class="text-muted small italic">Sin acciones</span>
+                            }
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-5">
+                        <i class="pi pi-inbox block mb-2" style="font-size: 2rem; color: #ccc;"></i>
+                        <p class="text-600">No se encontraron pedidos con estos criterios.</p>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+</ng-template>
+
+<p-toast></p-toast>
+<p-confirmdialog></p-confirmdialog>
+
+<!-- Modal de Detalles de Orden -->
+<p-dialog [(visible)]="visible" [style]="{ width: '35rem', height: '25rem' }">
+    <ng-template #header>
+        <h3 #title>Detalle de la Orden</h3>
+    </ng-template>
+    <ng-template #content>
+        <h5>Nombre del cliente: </h5>
+        <p>{{ selectedOrder?.customerName }}</p>
+        <h5>Email del cliente: </h5>
+        <p>{{ selectedOrder?.customerEmail }}</p>
+        <h5>Dirección del cliente: </h5>
+        <p>{{ selectedOrder?.address }}</p>
+        <br>
+        <h4 #subtitle>Detalles de los productos</h4>
+        <p-table [value]="selectedOrder?.products || []" [paginator]="true" [rows]="10" [loading]="isLoading()">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-product>
+                <tr>
+                    <td>{{ product.name }}</td>
+                    <td>{{ product.price }}</td>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td colspan="6" class="text-center p-5">
+                        <i class="pi pi-inbox block mb-2" style="font-size: 2rem; color: #ccc;"></i>
+                        <p class="text-600">No se encontraron productos con estos criterios.</p>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </ng-template>
+    <ng-template #footer>
+
+        <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary"
+            (click)="visible = false"></button>
+        <button pButton type="button" label="Guardar" icon="pi pi-check" class="buttonActu"
+            (click)="selectedOrder && updateStatus(selectedOrder, 'ENTREGADO')"></button>
+    </ng-template>
+</p-dialog>
+
+<!-- Modal de Calificación -->
+<p-dialog [(visible)]="ratingDialogVisible" [style]="{ width: '30rem' }" header="Calificar Entrega">
+    <ng-template #content>
+        <div class="flex flex-column gap-4">
+            <div class="flex flex-column align-items-center gap-2">
+                <label class="font-semibold">¿Cómo fue tu experiencia?</label>
+                <p-rating [(ngModel)]="currentRating" class="text-2xl"></p-rating>
+            </div>
+
+            <div class="flex flex-column gap-2">
+                <label for="feedback" class="font-semibold">Comentarios (opcional)</label>
+                <textarea id="feedback" [(ngModel)]="currentFeedback" rows="4"
+                    placeholder="Cuéntanos sobre tu experiencia..."
+                    class="w-full p-2 border-round border-1 border-300"></textarea>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template #footer>
+        <button pButton type="button" label="Cancelar" icon="pi pi-times" class="p-button-secondary"
+            (click)="ratingDialogVisible = false"></button>
+        <button pButton type="button" label="Enviar Calificación" icon="pi pi-check" class="p-button-success"
+            [disabled]="currentRating === 0" (click)="submitRating()"></button>
+    </ng-template>
+</p-dialog>
