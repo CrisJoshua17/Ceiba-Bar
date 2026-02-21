@@ -1,0 +1,8 @@
+# ========== CONFIGURACIÓN BASE ==========
+# Activación de perfil mediante variable de entorno
+# Local: SPRING_PROFILES_ACTIVE=local
+# Docker: SPRING_PROFILES_ACTIVE=dev
+
+spring.application.name=micro-realtime
+
+# El perfil específico (local o dev) proporcionará el resto de la configuración

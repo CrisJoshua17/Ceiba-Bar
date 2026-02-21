@@ -1,7 +1,7 @@
-version: '3.8'
+version: "3.8"
 
 services:
-  # POSTGRESQL
+  # ==================== INFRAESTRUCTURA ====================
   postgres:
     image: postgres:15
     container_name: delivery-postgres
@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: Haikyuu1212
     networks:
-      - delivery-network  
+      - delivery-network
     ports:
       - "5433:5432"
     volumes:
@@ -22,7 +22,6 @@ services:
       retries: 10
       start_period: 10s
 
-  # MONGODB
   mongo:
     image: mongo:7
     container_name: delivery-mongo
@@ -32,8 +31,13 @@ services:
       - "27018:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
-  # ZOOKEEPER
   zookeeper:
     image: confluentinc/cp-zookeeper:7.3.0
     container_name: delivery-zookeeper
@@ -41,11 +45,10 @@ services:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - delivery-network  
+      - delivery-network
     ports:
       - "2181:2181"
 
-  # KAFKA
   kafka:
     image: confluentinc/cp-kafka:7.3.0
     container_name: delivery-kafka
@@ -56,10 +59,202 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      # CAMBIO CRÍTICO: kafka en lugar de localhost para comunicación interna
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
-      - delivery-network  
+      - delivery-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "kafka-topics",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # ==================== MICROSERVICIOS ====================
+
+  # Service Discovery
+  eureka:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    container_name: delivery-eureka
+    ports:
+      - "8762:8762"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8762/actuator/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # API Gateway (punto de entrada principal)
+  gateway:
+    build:
+      context: ./micro-gateway
+      dockerfile: Dockerfile
+    container_name: delivery-gateway
+    ports:
+      - "8090:8090"
+    depends_on:
+      eureka:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "http://localhost:8090/actuator/health",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # Autenticación
+  auth:
+    build:
+      context: ./micro-auth
+      dockerfile: Dockerfile
+    container_name: delivery-auth
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
+  # Usuarios
+  usuarios:
+    build:
+      context: ./micro_usuarios
+      dockerfile: Dockerfile
+    container_name: delivery-usuarios
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
+  # Clientes
+  customer:
+    build:
+      context: ./micro-customer
+      dockerfile: Dockerfile
+    container_name: delivery-customer
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
+  # Conductores
+  drivers:
+    build:
+      context: ./micro-drivers
+      dockerfile: Dockerfile
+    container_name: delivery-drivers
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
+  # Productos
+  productos:
+    build:
+      context: ./micro_productos
+      dockerfile: Dockerfile
+    container_name: delivery-productos
+    ports:
+      - "8087:8087"
+    volumes:
+      - productos_images:/app/uploads/images
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
+  # Pagos (Stripe)
+  payments:
+    build:
+      context: ./micro_payments
+      dockerfile: Dockerfile
+    container_name: delivery-payments
+    depends_on:
+      eureka:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    env_file:
+      - ./micro_payments/.env
+    networks:
+      - delivery-network
+
+  # Tracking y Órdenes (usa Postgres + Mongo + Kafka)
+  realtime:
+    build:
+      context: ./micro-realtime
+      dockerfile: Dockerfile
+    container_name: delivery-realtime
+    depends_on:
+      eureka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - delivery-network
+
 networks:
   delivery-network:
     driver: bridge
@@ -67,3 +262,4 @@ networks:
 volumes:
   postgres_data:
   mongo_data:
+  productos_images:
