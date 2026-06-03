@@ -15,41 +15,86 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import com.project.micro_realtime.model.BaseEntity;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
 
 @Entity
-@Table(name = "orders")
-@Data
-public class Order {
+@Table(name = "orders", indexes = {
+      @Index(name = "idx_orders_customer_status", columnList = "customer_id, status"),
+      @Index(name = "idx_orders_driver_status", columnList = "driver_id, status"),
+      @Index(name = "idx_orders_created", columnList = "created_at")
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private Long id;
+})
+@Getter 
+@Setter 
+@NoArgsConstructor  
+@AllArgsConstructor 
+@Builder
+public class Order extends BaseEntity{
 
-   private Long userId;
-   private String customerName;
-   private String customerEmail;
-   private String address;
-   private Double destinationLat;
-   private Double destinationLng;
+   @Column(name = "customer_id")
+   private Long customerId;
+   @Column(name = "customer_name")
+    private String customerName;    // Denormalizado (historial)
+   @Column(name = "customer_email")
+    private String customerEmail;   // Denormalizado (historial)
+   @Column(name = "driver_id")
+    private Long driverId;
 
-   @ElementCollection(fetch = FetchType.EAGER)
-   @CollectionTable(name = "order_products", joinColumns = @JoinColumn(name = "order_id"))
-   private List<ProductDto> products;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status = OrderStatus.CREATED;
 
-   @Enumerated(EnumType.STRING)
-   private OrderStatus status = OrderStatus.CREATED;
+    @Embedded
+    private DeliveryAddress deliveryAddress;
 
-   // ========== RATING FIELDS ==========
-   @Column(name = "rating")
-   private Integer rating; // 1-5 estrellas
+    @Column(name = "delivery_latitude")
+    private Double deliveryLatitude;
 
-   @Column(name = "feedback", length = 500)
-   private String feedback; // Comentario del cliente
+    @Column(name = "delivery_longitude")
+    private Double deliveryLongitude;
 
-   @Column(name = "rated_at")
-   private LocalDateTime ratedAt; // Fecha de calificación
+    @Column(precision = 10, scale = 2)
+    private BigDecimal subtotal;
 
+    @Column(precision = 10, scale = 2)
+    private BigDecimal deliveryFee;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal discount = BigDecimal.ZERO;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal tip = BigDecimal.ZERO;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal total;
+
+    private String paymentMethod;   // "stripe" | "paypal"
+    private String notes;
+
+    private Integer rating;         // 1-5
+    private String feedback;
+
+    @Column(name = "rated_at")
+    private LocalDateTime ratedAt;
+    
+    @Column(name = "delivered_at")
+    private LocalDateTime deliveredAt;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderItem> items = new ArrayList<>();
+
+    // Relación con Delivery (mismo servicio)
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
+    private Delivery delivery;
 }

@@ -1,14 +1,15 @@
 package com.project.micro_payments.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import com.project.micro_payments.model.enums.PaymentMethod;
+import com.project.micro_payments.model.enums.PaymentStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,8 +18,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "payments", indexes = {
-        @Index(name = "idx_payment_order", columnList = "orderId"),
-        @Index(name = "idx_payment_idempotency", columnList = "idempotencyKey")
+        @Index(name = "idx_payment_order", columnList = "order_id"),
+        @Index(name = "idx_payment_idempotency", columnList = "idempotency_key")
 })
 @NoArgsConstructor
 @AllArgsConstructor
