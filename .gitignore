@@ -1,0 +1,28 @@
+ Entorno
+.env
+*.env.local
+*.env.production
+
+# IDE
+.idea/
+*.iml
+.vscode/settings.json
+
+# Build
+target/
+node_modules/
+.next/
+dist/
+build/
+
+# Docker
+docker-compose.override.yml
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Secretos
+**/secrets/
+*.pem
+*.key

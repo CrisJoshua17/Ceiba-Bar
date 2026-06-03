@@ -20,12 +20,12 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "addresses")
-@Data
-public class Address {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Address extends BaseEntity {
 
     private String alias;
 
@@ -48,13 +48,12 @@ public class Address {
     @NotBlank
     private String postalCode;
 
-    @JsonIgnore
-    @ManyToMany(mappedBy = "addresses")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Set<Customer> customers = new HashSet<>();
-
     private String instructions;
-
     private Boolean isDefault = false;
+    private Double latitude;
+    private Double longitude;
+
+    @ManyToMany(mappedBy = "addresses")
+    private List<Customer> customers = new ArrayList<>();
+
 }

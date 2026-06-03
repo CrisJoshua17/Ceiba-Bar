@@ -364,7 +364,7 @@ public class Payment extends BaseEntity {
 public enum PaymentMethod { STRIPE, PAYPAL }
 public enum PaymentStatus { PENDING, PROCESSING, COMPLETED, FAILED, REFUNDED, PARTIALLY_REFUNDED }
 ```
-
+******************************************************************************************************************
 **Paso 3:** Corregir `StripeEventProcessed`:
 ```java
 @Entity

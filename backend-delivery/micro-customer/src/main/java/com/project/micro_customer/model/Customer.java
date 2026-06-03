@@ -2,6 +2,7 @@ package com.project.micro_customer.model;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,25 +24,25 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "customers")
-@Data
-public class Customer {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Customer extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "user_id", nullable = false, unique = true)
+    private Long userId; // Referencia al User en micro-usuarios
 
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "user_email")
+    @Column(name = "user_email", unique = true)
     private String userEmail;
 
-    // Un cliente puede tener muchas direcciones
+    // Un cliente puede tener muchas direcciones,varios clientes pueden compartir la
+    // misma dirección (ej: familia)
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH })
     @JoinTable(name = "customer_addresses", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    private Set<Address> addresses = new HashSet<>();
+    private List<Address> addresses = new ArrayList<>();
+
     @Column(name = "total_orders")
     private Integer totalOrders = 0;
 
