@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.micro_drivers.Feign.AuthClient;
+
 import com.project.micro_drivers.model.Driver;
 import com.project.micro_drivers.model.dto.UserDto;
 import com.project.micro_drivers.service.DriverServiceImpl;
@@ -34,7 +34,6 @@ import lombok.extern.log4j.Log4j2;
 public class DriverController {
 
     private final DriverServiceImpl service;
-    private final AuthClient authClient;
 
     @GetMapping
     public ResponseEntity<?> findAll() {
@@ -145,7 +144,7 @@ public class DriverController {
     }
 
     @PostMapping("/internal/create")
-    public ResponseEntity<?> createDriverProfile(@RequestParam Long userId,
+    public ResponseEntity<?> createDriverProfile(@RequestParam String userId,
             @RequestParam String userEmail) {
         try {
             log.info("Creando perfil automático para driver: {} (ID: {})", userEmail, userId);
@@ -174,20 +173,12 @@ public class DriverController {
     }
 
     @GetMapping("/my-profile")
-    public ResponseEntity<?> getMyProfile(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> getMyProfile() {
         Map<String, Object> response = new HashMap<>();
         try {
-            // ✅ OBTENER INFORMACIÓN DEL USUARIO DESDE MICRO_AUTH
-            Map<String, Object> userInfo = authClient.getUserInfo(authHeader);
-            Long userId = Long.valueOf(userInfo.get("userId").toString());
-
-            // ✅ VERIFICAR QUE SEA DRIVER
-            if (!userInfo.get("roles").toString().contains("DRIVER")) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol DRIVER");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            org.springframework.security.oauth2.jwt.Jwt jwt = (org.springframework.security.oauth2.jwt.Jwt) authentication.getPrincipal();
+            String userId = jwt.getSubject();
 
             // ✅ BUSCAR PERFIL DE DRIVER
             Driver driver = service.findByUserId(userId)
@@ -215,12 +206,12 @@ public class DriverController {
 
     // === ACTUALIZAR MI PERFIL ===
     @PutMapping("/my-profile")
-    public ResponseEntity<?> updateMyProfile(@RequestHeader("Authorization") String authHeader,
-            @RequestBody Driver driverUpdate) {
+    public ResponseEntity<?> updateMyProfile(@RequestBody Driver driverUpdate) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Map<String, Object> userInfo = authClient.getUserInfo(authHeader);
-            Long userId = Long.valueOf(userInfo.get("userId").toString());
+            var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            org.springframework.security.oauth2.jwt.Jwt jwt = (org.springframework.security.oauth2.jwt.Jwt) authentication.getPrincipal();
+            String userId = jwt.getSubject();
 
             Driver existingDriver = service.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de driver no encontrado"));
@@ -254,7 +245,7 @@ public class DriverController {
 
     // === ENDPOINTS INTERNOS PARA COMUNICACIÓN ENTRE MICROSERVICIOS ===
     @GetMapping("/internal/user/{userId}")
-    public Driver findByUserId(@PathVariable Long userId) {
+    public Driver findByUserId(@PathVariable String userId) {
         return service.findByUserId(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 

@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface DriverClient {
 
     @PostMapping("/internal/create")
-    void createDriverProfile(@RequestParam("userId") Long userId,
+    void createDriverProfile(@RequestParam("userId") String userId,
             @RequestParam("userEmail") String userEmail);
 }

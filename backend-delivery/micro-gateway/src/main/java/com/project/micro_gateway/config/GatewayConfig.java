@@ -19,65 +19,39 @@ public class GatewayConfig {
                                                 .method("GET", "OPTIONS")
                                                 .uri("lb://micro-productos"))
 
-                                // ========== AUTH ROUTES (No requieren validación) ==========
-                                .route("auth-login", r -> r
-                                                .path("/api/auth/login")
-                                                .uri("lb://micro-auth"))
-
-                                .route("auth-register", r -> r
-                                                .path("/api/auth/register")
-                                                .uri("lb://micro-auth"))
-
-                                .route("auth-validate", r -> r
-                                                .path("/api/auth/validate")
-                                                .uri("lb://micro-auth"))
-
-                                // ========== AUTH ROUTES (Requieren validación) ==========
-                                .route("auth-protected", r -> r
-                                                .path("/api/auth/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
-                                                .uri("lb://micro-auth"))
-
                                 // ========== USERS ROUTES ==========
                                 .route("users", r -> r
                                                 .path("/api/users/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-usuarios"))
 
                                 // ========== DRIVERS ROUTES ==========
                                 .route("drivers", r -> r
                                                 .path("/api/drivers/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-drivers"))
 
                                 // ========== CUSTOMERS ROUTES ==========
                                 .route("customers", r -> r
                                                 .path("/api/customers/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-customer"))
 
                                 // ========== PRODUCTS PROTECTED (POST, PUT, DELETE) ==========
                                 .route("products-protected", r -> r
                                                 .path("/api/products/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-productos"))
 
                                 // ========== PAYMENTS ROUTES ==========
                                 .route("payments", r -> r
                                                 .path("/api/payments/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-payments"))
 
                                 // ========== ORDERS ROUTES ==========
                                 .route("orders", r -> r
                                                 .path("/api/orders/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-realtime"))
 
                                 // ========== DELIVERY ROUTES ==========
                                 .route("delivery", r -> r
                                                 .path("/api/delivery/**")
-                                                .filters(f -> f.filter(new AuthenticationFilter()))
                                                 .uri("lb://micro-realtime"))
 
                                 // ========== TRACKING ROUTES ==========

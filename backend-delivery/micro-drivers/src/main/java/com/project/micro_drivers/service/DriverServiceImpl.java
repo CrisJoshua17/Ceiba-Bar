@@ -54,7 +54,7 @@ public class DriverServiceImpl implements DriverService {
     }
 
     @Override
-    public Optional<Driver> findByUserId(Long userId) {
+    public Optional<Driver> findByUserId(String userId) {
         return repository.findByUserId(userId);
     }
 

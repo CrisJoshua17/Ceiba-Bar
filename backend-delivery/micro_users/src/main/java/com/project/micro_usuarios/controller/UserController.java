@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.micro_usuarios.Feign.AuthClient;
 import com.project.micro_usuarios.Feign.CustomerClient;
 import com.project.micro_usuarios.Feign.DriverClient;
 import com.project.micro_usuarios.model.Role;
@@ -42,21 +41,9 @@ import lombok.extern.log4j.Log4j2;
 public class UserController {
 
     private final UserServiceImpl service;
-    private final AuthClient authClient;
     private final CustomerClient customerClient;
     private final DriverClient driverClient;
     private final ImagesService imagesService;
-
-    // === MÉTODO AUXILIAR PARA VALIDAR ADMIN ===
-    private boolean validateAdmin(String token) {
-        log.warn(token);
-        try {
-            return authClient.validateAdminToken(token).getData();
-        } catch (Exception e) {
-            log.error("Error validando token de admin: {}", e.getMessage());
-            return false;
-        }
-    }
 
     // === ENDPOINT PARA DESARROLLO - Crear primer admin ===
     @PostMapping("/init-admin")
@@ -119,18 +106,10 @@ public class UserController {
         }
     }
 
-    // === CREAR DRIVER - Solo ADMIN ===
     @PostMapping("/drivers")
-    public ResponseEntity<?> createDriver(@RequestBody User user,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> createDriver(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
 
             user.setRole(Role.DRIVER);
             User userSave = service.createUser(user);
@@ -158,18 +137,10 @@ public class UserController {
         }
     }
 
-    // === CREAR ADMIN - Solo ADMIN ===
     @PostMapping("/admins")
-    public ResponseEntity<?> createAdmin(@RequestBody User user,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> createAdmin(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
 
             user.setRole(Role.ADMIN);
             User userSave = service.createUser(user);
@@ -190,17 +161,10 @@ public class UserController {
         }
     }
 
-    // === LISTAR USUARIOS - Solo ADMIN ===
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<?> findAll() {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
 
             List<User> users = service.findAll();
 
@@ -245,10 +209,8 @@ public class UserController {
         }
     }
 
-    // === OBTENER POR ID - ===
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id,
-            @RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<?> findById(@PathVariable String id) {
         Map<String, Object> response = new HashMap<>();
         try {
             Optional<User> optionalUser = service.findById(id);
@@ -318,25 +280,16 @@ public class UserController {
     }
 
     @GetMapping("/internal/{id}")
-    public UserDto getUserByIdInternal(@PathVariable Long id) {
+    public UserDto getUserByIdInternal(@PathVariable String id) {
         User user = service.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + id));
         return convertToDto(user);
     }
 
-    // === CREAR USUARIO - Solo ADMIN (considera eliminar este endpoint si no es
-    // necesario) ===
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody User user,
-            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+    public ResponseEntity<?> saveUser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
 
             User userSave = service.createUser(user);
             response.put("success", true);
@@ -358,7 +311,7 @@ public class UserController {
     // === ACTUALIZAR USUARIO - Con validación de ID ===
     @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateUser(
-            @PathVariable Long userId,
+            @PathVariable String userId,
             @RequestParam("name") String name,
             @RequestParam("lastName") String lastName,
             @RequestParam("email") String email,
@@ -421,7 +374,7 @@ public class UserController {
     // === ACTUALIZAR IMAGEN ===
     @PatchMapping(value = "/{id}/image", consumes = "multipart/form-data")
     public ResponseEntity<?> updateImage(
-            @PathVariable Long id,
+            @PathVariable String id,
             @RequestParam("image") MultipartFile image) {
 
         Map<String, Object> response = new HashMap<>();
@@ -496,18 +449,10 @@ public class UserController {
         }
     }
 
-    // === ELIMINAR USUARIO - Solo ADMIN ===
     @DeleteMapping("/{userId}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long userId,
-            @RequestHeader(value = "Authorization") String authHeader) {
+    public ResponseEntity<?> deleteUser(@PathVariable String userId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
 
             service.delete(userId);
             response.put("success", true);

@@ -1,6 +1,6 @@
 CREATE TABLE drivers (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT,
+    user_id VARCHAR(36) NOT NULL UNIQUE,
     user_email VARCHAR(255),
     moto_id VARCHAR(255),
     license_plate VARCHAR(255),

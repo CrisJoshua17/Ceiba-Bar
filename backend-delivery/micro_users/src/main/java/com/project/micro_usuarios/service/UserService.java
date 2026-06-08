@@ -10,13 +10,13 @@ public interface UserService {
 
     User createUser(User user);
 
-    Optional<User> findById(Long id);
+    Optional<User> findById(String id);
 
     List<User> findAll();
 
     User update(User user);
 
-    void delete(Long id);
+    void delete(String id);
 
     Optional<User> findByEmail(String email);
 

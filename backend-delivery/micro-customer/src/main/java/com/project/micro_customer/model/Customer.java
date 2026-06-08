@@ -36,7 +36,7 @@ import jakarta.persistence.Table;
 public class Customer extends BaseEntity {
 
     @Column(name = "user_id", nullable = false, unique = true)
-    private Long userId; // Referencia al User en micro-usuarios
+    private String userId; // Referencia al User en micro-usuarios
 
     @Column(name = "user_email", unique = true)
     private String userEmail;

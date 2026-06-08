@@ -21,6 +21,6 @@ public interface DriverService {
 
      Optional<Driver> findByUserEmail(String email);
 
-     Optional<Driver> findByUserId(Long userId);
+     Optional<Driver> findByUserId(String userId);
 
 }

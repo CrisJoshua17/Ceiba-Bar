@@ -11,7 +11,7 @@ public class OrderDto {
 
     private Long id;
 
-    private Long userId;
+    private String userId;
     private String customerName;
     private String customerEmail;
     private String address;

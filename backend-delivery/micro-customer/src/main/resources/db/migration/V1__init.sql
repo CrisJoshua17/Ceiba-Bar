@@ -1,6 +1,6 @@
 CREATE TABLE customers (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
+    user_id VARCHAR(36) NOT NULL UNIQUE,
     user_email VARCHAR(255) UNIQUE,
     total_orders INTEGER DEFAULT 0,
     total_spent DOUBLE PRECISION DEFAULT 0.0,

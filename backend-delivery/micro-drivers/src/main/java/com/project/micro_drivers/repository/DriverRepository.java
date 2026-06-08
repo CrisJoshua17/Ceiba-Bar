@@ -10,7 +10,7 @@ import com.project.micro_drivers.model.Driver;
 @Repository
 public interface DriverRepository extends JpaRepository<Driver, Long> {
 
-  Optional<Driver> findByUserId(Long UserId);
+  Optional<Driver> findByUserId(String userId);
 
   Optional<Driver> findByUserEmail(String userEmail);
 

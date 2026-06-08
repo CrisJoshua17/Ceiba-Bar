@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.micro_customer.Feign.AuthClient;
+
 import com.project.micro_customer.model.Address;
 import com.project.micro_customer.model.Customer;
 import com.project.micro_customer.service.CustomerServiceImpl;
@@ -37,26 +37,18 @@ import lombok.extern.log4j.Log4j2;
 public class CustomerController {
 
     private final CustomerServiceImpl customerService;
-    private final AuthClient authClient;
 
     // === ENDPOINTS PARA CUSTOMERS (su propio perfil) ===
 
     // CREAR PERFIL DE CUSTOMER
     @PostMapping("/register")
-    public ResponseEntity<?> registerCustomer(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> registerCustomer() {
         Map<String, Object> response = new HashMap<>();
         try {
-            Map<String, Object> userInfo = authClient.getUserInfo(authHeader);
-            Map<String, Object> data = (Map<String, Object>) userInfo.get("data");
-            Map<String, Object> user = (Map<String, Object>) data.get("user");
-
-            Long userId = Long.valueOf(user.get("id").toString());
-            String userEmail = (String) user.get("email");
-
-            // Verificar que sea CUSTOMER
-            if (!user.get("role").toString().equals("CUSTOMER")) {
-                return errorResponse(response, "Solo los customers pueden crear perfil", HttpStatus.FORBIDDEN);
-            }
+            var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+            org.springframework.security.oauth2.jwt.Jwt jwt = (org.springframework.security.oauth2.jwt.Jwt) authentication.getPrincipal();
+            String userId = jwt.getSubject();
+            String userEmail = jwt.getClaimAsString("email");
 
             // Verificar que no tenga perfil ya
             if (customerService.findByUserId(userId).isPresent()) {
@@ -81,10 +73,10 @@ public class CustomerController {
 
     // OBTENER MI PERFIL
     @GetMapping("/my-profile")
-    public ResponseEntity<?> getMyProfile(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> getMyProfile() {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer customer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
 
@@ -99,10 +91,10 @@ public class CustomerController {
 
     // VER MIS DIRECCES
     @GetMapping("/my-profile/addresses")
-    public ResponseEntity<?> getMyAddresses(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> getMyAddresses() {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer existingCustomer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
             List<Address> addresses = existingCustomer.getAddresses();
@@ -118,11 +110,10 @@ public class CustomerController {
 
     // ACTUALIZAR MIS DIRECCES
     @PutMapping("/my-profile/addresses")
-    public ResponseEntity<?> updateMyAddresses(@RequestHeader("Authorization") String authHeader,
-            @RequestBody List<Address> addresses) {
+    public ResponseEntity<?> updateMyAddresses(@RequestBody List<Address> addresses) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer existingCustomer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
 
@@ -143,11 +134,10 @@ public class CustomerController {
 
     // AGREGAR UNA DIRECCIÓN
     @PostMapping("/my-profile/addresses")
-    public ResponseEntity<?> addAddress(@RequestHeader("Authorization") String authHeader,
-            @RequestBody Address newAddress) {
+    public ResponseEntity<?> addAddress(@RequestBody Address newAddress) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer customer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
 
@@ -175,11 +165,10 @@ public class CustomerController {
 
     // ELIMINAR UNA DIRECCIÓN
     @DeleteMapping("/my-profile/addresses")
-    public ResponseEntity<?> removeAddress(@RequestHeader("Authorization") String authHeader,
-            @RequestBody Address addressToRemove) {
+    public ResponseEntity<?> removeAddress(@RequestBody Address addressToRemove) {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer customer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
 
@@ -205,10 +194,10 @@ public class CustomerController {
 
     // ELIMINAR MI PERFIL
     @DeleteMapping("/my-profile")
-    public ResponseEntity<?> deleteMyProfile(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> deleteMyProfile() {
         Map<String, Object> response = new HashMap<>();
         try {
-            Long userId = getUserIdFromToken(authHeader);
+            String userId = getUserIdFromToken();
             Customer existingCustomer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
 
@@ -227,13 +216,9 @@ public class CustomerController {
 
     // LISTAR TODOS LOS CUSTOMERS (solo admin)
     @GetMapping
-    public ResponseEntity<?> findAll(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> findAll() {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!authClient.validateAdminToken(authHeader)) {
-                return errorResponse(response, "No autorizado - Se requiere rol ADMIN", HttpStatus.FORBIDDEN);
-            }
 
             List<Customer> customers = customerService.findAll();
 
@@ -247,14 +232,9 @@ public class CustomerController {
 
     // OBTENER CUSTOMER POR ID (solo admin)
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable Long id,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> findById(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!authClient.validateAdminToken(authHeader)) {
-                return errorResponse(response, "No autorizado - Se requiere rol ADMIN", HttpStatus.FORBIDDEN);
-            }
 
             Optional<Customer> optionalCustomer = customerService.findById(id);
             if (optionalCustomer.isEmpty()) {
@@ -271,14 +251,9 @@ public class CustomerController {
 
     // CREAR CUSTOMER (solo admin - para casos especiales)
     @PostMapping
-    public ResponseEntity<?> saveCustomer(@RequestBody Customer customer,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> saveCustomer(@RequestBody Customer customer) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!authClient.validateAdminToken(authHeader)) {
-                return errorResponse(response, "No autorizado - Se requiere rol ADMIN", HttpStatus.FORBIDDEN);
-            }
 
             Customer customerSave = customerService.save(customer);
             return successResponse(response, "Cliente guardado exitosamente", customerSave, HttpStatus.CREATED);
@@ -291,14 +266,9 @@ public class CustomerController {
     // ACTUALIZAR CUSTOMER (solo admin)
     @PutMapping("/{customerId}")
     public ResponseEntity<?> updateCustomer(@PathVariable Long customerId,
-            @RequestBody Customer customer,
-            @RequestHeader("Authorization") String authHeader) {
+            @RequestBody Customer customer) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!authClient.validateAdminToken(authHeader)) {
-                return errorResponse(response, "No autorizado - Se requiere rol ADMIN", HttpStatus.FORBIDDEN);
-            }
 
             // Asegurar que el ID del path coincida con el del body
             if (!customerId.equals(customer.getId())) {
@@ -315,14 +285,9 @@ public class CustomerController {
 
     // ELIMINAR CUSTOMER (solo admin)
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId,
-            @RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<?> deleteCustomer(@PathVariable Long customerId) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!authClient.validateAdminToken(authHeader)) {
-                return errorResponse(response, "No autorizado - Se requiere rol ADMIN", HttpStatus.FORBIDDEN);
-            }
 
             customerService.delete(customerId);
             return successResponse(response, "Cliente eliminado exitosamente", null);
@@ -333,7 +298,7 @@ public class CustomerController {
     }
 
     @PostMapping("/internal/create")
-    public ResponseEntity<?> createCustomerProfile(@RequestParam Long userId,
+    public ResponseEntity<?> createCustomerProfile(@RequestParam String userId,
             @RequestParam String userEmail) {
         try {
             log.info("Creando perfil automático para customer: {} (ID: {})", userEmail, userId);
@@ -363,16 +328,14 @@ public class CustomerController {
 
     // === ENDPOINTS INTERNOS PARA COMUNICACIÓN ENTRE MICROSERVICIOS ===
     @GetMapping("/internal/user/{userId}")
-    public Customer findByUserId(@PathVariable Long userId) {
+    public Customer findByUserId(@PathVariable String userId) {
         return customerService.findByUserId(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
     }
 
     // === MÉTODOS AUXILIARES ===
-    private Long getUserIdFromToken(String authHeader) {
-        Map<String, Object> userInfo = authClient.getUserInfo(authHeader);
-        Map<String, Object> data = (Map<String, Object>) userInfo.get("data");
-        Map<String, Object> user = (Map<String, Object>) data.get("user");
-        return Long.valueOf(user.get("id").toString());
+    private String getUserIdFromToken() {
+        var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 
     private ResponseEntity<?> successResponse(Map<String, Object> response, String message, Object data) {

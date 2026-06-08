@@ -11,6 +11,6 @@ import com.project.micro_customer.model.Customer;
 @Repository
 public interface CustomerRespository extends JpaRepository<Customer, Long> {
     
-  Optional<Customer> findByUserId(Long UserId);
+  Optional<Customer> findByUserId(String userId);
 
 }

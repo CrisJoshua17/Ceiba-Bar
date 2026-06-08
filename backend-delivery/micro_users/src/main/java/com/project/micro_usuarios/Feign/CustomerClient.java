@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface CustomerClient {
     
      @PostMapping("/api/customers/internal/create")
-    void createCustomerProfile(@RequestParam("userId") Long userId, 
+    void createCustomerProfile(@RequestParam("userId") String userId, 
                               @RequestParam("userEmail") String userEmail);
 }

@@ -85,7 +85,7 @@ public class CustomerServiceImpl implements CustomerService {
 
 
        @Override
-    public Optional<Customer> findByUserId(Long userId) {
+    public Optional<Customer> findByUserId(String userId) {
     return repository.findByUserId(userId);
 }
 

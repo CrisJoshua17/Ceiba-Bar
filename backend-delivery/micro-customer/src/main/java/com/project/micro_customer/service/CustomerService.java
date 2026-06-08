@@ -12,5 +12,5 @@ public interface  CustomerService {
      List<Customer> findAll();
      Customer update(Customer customer);
      void delete(Long id);
-     Optional<Customer> findByUserId(Long UserId);
+     Optional<Customer> findByUserId(String userId);
 }

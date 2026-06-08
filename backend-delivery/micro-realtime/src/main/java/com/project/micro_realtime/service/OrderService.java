@@ -11,7 +11,7 @@ import com.project.micro_realtime.dto.DriverDto;
 import com.project.micro_realtime.dto.OrderResponseDto;
 import com.project.micro_realtime.dto.RatingRequest;
 import com.project.micro_realtime.event.OrderStatusEvent;
-import com.project.micro_realtime.feign.AuthClient;
+
 import com.project.micro_realtime.feign.DriverClient;
 import com.project.micro_realtime.model.Delivery;
 import com.project.micro_realtime.model.Order;

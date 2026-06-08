@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findById(Long id) {
+    public Optional<User> findById(String id) {
         return repository.findById(id);
     }
 
@@ -69,7 +69,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(String id) {
         User userdb = repository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Error al encontrar al Usuario con id: " + id));
         repository.deleteById(userdb.getId());

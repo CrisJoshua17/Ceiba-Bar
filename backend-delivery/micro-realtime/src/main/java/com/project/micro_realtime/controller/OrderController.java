@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.micro_realtime.dto.OrderResponseDto;
-import com.project.micro_realtime.feign.AuthClient;
+
 import com.project.micro_realtime.model.Order;
 import com.project.micro_realtime.model.OrderStatus;
 import com.project.micro_realtime.service.OrderService;

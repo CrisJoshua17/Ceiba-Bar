@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.project.micro_productos.Feign.AuthClient;
+
 import com.project.micro_productos.model.Drink;
 import com.project.micro_productos.model.DrinkType;
 import com.project.micro_productos.model.Product;
@@ -48,7 +48,6 @@ import lombok.extern.log4j.Log4j2;
 public class ProductController {
 
     private final ProductService productService;
-    private final AuthClient authClient;
     private final ImagesService imagesService;
 
     // === OBTENER TODOS LOS DISPONIBLES ===
@@ -195,13 +194,7 @@ public class ProductController {
             @RequestHeader(value = "Authorization") String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            // Validar que sea ADMIN (Manejado por SecurityConfig)
 
             // === VALIDACIÓN DE IMAGEN ===
             MultipartFile imageFile = request.getImage();
@@ -285,13 +278,7 @@ public class ProductController {
             @RequestHeader(value = "Authorization") String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            // Validar que sea ADMIN (Manejado por SecurityConfig)
 
             Optional<Product> productOptional = productService.findProductById(id);
             if (!productOptional.isPresent()) {
@@ -366,13 +353,7 @@ public class ProductController {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            // Validar que sea ADMIN
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            // Validar que sea ADMIN (Manejado por SecurityConfig)
 
             // === VALIDACIONES ===
             if (image == null || image.isEmpty()) {
@@ -451,13 +432,7 @@ public class ProductController {
             @RequestHeader(value = "Authorization", required = false) String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            // Validar que sea ADMIN (Manejado por SecurityConfig)
 
             Product product = productService.toggleProductAvailability(id);
             ProductResponse data = toResponse(product);
@@ -491,13 +466,7 @@ public class ProductController {
             @RequestHeader(value = "Authorization") String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
-            // Validar que sea ADMIN
-            if (!validateAdmin(authHeader)) {
-                response.put("success", false);
-                response.put("message", "No autorizado - Se requiere rol ADMIN");
-                response.put("timestamp", LocalDateTime.now());
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-            }
+            // Validar que sea ADMIN (Manejado por SecurityConfig)
 
             // Obtener producto para eliminar su imagen
             Optional<Product> productOptional = productService.findProductById(id);
@@ -614,13 +583,4 @@ public class ProductController {
         return "UNKNOWN";
     }
 
-    // === MÉTODO AUXILIAR PARA VALIDAR ADMIN ===
-    private boolean validateAdmin(String authHeader) {
-        try {
-            return authClient.validateAdminToken(authHeader).getData();
-        } catch (Exception e) {
-            log.error("Error validando token de admin: {}", e.getMessage());
-            return false;
-        }
-    }
 }

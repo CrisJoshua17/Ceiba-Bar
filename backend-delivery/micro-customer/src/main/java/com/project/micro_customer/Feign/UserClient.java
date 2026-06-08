@@ -11,9 +11,9 @@ import com.project.micro_customer.model.dto.UserDto;
 public interface UserClient {
 
    @GetMapping("/api/users/{id}")
-    UserDto getUserById(@PathVariable Long id);
+    UserDto getUserById(@PathVariable String id);
     
     @GetMapping("/api/users/internal/{id}")
-    UserDto getUserByIdInternal(@PathVariable Long id);
+    UserDto getUserByIdInternal(@PathVariable String id);
     
 }
