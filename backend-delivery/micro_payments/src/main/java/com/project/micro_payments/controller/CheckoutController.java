@@ -49,8 +49,8 @@ public class CheckoutController {
                 response.error("Pago no encontrado");
                 return ResponseEntity.status(404).body(response);
             }
-            if ("PAID".equals(payment.getStatus())) {
-                response.ok("Pago validado exitosamente", payment.getOrderId());
+            if (com.project.micro_payments.model.enums.PaymentStatus.COMPLETED.equals(payment.getStatus())) {
+                response.ok("Pago validado exitosamente", payment.getOrderId() != null ? payment.getOrderId().toString() : "");
                 return ResponseEntity.ok(response);
             } else {
                 response.error("El pago no ha sido completado. Estado: " + payment.getStatus());

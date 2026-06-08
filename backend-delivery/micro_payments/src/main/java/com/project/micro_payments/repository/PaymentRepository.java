@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.project.micro_payments.dto.Payment;
+import com.project.micro_payments.model.Payment;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 

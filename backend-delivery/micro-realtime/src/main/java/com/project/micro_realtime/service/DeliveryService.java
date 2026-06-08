@@ -49,21 +49,21 @@ public class DeliveryService {
 
         // Crear la entrega
         Delivery delivery = new Delivery();
-        delivery.setOrderId(request.getOrderId());
+        delivery.setOrder(order);
         delivery.setDriverId(request.getDriverId());
         delivery.setNotes(request.getNotes());
-        delivery.setStatus(OrderStatus.EN_CAMINO);
+        delivery.setStatus(com.project.micro_realtime.model.DeliveryStatus.ON_THE_WAY);
 
         // Obtener coordenadas de la dirección del cliente si aún no las tiene
-        if ((order.getDestinationLat() == null || order.getDestinationLat() == 0) &&
-                order.getAddress() != null && !order.getAddress().trim().isEmpty()) {
+        if ((order.getDeliveryLatitude() == null || order.getDeliveryLatitude() == 0) &&
+                order.getDeliveryAddress() != null && order.getDeliveryAddress().getStreet() != null && !order.getDeliveryAddress().getStreet().trim().isEmpty()) {
             try {
                 // Bloquear y obtener coordenadas explícitamente
-                LatLng coords = geocodingService.geocode(order.getAddress()).block();
+                LatLng coords = geocodingService.geocode(order.getDeliveryAddress().getStreet()).block();
 
                 if (coords != null) {
-                    order.setDestinationLat(coords.lat());
-                    order.setDestinationLng(coords.lng());
+                    order.setDeliveryLatitude(coords.lat());
+                    order.setDeliveryLongitude(coords.lng());
 
                     // Asignar también a la delivery
                     delivery.setDeliveryLatitude(coords.lat());
@@ -71,7 +71,7 @@ public class DeliveryService {
 
                     System.out.println(" Coordenadas obtenidas y guardadas: " + coords.lat() + ", " + coords.lng());
                 } else {
-                    System.err.println(" Geocoding retornó null para: " + order.getAddress());
+                    System.err.println(" Geocoding retornó null para: " + (order.getDeliveryAddress() != null ? order.getDeliveryAddress().getStreet() : ""));
                 }
             } catch (Exception e) {
                 System.err.println("Error en geocoding: " + e.getMessage());
@@ -79,8 +79,8 @@ public class DeliveryService {
             }
         } else {
             // Si ya tenía coordenadas, copiarlas a la delivery
-            delivery.setDeliveryLatitude(order.getDestinationLat());
-            delivery.setDeliveryLongitude(order.getDestinationLng());
+            delivery.setDeliveryLatitude(order.getDeliveryLatitude());
+            delivery.setDeliveryLongitude(order.getDeliveryLongitude());
         }
 
         Delivery savedDelivery = deliveryRepository.save(delivery);
@@ -109,7 +109,7 @@ public class DeliveryService {
         delivery.setStartedAt(LocalDateTime.now());
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
-        Order order = orderRepository.findById(delivery.getOrderId()).orElse(null);
+        Order order = delivery.getOrder();
         return enrichDeliveryDto(savedDelivery, order);
     }
 
@@ -125,8 +125,8 @@ public class DeliveryService {
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // Actualizar orden
-        Order order = orderRepository.findById(delivery.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+        Order order = delivery.getOrder();
+        if (order == null) throw new RuntimeException("Orden no encontrada");
         order.setStatus(OrderStatus.ENTREGADO);
         orderRepository.save(order);
 
@@ -153,8 +153,8 @@ public class DeliveryService {
         Delivery savedDelivery = deliveryRepository.save(delivery);
 
         // Actualizar orden
-        Order order = orderRepository.findById(delivery.getOrderId())
-                .orElseThrow(() -> new RuntimeException("Orden no encontrada"));
+        Order order = delivery.getOrder();
+        if (order == null) throw new RuntimeException("Orden no encontrada");
         order.setStatus(OrderStatus.CANCELADO);
         orderRepository.save(order);
 
@@ -170,7 +170,7 @@ public class DeliveryService {
         List<Delivery> deliveries = deliveryRepository.findByDriverId(driverId);
         return deliveries.stream()
                 .map(delivery -> {
-                    Order order = orderRepository.findById(delivery.getOrderId()).orElse(null);
+                    Order order = delivery.getOrder();
                     return enrichDeliveryDto(delivery, order);
                 })
                 .collect(Collectors.toList());
@@ -186,7 +186,7 @@ public class DeliveryService {
         return deliveries.stream()
                 .filter(delivery -> delivery.getCompletedAt() == null) // Solo las no completadas
                 .map(delivery -> {
-                    Order order = orderRepository.findById(delivery.getOrderId()).orElse(null);
+                    Order order = delivery.getOrder();
                     return enrichDeliveryDto(delivery, order);
                 })
                 .collect(Collectors.toList());
@@ -210,7 +210,7 @@ public class DeliveryService {
     private DeliveryDto enrichDeliveryDto(Delivery delivery, Order order) {
         DeliveryDto dto = new DeliveryDto();
         dto.setId(delivery.getId());
-        dto.setOrderId(delivery.getOrderId());
+        dto.setOrderId(delivery.getOrder() != null ? delivery.getOrder().getId() : null);
         dto.setDriverId(delivery.getDriverId());
         dto.setAssignedAt(delivery.getAssignedAt());
         dto.setStartedAt(delivery.getStartedAt());
@@ -236,8 +236,15 @@ public class DeliveryService {
         if (order != null) {
             dto.setCustomerName(order.getCustomerName());
             dto.setCustomerEmail(order.getCustomerEmail());
-            dto.setAddress(order.getAddress());
-            dto.setProducts(order.getProducts());
+            dto.setAddress(order.getDeliveryAddress() != null ? order.getDeliveryAddress().getStreet() : "");
+            dto.setProducts(order.getItems() != null ? order.getItems().stream().map(item -> {
+                com.project.micro_realtime.dto.ProductDto pdto = new com.project.micro_realtime.dto.ProductDto();
+                pdto.setId(item.getProductId());
+                pdto.setName(item.getProductName());
+                pdto.setPrice(item.getUnitPrice() != null ? item.getUnitPrice().doubleValue() : 0.0);
+                pdto.setImage(item.getProductImage());
+                return pdto;
+            }).collect(Collectors.toList()) : new java.util.ArrayList<>());
         }
 
         return dto;

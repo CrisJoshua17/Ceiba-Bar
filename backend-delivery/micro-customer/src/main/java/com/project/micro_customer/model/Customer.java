@@ -1,9 +1,16 @@
 package com.project.micro_customer.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -38,12 +45,15 @@ public class Customer extends BaseEntity {
     // misma dirección (ej: familia)
     @ManyToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.DETACH })
     @JoinTable(name = "customer_addresses", joinColumns = @JoinColumn(name = "customer_id"), inverseJoinColumns = @JoinColumn(name = "address_id"))
+    @Builder.Default
     private List<Address> addresses = new ArrayList<>();
 
     @Column(name = "total_orders")
+    @Builder.Default
     private Integer totalOrders = 0;
 
     @Column(name = "total_spent")
+    @Builder.Default
     private Double totalSpent = 0.0;
 
     @Column(name = "member_since")

@@ -64,6 +64,9 @@ public class Payment extends BaseEntity {
     @Column(name = "refunded_at")
     private LocalDateTime refundedAt;
 
+    @Column(name = "temp_order_data", columnDefinition = "TEXT")
+    private String tempOrderData;
+
     // Stripe específico
     @Column(name = "stripe_session_id")
     private String stripeSessionId;

@@ -541,6 +541,8 @@ public enum OrderEventType {
 }
 ```
 
+___________________------
+
 ### 1.5 Crear entidades nuevas — micro-productos
 
 **Paso 1:** Crear `StockReservation.java`:
@@ -614,6 +616,7 @@ public class Menu extends BaseEntity {
 
 public enum MenuType { DESAYUNO, ALMUERZO, CENA, HAPPY_HOUR, ESPECIAL }
 ```
+_____________________________________________________________
 
 ### 1.6 Separar BD por microservicio
 
@@ -806,9 +809,6 @@ keycloak:
    - `ceiba-gateway` (Confidential client, service account)
 4. **Crear Roles de Realm:** `ADMIN`, `CUSTOMER`, `DRIVER`, `RESTAURANT`
 5. **Crear usuarios de prueba** con diferentes roles
-6. **Configurar Identity Brokering → Google:**
-   - Ir a Identity Providers → Add Google
-   - Pegar Client ID y Client Secret de Google Cloud Console
 
 ### 2.3 Configurar microservicios como Resource Servers
 
@@ -882,10 +882,16 @@ docker cp keycloak:/opt/keycloak/data/export/ceiba-bar-realm.json \
   ./backend-delivery/keycloak/ceiba-bar-realm.json
 ```
 
+### 2.5 (Opcional) Configurar Identity Brokering con Google
+Si deseas habilitar inicio de sesión social con Google más adelante:
+1. Ir a Google Cloud Console, crear un proyecto y generar credenciales de cliente OAuth 2.0 (obteniendo Client ID y Client Secret).
+2. En Keycloak Admin Console, ir a **Identity providers** -> **Add provider** -> **Google**.
+3. Pegar el Client ID y Client Secret.
+
 ### ✅ Verificación Fase 2
 - [ ] Keycloak corre en Docker y la UI es accesible
 - [ ] Realm `ceiba-bar` creado con roles y clientes
-- [ ] Login con Google funciona
+- [ ] (Opcional) Login con Google funciona (si se configuró el broker)
 - [ ] Microservicios validan JWT de Keycloak
 - [ ] Un request sin token → 401
 - [ ] Un request con token → 200

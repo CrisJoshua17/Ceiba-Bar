@@ -67,7 +67,7 @@ public class SecurityConfig {
                                                 // Endpoints que requieren autenticación (cualquier usuario logueado)
                                                 .requestMatchers(
                                                                 "/api/auth/user-info",
-                                                                "/api/users/profile", // Si tienes un endpoint de perfil
+                                                                "/api/users/profile", // endpoint de perfil
                                                                 "/api/auth/**" // Otros endpoints de auth requieren
                                                                                // autenticación
                                                 ).authenticated()

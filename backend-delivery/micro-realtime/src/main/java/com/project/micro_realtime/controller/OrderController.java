@@ -55,7 +55,7 @@ public class OrderController {
                 .flatMap(order -> {
                     if (email.equalsIgnoreCase(order.getCustomerEmail())) {
                         // Si tiene dirección y no está EN_CAMINO, activarlo para el simulador
-                        if (order.getAddress() != null && !order.getAddress().isEmpty()
+                        if (order.getDeliveryAddress() != null && order.getDeliveryAddress().getStreet() != null && !order.getDeliveryAddress().getStreet().isEmpty()
                                 && order.getStatus() != OrderStatus.EN_CAMINO
                                 && order.getStatus() != OrderStatus.ENTREGADO) {
                             order.setStatus(OrderStatus.EN_CAMINO);

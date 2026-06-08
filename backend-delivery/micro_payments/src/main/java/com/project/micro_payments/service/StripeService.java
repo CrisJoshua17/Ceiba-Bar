@@ -9,8 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.micro_payments.dto.OrderDto;
-import com.project.micro_payments.dto.Payment;
-import com.project.micro_payments.dto.StripeEventProcessed;
+import com.project.micro_payments.model.Payment;
+import com.project.micro_payments.model.StripeEventProcessed;
 import com.project.micro_payments.feign.OrderClient;
 import com.project.micro_payments.repository.PaymentRepository;
 import com.project.micro_payments.repository.StripeEventProcessedRepository;
@@ -50,18 +50,18 @@ public class StripeService {
 
     public Session createCheckoutSession(OrderDto orderDto, long amount, String nameProduct) throws StripeException {
 
-        String orderId = orderDto.getId() != null ? orderDto.getId().toString()
+        String metadataOrderId = orderDto.getId() != null ? orderDto.getId().toString()
                 : "TEMP-" + UUID.randomUUID().toString();
 
         // Guardar la orden en formato JSON en la base de datos (tempOrderData)
         String orderJson = convertOrderToJson(orderDto);
         Payment payment = Payment.builder()
-                .orderId(orderId)
-                .amount(amount)
-                .status("PENDING")
-                .createdAt(Instant.now().toString())
+                .orderId(orderDto.getId())
+                .amount(java.math.BigDecimal.valueOf(amount))
+                .status(com.project.micro_payments.model.enums.PaymentStatus.PENDING)
                 .tempOrderData(orderJson) // Guardamos localmente
                 .build();
+        payment.setCreatedAt(java.time.LocalDateTime.now());
         paymentRepository.save(payment);
 
         // Crear Line Items
@@ -82,7 +82,7 @@ public class StripeService {
                 .setSuccessUrl(successUrl + "?session_id={CHECKOUT_SESSION_ID}")
                 .setCancelUrl(cancelUrl)
                 .addLineItem(lineItem)
-                .putMetadata("orderId", orderId)
+                .putMetadata("orderId", metadataOrderId)
                 // .putMetadata("orderData", convertOrderToJson(orderDto)) // REMOVIDO: Evitar
                 // límite de 500 chars
                 .build();
@@ -113,9 +113,9 @@ public class StripeService {
                     Optional<Payment> paymentOptional = paymentRepository.findByStripeSessionId(sessionId);
                     if (paymentOptional.isPresent()) {
                         Payment payment = paymentOptional.get();
-                        payment.setStatus("PAID");
+                        payment.setStatus(com.project.micro_payments.model.enums.PaymentStatus.COMPLETED);
                         payment.setStripePaymentIntentId(session.getPaymentIntent());
-                        payment.setUpdatedAt(Instant.now().toString());
+                        payment.setUpdatedAt(java.time.LocalDateTime.now());
                         paymentRepository.save(payment);
                         // Notificar a micro-realtime - CREAR LA ORDEN AHORA
                         // Leemos los datos desde nuestra BD, no desde Stripe
@@ -152,14 +152,14 @@ public class StripeService {
 
     public Payment getPaymentBySessionId(String sessionId) {
         Payment payment = paymentRepository.findByStripeSessionId(sessionId).orElse(null);
-        if (payment != null && "PENDING".equals(payment.getStatus())) {
+        if (payment != null && com.project.micro_payments.model.enums.PaymentStatus.PENDING.equals(payment.getStatus())) {
             try {
                 // Consultar a Stripe directamente (Pull Strategy)
                 Session session = Session.retrieve(sessionId);
                 if ("paid".equals(session.getPaymentStatus())) {
-                    payment.setStatus("PAID");
+                    payment.setStatus(com.project.micro_payments.model.enums.PaymentStatus.COMPLETED);
                     payment.setStripePaymentIntentId(session.getPaymentIntent());
-                    payment.setUpdatedAt(Instant.now().toString());
+                    payment.setUpdatedAt(java.time.LocalDateTime.now());
                     paymentRepository.save(payment);
 
                     // Crear la orden

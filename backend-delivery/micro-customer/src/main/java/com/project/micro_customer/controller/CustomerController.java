@@ -105,7 +105,7 @@ public class CustomerController {
             Long userId = getUserIdFromToken(authHeader);
             Customer existingCustomer = customerService.findByUserId(userId)
                     .orElseThrow(() -> new RuntimeException("Perfil de customer no encontrado"));
-            Set<Address> addresses = existingCustomer.getAddresses();
+            List<Address> addresses = existingCustomer.getAddresses();
 
             return successResponse(response, "Direcciones obtenidas exitosamente", addresses);
 
@@ -119,7 +119,7 @@ public class CustomerController {
     // ACTUALIZAR MIS DIRECCES
     @PutMapping("/my-profile/addresses")
     public ResponseEntity<?> updateMyAddresses(@RequestHeader("Authorization") String authHeader,
-            @RequestBody Set<Address> addresses) {
+            @RequestBody List<Address> addresses) {
         Map<String, Object> response = new HashMap<>();
         try {
             Long userId = getUserIdFromToken(authHeader);
@@ -161,7 +161,7 @@ public class CustomerController {
             customerService.update(customer); // No necesitas el retorno si no lo usas
 
             // Devuelve SOLO las direcciones actualizadas
-            Set<Address> updatedAddresses = customer.getAddresses();
+            List<Address> updatedAddresses = customer.getAddresses();
 
             return successResponse(response, "Dirección agregada exitosamente", updatedAddresses);
 

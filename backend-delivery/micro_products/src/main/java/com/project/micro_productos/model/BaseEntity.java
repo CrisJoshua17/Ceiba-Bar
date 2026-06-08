@@ -1,4 +1,4 @@
-package com.project.micro_products.model;
+package com.project.micro_productos.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;

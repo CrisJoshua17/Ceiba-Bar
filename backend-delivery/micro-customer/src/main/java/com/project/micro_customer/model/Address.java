@@ -1,7 +1,15 @@
 package com.project.micro_customer.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -46,11 +54,14 @@ public class Address extends BaseEntity {
     private String postalCode;
 
     private String instructions;
+    
+    @Builder.Default
     private Boolean isDefault = false;
     private Double latitude;
     private Double longitude;
 
     @ManyToMany(mappedBy = "addresses")
+    @Builder.Default
     private List<Customer> customers = new ArrayList<>();
 
 }

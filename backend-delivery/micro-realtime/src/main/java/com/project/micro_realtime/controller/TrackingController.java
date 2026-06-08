@@ -56,15 +56,15 @@ public class TrackingController {
                         tracking.setStatus(order.getStatus().toString());
 
                     // Intento 1: Usar coordenadas ya guardadas en la orden
-                    if (order.getDestinationLat() != null && order.getDestinationLat() != 0.0) {
-                        tracking.setDeliveryLat(order.getDestinationLat());
-                        tracking.setDeliveryLng(order.getDestinationLng());
+                    if (order.getDeliveryLatitude() != null && order.getDeliveryLatitude() != 0.0) {
+                        tracking.setDeliveryLat(order.getDeliveryLatitude());
+                        tracking.setDeliveryLng(order.getDeliveryLongitude());
                         return Mono.just(tracking);
                     }
 
                     // Intento 2: Geocodificar dirección "al vuelo"
-                    if (order.getAddress() != null && !order.getAddress().isEmpty()) {
-                        return geocodingService.geocode(order.getAddress())
+                    if (order.getDeliveryAddress() != null && order.getDeliveryAddress().getStreet() != null && !order.getDeliveryAddress().getStreet().isEmpty()) {
+                        return geocodingService.geocode(order.getDeliveryAddress().getStreet())
                                 .map(coords -> {
                                     tracking.setDeliveryLat(coords.lat());
                                     tracking.setDeliveryLng(coords.lng());

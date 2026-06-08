@@ -64,9 +64,11 @@ public class DeliveryController {
             Order order = orderRepository.findById(orderId)
                     .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
 
-            order.setAddress(address);
-            order.setDestinationLat(dest.lat());
-            order.setDestinationLng(dest.lng());
+            com.project.micro_realtime.model.DeliveryAddress delAddr = new com.project.micro_realtime.model.DeliveryAddress();
+            delAddr.setStreet(address);
+            order.setDeliveryAddress(delAddr);
+            order.setDeliveryLatitude(dest.lat());
+            order.setDeliveryLongitude(dest.lng());
             order.setStatus(OrderStatus.EN_CAMINO);
 
             return orderRepository.save(order);

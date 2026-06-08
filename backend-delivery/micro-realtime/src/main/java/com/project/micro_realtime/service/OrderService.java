@@ -38,12 +38,12 @@ public class OrderService {
         return Mono.just(order)
                 .flatMap(o -> {
                     // Si hay dirección pero no coordenadas, intentar geocodificar
-                    if (o.getAddress() != null && !o.getAddress().isEmpty() &&
-                            (o.getDestinationLat() == null || o.getDestinationLat() == 0.0)) {
-                        return geocodingService.geocode(o.getAddress())
+                    if (o.getDeliveryAddress() != null && o.getDeliveryAddress().getStreet() != null && !o.getDeliveryAddress().getStreet().isEmpty() &&
+                            (o.getDeliveryLatitude() == null || o.getDeliveryLatitude() == 0.0)) {
+                        return geocodingService.geocode(o.getDeliveryAddress().getStreet())
                                 .map(coords -> {
-                                    o.setDestinationLat(coords.lat());
-                                    o.setDestinationLng(coords.lng());
+                                    o.setDeliveryLatitude(coords.lat());
+                                    o.setDeliveryLongitude(coords.lng());
                                     return o;
                                 })
                                 .defaultIfEmpty(o);
@@ -63,21 +63,22 @@ public class OrderService {
             boolean willBeEnCamino = updatedOrder.getStatus() == OrderStatus.EN_CAMINO;
 
             // Detectar cambio de dirección para re-geocodificar
-            boolean addressChanged = !existing.getAddress().equals(updatedOrder.getAddress());
+            boolean addressChanged = existing.getDeliveryAddress() != null && updatedOrder.getDeliveryAddress() != null 
+                    && !java.util.Objects.equals(existing.getDeliveryAddress().getStreet(), updatedOrder.getDeliveryAddress().getStreet());
 
             existing.setCustomerName(updatedOrder.getCustomerName());
-            existing.setAddress(updatedOrder.getAddress());
+            existing.setDeliveryAddress(updatedOrder.getDeliveryAddress());
             existing.setStatus(updatedOrder.getStatus());
 
             return existing;
         })
                 .flatMap(existing -> {
                     // Si cambió la dirección, re-geocodificar
-                    if (updatedOrder.getAddress() != null && !updatedOrder.getAddress().isEmpty()) {
-                        return geocodingService.geocode(updatedOrder.getAddress())
+                    if (updatedOrder.getDeliveryAddress() != null && updatedOrder.getDeliveryAddress().getStreet() != null && !updatedOrder.getDeliveryAddress().getStreet().isEmpty()) {
+                        return geocodingService.geocode(updatedOrder.getDeliveryAddress().getStreet())
                                 .map(coords -> {
-                                    existing.setDestinationLat(coords.lat());
-                                    existing.setDestinationLng(coords.lng());
+                                    existing.setDeliveryLatitude(coords.lat());
+                                    existing.setDeliveryLongitude(coords.lng());
                                     return existing;
                                 })
                                 .defaultIfEmpty(existing);
@@ -96,8 +97,8 @@ public class OrderService {
                                 LocalDateTime.now(),
                                 19.4326,
                                 -99.1332,
-                                saved.getDestinationLat(), // Asignar destino
-                                saved.getDestinationLng() // Asignar destino
+                                saved.getDeliveryLatitude(), // Asignar destino
+                                saved.getDeliveryLongitude() // Asignar destino
                         );
                         kafkaProducerService.sendStatusUpdate(event);
                     }
@@ -143,20 +144,27 @@ public class OrderService {
                     // Crear el DTO base con datos de la orden
                     OrderResponseDto dto = OrderResponseDto.builder()
                             .id(order.getId())
-                            .userId(order.getUserId())
+                            .userId(order.getCustomerId())
                             .customerName(order.getCustomerName())
                             .customerEmail(order.getCustomerEmail())
-                            .address(order.getAddress())
+                            .address(order.getDeliveryAddress() != null ? order.getDeliveryAddress().getStreet() : "")
                             // COORDENADAS POR DEFECTO LEJANAS (Sur CDMX) si no están configuradas
                             // Start (Zocalo): 19.4326, -99.1332
                             // End (Sur): 19.3326, -99.1332
-                            .destinationLat(order.getDestinationLat() != null && order.getDestinationLat() != 0.0
-                                    ? order.getDestinationLat()
+                            .destinationLat(order.getDeliveryLatitude() != null && order.getDeliveryLatitude() != 0.0
+                                    ? order.getDeliveryLatitude()
                                     : 19.3326)
-                            .destinationLng(order.getDestinationLng() != null && order.getDestinationLng() != 0.0
-                                    ? order.getDestinationLng()
+                            .destinationLng(order.getDeliveryLongitude() != null && order.getDeliveryLongitude() != 0.0
+                                    ? order.getDeliveryLongitude()
                                     : -99.1332)
-                            .products(order.getProducts())
+                            .products(order.getItems() != null ? order.getItems().stream().map(item -> {
+                                com.project.micro_realtime.dto.ProductDto pdto = new com.project.micro_realtime.dto.ProductDto();
+                                pdto.setId(item.getProductId());
+                                pdto.setName(item.getProductName());
+                                pdto.setPrice(item.getUnitPrice() != null ? item.getUnitPrice().doubleValue() : 0.0);
+                                pdto.setImage(item.getProductImage());
+                                return pdto;
+                            }).collect(java.util.stream.Collectors.toList()) : new java.util.ArrayList<>())
                             .status(order.getStatus())
                             .rating(order.getRating())
                             .feedback(order.getFeedback())

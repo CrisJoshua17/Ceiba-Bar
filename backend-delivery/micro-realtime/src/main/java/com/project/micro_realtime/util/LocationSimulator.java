@@ -72,8 +72,8 @@ public class LocationSimulator {
             return Mono.empty();
         }
 
-        double targetLat = order.getDestinationLat() != null ? order.getDestinationLat() : 0.0;
-        double targetLng = order.getDestinationLng() != null ? order.getDestinationLng() : 0.0;
+        double targetLat = order.getDeliveryLatitude() != null ? order.getDeliveryLatitude() : 0.0;
+        double targetLng = order.getDeliveryLongitude() != null ? order.getDeliveryLongitude() : 0.0;
 
         // Validar coordenadas de destino y aplicar fallback si es necesario
         if (targetLat == 0.0 || targetLng == 0.0) {
