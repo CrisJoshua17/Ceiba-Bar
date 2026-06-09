@@ -147,6 +147,20 @@ public class OrderController {
                 .onErrorResume(e -> errorResponse(e.getMessage(), HttpStatus.BAD_REQUEST));
     }
 
+    @PostMapping("/{id}/next")
+    public Mono<ResponseEntity<?>> advanceState(@PathVariable Long id) {
+        return orderService.advanceOrderState(id)
+                .flatMap(updatedOrder -> successResponse("Estado avanzado exitosamente", updatedOrder, HttpStatus.OK))
+                .onErrorResume(e -> errorResponse("Error al avanzar el estado: " + e.getMessage(), HttpStatus.BAD_REQUEST));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public Mono<ResponseEntity<?>> cancelOrder(@PathVariable Long id) {
+        return orderService.cancelOrder(id)
+                .flatMap(updatedOrder -> successResponse("Orden cancelada exitosamente", updatedOrder, HttpStatus.OK))
+                .onErrorResume(e -> errorResponse("Error al cancelar la orden: " + e.getMessage(), HttpStatus.BAD_REQUEST));
+    }
+
     private Mono<ResponseEntity<?>> successResponse(String message, Object data, HttpStatus status) {
         return Mono.fromCallable(() -> {
             Map<String, Object> response = new HashMap<>();

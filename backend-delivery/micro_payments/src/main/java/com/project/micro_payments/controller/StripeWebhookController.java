@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.JsonSyntaxException;
-import com.project.micro_payments.service.StripeService;
+import com.project.micro_payments.service.StripeGateway;
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 public class StripeWebhookController {
     @Value("${stripe.webhook-secret}")
     private String endpointSecret;
-    private final StripeService stripeService;
+    private final StripeGateway stripeGateway;
 
     @PostMapping("/stripe")
     public ResponseEntity<String> handleStripeWebhook(
@@ -35,7 +35,7 @@ public class StripeWebhookController {
         try {
             Event event = Webhook.constructEvent(payload, sigHeader, endpointSecret);
             // Delegar procesamiento idempotente
-            stripeService.handleEvent(event);
+            stripeGateway.handleWebhookEvent(event);
             return ResponseEntity.ok("");
         } catch (SignatureVerificationException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

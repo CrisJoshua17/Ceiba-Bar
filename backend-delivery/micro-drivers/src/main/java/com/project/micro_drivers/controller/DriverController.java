@@ -260,10 +260,12 @@ public class DriverController {
                     .orElseThrow(() -> new RuntimeException("Driver no encontrado con ID: " + driverId));
 
             driver.setTotalDeliveries(driver.getTotalDeliveries() + 1);
+            driver.setAvailable(true); // Conductor queda libre
             Driver updatedDriver = service.update(driver);
+            service.tryAssignPendingOrders(); // Intentar asignar pedidos en cola
 
             response.put("success", true);
-            response.put("message", "Contador de entregas incrementado");
+            response.put("message", "Contador de entregas incrementado y conductor disponible");
             response.put("data", updatedDriver);
             response.put("timestamp", LocalDateTime.now());
 
@@ -284,7 +286,7 @@ public class DriverController {
     public ResponseEntity<?> getAvailableDrivers() {
         Map<String, Object> response = new HashMap<>();
         try {
-            List<Driver> drivers = service.findAll();
+            List<Driver> drivers = service.findAvailableDrivers();
 
             response.put("success", true);
             response.put("message", "Drivers disponibles obtenidos exitosamente");
@@ -301,6 +303,51 @@ public class DriverController {
             response.put("timestamp", LocalDateTime.now());
 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    /**
+     * Actualiza la ubicación de un driver
+     */
+    @PutMapping("/{driverId}/location")
+    public ResponseEntity<?> updateLocation(@PathVariable Long driverId,
+            @RequestParam Double latitude,
+            @RequestParam Double longitude) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Driver updatedDriver = service.updateLocation(driverId, latitude, longitude);
+            response.put("success", true);
+            response.put("message", "Ubicación del driver actualizada");
+            response.put("data", updatedDriver);
+            response.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error al actualizar ubicación: " + e.getMessage());
+            response.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
+    /**
+     * Actualiza la disponibilidad de un driver
+     */
+    @PutMapping("/{driverId}/availability")
+    public ResponseEntity<?> updateAvailability(@PathVariable Long driverId,
+            @RequestParam Boolean available) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            Driver updatedDriver = service.updateAvailability(driverId, available);
+            response.put("success", true);
+            response.put("message", "Disponibilidad del driver actualizada");
+            response.put("data", updatedDriver);
+            response.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Error al actualizar disponibilidad: " + e.getMessage());
+            response.put("timestamp", LocalDateTime.now());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
 

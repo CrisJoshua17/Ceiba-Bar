@@ -10,7 +10,7 @@ import com.project.micro_usuarios.model.Role;
 import com.project.micro_usuarios.model.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByEmail(String email);
 

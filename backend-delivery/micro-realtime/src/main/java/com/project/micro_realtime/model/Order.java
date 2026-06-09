@@ -101,4 +101,12 @@ public class Order extends BaseEntity{
     // Relación con Delivery (mismo servicio)
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Delivery delivery;
+
+    public void nextState() {
+        com.project.micro_realtime.state.OrderStateFactory.getState(this.status).next(this);
+    }
+
+    public void cancelState() {
+        com.project.micro_realtime.state.OrderStateFactory.getState(this.status).cancel(this);
+    }
 }

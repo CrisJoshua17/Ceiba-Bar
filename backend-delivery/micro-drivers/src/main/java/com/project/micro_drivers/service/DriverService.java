@@ -23,4 +23,13 @@ public interface DriverService {
 
      Optional<Driver> findByUserId(String userId);
 
+     void assignDriverToOrder(long orderId, String messagePayload);
+
+     void tryAssignPendingOrders();
+
+     Driver updateLocation(Long driverId, Double latitude, Double longitude);
+
+     Driver updateAvailability(Long driverId, Boolean available);
+
+     List<Driver> findAvailableDrivers();
 }

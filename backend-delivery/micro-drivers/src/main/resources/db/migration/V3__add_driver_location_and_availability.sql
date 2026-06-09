@@ -1,0 +1,10 @@
+ALTER TABLE drivers ADD COLUMN current_latitude DOUBLE PRECISION;
+ALTER TABLE drivers ADD COLUMN current_longitude DOUBLE PRECISION;
+ALTER TABLE drivers ADD COLUMN available BOOLEAN DEFAULT TRUE NOT NULL;
+
+CREATE TABLE pending_assignments (
+    id BIGSERIAL PRIMARY KEY,
+    order_id BIGINT NOT NULL UNIQUE,
+    payload TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW() NOT NULL
+);

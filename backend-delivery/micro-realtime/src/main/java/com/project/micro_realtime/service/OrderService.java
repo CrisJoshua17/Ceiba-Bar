@@ -33,6 +33,27 @@ public class OrderService {
     private final KafkaTemplate<String, OrderStatusEvent> kafkaTemplate;
     private final KafkaProducerService kafkaProducerService;
     private final GeocodingService geocodingService;
+    private final com.project.micro_realtime.repository.OutboxRepository outboxRepository;
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+
+    @org.springframework.transaction.annotation.Transactional
+    public Order saveOrderAndOutbox(Order o) {
+        Order saved = orderRepository.save(o);
+        try {
+            com.project.micro_realtime.model.OutboxEvent outboxEvent = com.project.micro_realtime.model.OutboxEvent.builder()
+                    .aggregateType("Order")
+                    .aggregateId(saved.getId())
+                    .eventType("ORDER_CREATED")
+                    .payload(objectMapper.writeValueAsString(saved))
+                    .status(com.project.micro_realtime.model.OutboxStatus.PENDING)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+            outboxRepository.save(outboxEvent);
+        } catch (Exception e) {
+            throw new RuntimeException("Error writing to outbox", e);
+        }
+        return saved;
+    }
 
     public Mono<Order> createOrder(Order order) {
         return Mono.just(order)
@@ -50,7 +71,7 @@ public class OrderService {
                     }
                     return Mono.just(o);
                 })
-                .map(orderRepository::save);
+                .map(this::saveOrderAndOutbox);
     }
 
     public Mono<Order> updateOrder(Long id, Order updatedOrder) {
@@ -235,6 +256,39 @@ public class OrderService {
             order.setFeedback(ratingRequest.getFeedback());
             order.setRatedAt(LocalDateTime.now());
 
+            return orderRepository.save(order);
+        });
+    }
+
+    public Mono<Order> advanceOrderState(Long id) {
+        return Mono.fromCallable(() -> {
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + id));
+            order.nextState();
+            Order saved = orderRepository.save(order);
+
+            if (saved.getStatus() == OrderStatus.EN_CAMINO) {
+                OrderStatusEvent event = new OrderStatusEvent(
+                        saved.getId(),
+                        "EN_CAMINO",
+                        "driver-001",
+                        LocalDateTime.now(),
+                        19.4326,
+                        -99.1332,
+                        saved.getDeliveryLatitude() != null ? saved.getDeliveryLatitude() : 19.3326,
+                        saved.getDeliveryLongitude() != null ? saved.getDeliveryLongitude() : -99.1332
+                );
+                kafkaProducerService.sendStatusUpdate(event);
+            }
+            return saved;
+        });
+    }
+
+    public Mono<Order> cancelOrder(Long id) {
+        return Mono.fromCallable(() -> {
+            Order order = orderRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Orden no encontrada con ID: " + id));
+            order.cancelState();
             return orderRepository.save(order);
         });
     }

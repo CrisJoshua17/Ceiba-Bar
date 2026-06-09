@@ -17,4 +17,7 @@ public class DriverDto {
     private String licenseNumber;
     private Double rating;
     private Integer totalDeliveries;
+    private Double currentLatitude;
+    private Double currentLongitude;
+    private Boolean available;
 }

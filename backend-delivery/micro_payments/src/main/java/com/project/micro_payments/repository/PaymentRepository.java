@@ -10,8 +10,12 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     Optional<Payment> findByStripeSessionId(String stripeSessionId);
 
-    Optional<Payment> findByOrderId(String orderId);
+    Optional<Payment> findByOrderId(Long orderId);
 
     Optional<Payment> findByStripePaymentIntentId(String stripePaymentIntentId);
+
+    Optional<Payment> findByIdempotencyKey(String idempotencyKey);
+    
+    Optional<Payment> findByPaypalOrderId(String paypalOrderId);
 
 }

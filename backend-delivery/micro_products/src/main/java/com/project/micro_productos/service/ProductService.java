@@ -6,6 +6,8 @@ import com.project.micro_productos.repository.SnackRepository;
 import com.project.micro_productos.repository.RecetarioRepository;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -30,6 +32,7 @@ public class ProductService {
         return products;
     }
     
+    @Cacheable(value = "products", key = "'all-available'")
     public List<Product> findAvailableProducts() {
         List<Product> products = new ArrayList<>();
         products.addAll(drinkRepository.findByAvailableTrue());
@@ -47,6 +50,7 @@ public class ProductService {
     }
     
     
+    @Cacheable(value = "products", key = "#id")
     public Optional<Product> findProductById(Long id) {
         // Buscar en todos los repositorios
         Optional<Drink> drink = drinkRepository.findById(id);
@@ -61,6 +65,7 @@ public class ProductService {
        return Optional.empty();
     }
     
+    @CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(Long id) {
         // Buscar y eliminar del repositorio correspondiente
         if (drinkRepository.existsById(id)) {
@@ -76,6 +81,7 @@ public class ProductService {
 
     // === MÉTODOS ESPECÍFICOS PARA DRINKS ===
     
+    @CacheEvict(value = "products", allEntries = true)
     public Drink createDrink(Drink drink) {
         return drinkRepository.save(drink);
     }
@@ -100,6 +106,7 @@ public class ProductService {
         return drinkRepository.findByTypeAndAvailableTrue(DrinkType.NON_ALCOHOLIC);
     }
     
+    @CacheEvict(value = "products", allEntries = true)
     public Drink updateDrink(Drink drink) {
         Drink drinkDb = drinkRepository.findById(drink.getId())
             .orElseThrow(() -> new RuntimeException("Bebida no encontrada con id: " + drink.getId()));
@@ -115,6 +122,7 @@ public class ProductService {
 
     // === MÉTODOS ESPECÍFICOS PARA SNACKS ===
     
+    @CacheEvict(value = "products", allEntries = true)
     public Snack createSnack(Snack snack) {
         return snackRepository.save(snack);
     }
@@ -127,6 +135,7 @@ public class ProductService {
         return snackRepository.findByAvailableTrue();
     }
     
+    @CacheEvict(value = "products", allEntries = true)
     public Snack updateSnack(Snack snack) {
         Snack snackDb = snackRepository.findById(snack.getId())
             .orElseThrow(() -> new RuntimeException("Snack no encontrado con id: " + snack.getId()));
@@ -141,6 +150,7 @@ public class ProductService {
 
     // === MÉTODOS ESPECÍFICOS PARA RECETARIO ===
 
+    @CacheEvict(value = "products", allEntries = true)
     public Recetario createRecetario(Recetario recetario) {
         return recetarioRepository.save(recetario);
     }
@@ -153,6 +163,7 @@ public class ProductService {
         return recetarioRepository.findByAvailableTrue();
     }
 
+    @CacheEvict(value = "products", allEntries = true)
     public Recetario updateRecetario(Recetario recetario) {
         Recetario recetarioDb = recetarioRepository.findById(recetario.getId())
                 .orElseThrow(() -> new RuntimeException("Recetario no encontrado con id: " + recetario.getId()));
@@ -168,6 +179,7 @@ public class ProductService {
 
     // === MÉTODOS DE CONTROL DE DISPONIBILIDAD ===
 
+    @CacheEvict(value = "products", allEntries = true)
     public Product toggleProductAvailability(Long id) {
         Product product = findProductById(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));

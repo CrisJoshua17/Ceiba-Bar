@@ -14,4 +14,5 @@ public interface DriverRepository extends JpaRepository<Driver, Long> {
 
   Optional<Driver> findByUserEmail(String userEmail);
 
+  java.util.List<Driver> findByAvailableTrue();
 }

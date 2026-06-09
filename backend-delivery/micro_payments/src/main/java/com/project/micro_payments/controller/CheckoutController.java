@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.micro_payments.dto.ApiResponse;
 import com.project.micro_payments.dto.CheckoutRequest;
-import com.project.micro_payments.service.StripeService;
-import com.stripe.model.checkout.Session;
+import com.project.micro_payments.service.PaymentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,19 +18,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CheckoutController {
 
-    private final StripeService stripeService;
+    private final PaymentService paymentService;
 
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<String>> createCheckout(@RequestBody CheckoutRequest req) {
         ApiResponse<String> response = new ApiResponse<>();
         try {
-            // Crear sesión de checkout con los datos de la orden
-            Session session = stripeService.createCheckoutSession(
-                    req.getOrderDto(),
-                    req.getAmount(),
-                    req.getItemProduct());
-            // Retornar la URL de checkout para redirigir al cliente
-            response.ok("Sesión de checkout creada exitosamente", session.getUrl());
+            String url = paymentService.initiatePayment(req);
+            response.ok("Sesión de checkout creada exitosamente", url);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             response.error("Error creando checkout: " + e.getMessage());
@@ -39,12 +33,13 @@ public class CheckoutController {
         }
     }
 
-    @GetMapping("/validate/{sessionId}")
+    @GetMapping("/validate/{method}/{sessionId}")
     public ResponseEntity<ApiResponse<String>> validatePayment(
+            @PathVariable("method") String method,
             @PathVariable("sessionId") String sessionId) {
         ApiResponse<String> response = new ApiResponse<>();
         try {
-            var payment = stripeService.getPaymentBySessionId(sessionId);
+            var payment = paymentService.validatePaymentBySessionOrOrder(sessionId, method);
             if (payment == null) {
                 response.error("Pago no encontrado");
                 return ResponseEntity.status(404).body(response);

@@ -35,4 +35,13 @@ public class Driver {
   private Double rating = 0.0;
   private Integer totalDeliveries = 0;
   private LocalDateTime registrationDate;
+
+  @Column(name = "current_latitude")
+  private Double currentLatitude;
+
+  @Column(name = "current_longitude")
+  private Double currentLongitude;
+
+  @Column(name = "available", nullable = false)
+  private Boolean available = true;
 }

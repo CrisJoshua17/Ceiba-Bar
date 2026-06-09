@@ -28,6 +28,11 @@ public class UserServiceImpl implements UserService {
             throw new RuntimeException("El email ya está registrado: " + user.getEmail());
         }
 
+        // Si no viene ID (por ejemplo en registros locales de prueba), generamos un UUID
+        if (user.getId() == null || user.getId().trim().isEmpty()) {
+            user.setId(java.util.UUID.randomUUID().toString());
+        }
+
         // ¡IMPORTANTE! Encriptar la contraseña antes de guardar
         String encryptedPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(encryptedPassword);

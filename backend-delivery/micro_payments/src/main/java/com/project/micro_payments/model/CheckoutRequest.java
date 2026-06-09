@@ -15,4 +15,9 @@ public class CheckoutRequest {
 
     @NotBlank
     private String itemProduct; // Nombre del producto para mostrar en Stripe
+    
+    @NotBlank
+    private String method; // "stripe" o "paypal"
+    
+    private String idempotencyKey; // Opcional: llave única para evitar cobros duplicados
 }

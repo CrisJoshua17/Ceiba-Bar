@@ -747,25 +747,17 @@ public interface OrderMapper {
 ### 1.15 Asignación de Conductores — Strategy Pattern 🟡
 
 - ⬜ Implementar **Strategy** para asignación inteligente de conductores:
+  - **Ubicación de Referencia**: La distancia se calcula desde la ubicación actual del conductor hacia el **negocio/restaurante** (Zócalo CDMX `19.4326`, `-99.1332`), no hacia el cliente, ya que primero debe recoger el pedido.
+  - **Cola de Espera (Job Queue)**: Si no hay conductores disponibles, la asignación se encola en la tabla `pending_assignments` y se procesa automáticamente cuando un conductor se libere, en lugar de cancelar la Saga inmediatamente.
 
 ```java
 public interface DriverAssignmentStrategy {
-    Driver assign(Order order, List<Driver> availableDrivers);
+    Driver assign(List<Driver> availableDrivers); // Calcula el conductor más cercano al negocio
 }
 
 @Component("nearest")
 public class NearestDriverStrategy implements DriverAssignmentStrategy {
-    // Asigna al conductor más cercano al restaurante
-}
-
-@Component("leastOrders")
-public class LeastOrdersStrategy implements DriverAssignmentStrategy {
-    // Asigna al conductor con menos pedidos activos (balance de carga)
-}
-
-@Component("bestRated")
-public class BestRatedDriverStrategy implements DriverAssignmentStrategy {
-    // Asigna al conductor mejor calificado disponible
+    // Asigna al conductor más cercano al restaurante usando fórmula Haversine
 }
 ```
 
@@ -793,7 +785,8 @@ public class BestRatedDriverStrategy implements DriverAssignmentStrategy {
 
 - ⬜ **Angular**: `keycloak-angular` + `keycloak-js`. Guard para proteger rutas.
 - ⬜ **React/Next.js**: `next-auth` con provider Keycloak o `react-oidc-context`.
-- ⬜ El frontend NO construye formularios de login; redirige a Keycloak (personalizable con tu branding).
+- ⬜ El frontend NO construye formularios de login ni registro; redirige a Keycloak (personalizable con tu branding/tema propio).
+- ⬜ Sincronizar perfiles de usuario en la base de datos Postgres de los microservicios usando eventos de Keycloak (Webhook / Event Listener) al momento del registro.
 
 ### 2.4 Versión React — Next.js 15 🔴
 

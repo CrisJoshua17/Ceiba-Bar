@@ -809,6 +809,10 @@ keycloak:
    - `ceiba-gateway` (Confidential client, service account)
 4. **Crear Roles de Realm:** `ADMIN`, `CUSTOMER`, `DRIVER`, `RESTAURANT`
 5. **Crear usuarios de prueba** con diferentes roles
+6. **Estrategia de Registro (Redirección a Keycloak con Tema Personalizado):**
+   - Habilitar registro de usuarios en el realm: Ve a **Realm settings** -> **Login** -> activa **User registration**.
+   - Para enlazar los usuarios creados o registrados en Keycloak con tu base de datos de microservicios durante tus pruebas locales: realiza una petición `POST` al endpoint `/api/users/register` del microservicio enviando el UUID de Keycloak en el campo `id`.
+   - En producción, el flujo redirigirá al formulario de registro nativo de Keycloak estilizado con un tema (Theme) afín a tu app, sincronizándose con la base de datos Postgres del backend por medio de un Event Listener / Webhook que guardará el usuario enviando el UUID en el campo `id`.
 
 ### 2.3 Configurar microservicios como Resource Servers
 
@@ -1004,9 +1008,10 @@ Si deseas habilitar inicio de sesión social con Google más adelante:
 ### 3.5 Asignación de conductores — Strategy (0.5 días)
 
 1. Crear interfaz `DriverAssignmentStrategy`
-2. Implementar `NearestDriverStrategy` (usando fórmula Haversine)
-3. Configurar en `micro-drivers`
-4. **Probar:** Dado un pedido en lat/lng X, se asigna el conductor disponible más cercano
+2. Implementar `NearestDriverStrategy` (usando fórmula Haversine calculando distancia del conductor hacia el negocio: `19.4326`, `-99.1332`)
+3. Configurar en `micro-drivers` una tabla `pending_assignments` para encolar pedidos si no hay conductores disponibles (evitando cancelar la Saga de inmediato)
+4. Modificar el simulador de tracking en `micro-realtime` (`LocationSimulator.java`) para trazar dos fases: **Conductor ➔ Negocio ➔ Cliente** y notificar los estados `DRIVER_ARRIVING` / `PICKED_UP` / `EN_CAMINO` / `ENTREGADO`.
+5. **Probar:** Registrar conductores libres y ocupados, y simular la liberación de uno para tomar una orden en cola.
 
 ### ✅ Verificación Fase 3
 - [ ] Pago con Stripe (sandbox) funciona end-to-end
