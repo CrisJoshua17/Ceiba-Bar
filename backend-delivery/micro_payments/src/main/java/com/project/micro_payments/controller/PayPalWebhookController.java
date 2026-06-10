@@ -65,7 +65,7 @@ public class PayPalWebhookController {
                         if (payment.getTempOrderData() != null) {
                             try {
                                 OrderDto dto = objectMapper.readValue(payment.getTempOrderData(), OrderDto.class);
-                                orderClient.create(dto).subscribe();
+                                orderClient.create(dto);
                             } catch (Exception e) {
                                 System.err.println("Error creando la orden PayPal: " + e.getMessage());
                             }

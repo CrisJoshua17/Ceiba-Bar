@@ -1,0 +1,18 @@
+{
+  "customerId": 1,
+  "customerName": "Juan Pérez",
+  "customerEmail": "juan.perez@example.com",
+  "deliveryAddress": {
+    "street": "Av. Reforma 456",
+    "colonia": "CDMX",
+    "city": "CDMX",
+    "postalCode": "06000"
+  },
+  "deliveryLatitude": 19.4326,
+  "deliveryLongitude": -99.1332,
+  "subtotal": 250.00,
+  "deliveryFee": 50.00,
+  "total": 300.00,
+  "paymentMethod": "stripe",
+  "items": []
+}

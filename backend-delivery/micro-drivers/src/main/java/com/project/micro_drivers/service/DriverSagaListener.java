@@ -20,7 +20,8 @@ public class DriverSagaListener {
 
     @RabbitListener(queues = "queue.payment.ok")
     @Transactional
-    public void handlePaymentOk(String messagePayload) {
+    public void handlePaymentOk(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         log.info("Received payment.ok event: {}", messagePayload);
         try {
             JsonNode rootNode = objectMapper.readTree(messagePayload);

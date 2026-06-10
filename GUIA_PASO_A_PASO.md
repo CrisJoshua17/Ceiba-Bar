@@ -1013,6 +1013,84 @@ Si deseas habilitar inicio de sesión social con Google más adelante:
 4. Modificar el simulador de tracking en `micro-realtime` (`LocationSimulator.java`) para trazar dos fases: **Conductor ➔ Negocio ➔ Cliente** y notificar los estados `DRIVER_ARRIVING` / `PICKED_UP` / `EN_CAMINO` / `ENTREGADO`.
 5. **Probar:** Registrar conductores libres y ocupados, y simular la liberación de uno para tomar una orden en cola.
 
+### 3.6 Patrones de Resiliencia (Resilience4j) — Circuit Breaker, Retry y Bulkhead (1 día)
+
+Para evitar que una falla o lentitud en un microservicio secundario (como Keycloak, la pasarela de pagos o el microservicio de productos) cause fallas en cascada en todo el sistema, debes implementar patrones de resiliencia con **Resilience4j**.
+
+**Paso 1: Agregar dependencias en los microservicios core (ej: `micro-realtime`, `micro_payments`):**
+Añadir a `pom.xml`:
+```xml
+<dependency>
+    <groupId>io.github.resilience4j</groupId>
+    <artifactId>resilience4j-spring-boot3</artifactId>
+</dependency>
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+```
+
+**Paso 2: Configurar las instancias de resiliencia en `application.yml`:**
+```yaml
+resilience4j:
+  circuitbreaker:
+    instances:
+      driversService:
+        slidingWindowType: COUNT_BASED
+        slidingWindowSize: 10              # Evalúa las últimas 10 peticiones
+        failureRateThreshold: 50           # Abre el circuito si falla el 50% o más
+        slowCallRateThreshold: 75          # Abre si el 75% son llamadas lentas
+        slowCallDurationThreshold: 2s      # Umbral para clasificar como llamada lenta
+        waitDurationInOpenState: 15s       # Tiempo que dura en estado ABIERTO antes de pasar a MEDIO_ABIERTO
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+  retry:
+    instances:
+      paymentsService:
+        maxAttempts: 3                     # Reintentar hasta 3 veces
+        waitDuration: 500ms                # Esperar 500ms entre intentos
+        exponentialBackoff:
+          enabled: true
+          multiplier: 2                    # Retraso exponencial (500ms, 1s, 2s)
+  bulkhead:
+    instances:
+      productsService:
+        maxConcurrentCalls: 10             # Máximo 10 llamadas simultáneas permitidas
+        maxWaitDuration: 100ms             # Espera máxima en cola si el bulkhead está lleno
+```
+
+**Paso 3: Aplicar anotaciones y programar métodos de Fallback en los servicios:**
+Asocia la tolerancia a fallos a llamadas Feign o endpoints externos. Por ejemplo, al intentar llamar a `micro-drivers`:
+
+```java
+@Service
+@Slf4j
+public class OrderAssignmentService {
+
+    private final DriverClient driverClient;
+
+    public OrderAssignmentService(DriverClient driverClient) {
+        this.driverClient = driverClient;
+    }
+
+    @CircuitBreaker(name = "driversService", fallbackMethod = "fallbackAssignDriver")
+    @Retry(name = "driversService")
+    @Bulkhead(name = "driversService")
+    public void assignDriver(Long orderId) {
+        log.info("Intentando asignar conductor a la orden: {}", orderId);
+        driverClient.assignDriver(orderId);
+    }
+
+    // El fallback se ejecuta si el circuito está abierto, se superan reintentos o el bulkhead se llena
+    public void fallbackAssignDriver(Long orderId, Throwable t) {
+        log.error("Falla en servicio de conductores (fallback activo). Razón: {}", t.getMessage());
+        // Lógica alternativa: encolar localmente la asignación, usar datos en caché o devolver error controlado
+    }
+}
+```
+
+*Nota:* El método fallback debe poseer el **mismo retorno y parámetros** que el método original, añadiendo un argumento del tipo `Throwable` al final de la firma.
+
 ### ✅ Verificación Fase 3
 - [ ] Pago con Stripe (sandbox) funciona end-to-end
 - [ ] Orden transiciona correctamente por estados
@@ -1022,7 +1100,9 @@ Si deseas habilitar inicio de sesión social con Google más adelante:
 - [ ] Compensación: sin conductor → reembolso, orden cancelada
 - [ ] Redis cachea productos y el caché se invalida al actualizar
 - [ ] DLQ recoge mensajes fallidos (verificar en RabbitMQ Management UI)
-- [ ] Commit: `git commit -m "feat: Strategy pagos, State órdenes, Saga+Outbox, Redis cache"`
+- [ ] Resilience4j: Circuit Breakers, Retries y Bulkheads configurados en `application.yml`
+- [ ] Fallbacks implementados en clientes y servicios de comunicación externa
+- [ ] Commit: `git commit -m "feat: Strategy pagos, State órdenes, Saga+Outbox, Redis cache, resiliencia Resilience4j"`
 
 ---
 

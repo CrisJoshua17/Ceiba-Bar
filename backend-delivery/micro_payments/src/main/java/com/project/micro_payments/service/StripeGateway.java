@@ -125,7 +125,7 @@ public class StripeGateway implements PaymentGateway {
                     if (orderData != null) {
                         try {
                             OrderDto orderDto = objectMapper.readValue(orderData, OrderDto.class);
-                            orderClient.create(orderDto).subscribe(); 
+                            orderClient.create(orderDto); 
                         } catch (Exception e) {
                             System.err.println("Error creando la orden tras el webhook: " + e.getMessage());
                         }

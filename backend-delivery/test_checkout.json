@@ -1,0 +1,15 @@
+{
+  "orderDto": {
+    "id": 4,
+    "userId": "uuid-test-customer",
+    "customerName": "Juan Pérez",
+    "customerEmail": "juan.perez@example.com",
+    "address": "Av. Reforma 456, CDMX",
+    "destinationLat": 19.4326,
+    "destinationLng": -99.1332,
+    "products": []
+  },
+  "amount": 25000,
+  "itemProduct": "Pack Cervezas Ceiba",
+  "method": "stripe"
+}

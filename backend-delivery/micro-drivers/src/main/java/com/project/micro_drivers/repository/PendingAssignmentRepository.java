@@ -8,4 +8,5 @@ import com.project.micro_drivers.model.PendingAssignment;
 @Repository
 public interface PendingAssignmentRepository extends JpaRepository<PendingAssignment, Long> {
     List<PendingAssignment> findAllByOrderByCreatedAtAsc();
+    boolean existsByOrderId(Long orderId);
 }

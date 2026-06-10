@@ -47,6 +47,7 @@ public class OutboxEvent {
     @Column(name = "sent_at")
     private LocalDateTime sentAt;
     
+    @Builder.Default
     @Column(name = "retry_count")
     private Integer retryCount = 0;
 }

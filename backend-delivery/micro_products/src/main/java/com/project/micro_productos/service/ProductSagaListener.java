@@ -34,7 +34,8 @@ public class ProductSagaListener {
 
     @RabbitListener(queues = "queue.order.created")
     @Transactional
-    public void handleOrderCreated(String messagePayload) {
+    public void handleOrderCreated(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         log.info("Received order.created event: {}", messagePayload);
         try {
             JsonNode rootNode = objectMapper.readTree(messagePayload);
@@ -98,13 +99,15 @@ public class ProductSagaListener {
 
     @RabbitListener(queues = "queue.payment.failed")
     @Transactional
-    public void handlePaymentFailed(String messagePayload) {
+    public void handlePaymentFailed(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         releaseStock(messagePayload);
     }
 
     @RabbitListener(queues = "queue.driver.unavailable")
     @Transactional
-    public void handleDriverUnavailable(String messagePayload) {
+    public void handleDriverUnavailable(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         releaseStock(messagePayload);
     }
 

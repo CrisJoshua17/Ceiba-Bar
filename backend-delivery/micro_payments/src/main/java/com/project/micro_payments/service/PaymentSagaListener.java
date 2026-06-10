@@ -30,7 +30,8 @@ public class PaymentSagaListener {
 
     @RabbitListener(queues = "queue.stock.reserved")
     @Transactional
-    public void handleStockReserved(String messagePayload) {
+    public void handleStockReserved(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         log.info("Received stock.reserved event: {}", messagePayload);
         try {
             JsonNode rootNode = objectMapper.readTree(messagePayload);
@@ -67,7 +68,8 @@ public class PaymentSagaListener {
 
     @RabbitListener(queues = "queue.driver.unavailable")
     @Transactional
-    public void handleDriverUnavailable(String messagePayload) {
+    public void handleDriverUnavailable(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         log.info("Received driver.unavailable event: {}", messagePayload);
         try {
             JsonNode rootNode = objectMapper.readTree(messagePayload);

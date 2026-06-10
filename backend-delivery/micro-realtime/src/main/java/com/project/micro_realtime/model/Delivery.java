@@ -34,6 +34,7 @@ public class Delivery extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false, unique = true)
+    @com.fasterxml.jackson.annotation.JsonIgnore
     private Order order;
 
     @Column(name = "driver_id")

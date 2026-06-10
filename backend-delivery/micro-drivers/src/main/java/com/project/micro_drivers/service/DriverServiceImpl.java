@@ -135,6 +135,10 @@ public class DriverServiceImpl implements DriverService {
 
         // If no available drivers, save to queue
         log.warn("No available drivers for order id: {}. Enqueuing in pending_assignments.", orderId);
+        if (pendingAssignmentRepository.existsByOrderId(orderId)) {
+            log.info("Order id: {} is already enqueued in pending_assignments. Skipping.", orderId);
+            return;
+        }
         PendingAssignment pending = PendingAssignment.builder()
                 .orderId(orderId)
                 .payload(messagePayload)

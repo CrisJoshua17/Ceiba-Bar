@@ -34,7 +34,7 @@ public class OrderService {
     private final KafkaProducerService kafkaProducerService;
     private final GeocodingService geocodingService;
     private final com.project.micro_realtime.repository.OutboxRepository outboxRepository;
-    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper = new com.fasterxml.jackson.databind.ObjectMapper();
+    private final com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @org.springframework.transaction.annotation.Transactional
     public Order saveOrderAndOutbox(Order o) {
@@ -50,7 +50,8 @@ public class OrderService {
                     .build();
             outboxRepository.save(outboxEvent);
         } catch (Exception e) {
-            throw new RuntimeException("Error writing to outbox", e);
+            e.printStackTrace();
+            throw new RuntimeException("Error writing to outbox: " + e.getMessage(), e);
         }
         return saved;
     }
@@ -152,7 +153,7 @@ public class OrderService {
     }
 
     public Flux<Order> getOrdersByUserId(Long userId) {
-        return Flux.fromIterable(orderRepository.findByUserId(userId));
+        return Flux.fromIterable(orderRepository.findByCustomerId(userId));
     }
 
     /**
@@ -160,7 +161,7 @@ public class OrderService {
      * driver)
      */
     public Flux<OrderResponseDto> getOrdersWithDetailsByUserId(Long userId) {
-        return Flux.fromIterable(orderRepository.findByUserId(userId))
+        return Flux.fromIterable(orderRepository.findByCustomerId(userId))
                 .flatMap(order -> {
                     // Crear el DTO base con datos de la orden
                     OrderResponseDto dto = OrderResponseDto.builder()

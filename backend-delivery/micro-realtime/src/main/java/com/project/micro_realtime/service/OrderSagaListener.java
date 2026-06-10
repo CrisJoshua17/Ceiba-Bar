@@ -29,7 +29,8 @@ public class OrderSagaListener {
 
     @RabbitListener(queues = "queue.driver.assigned")
     @Transactional
-    public void handleDriverAssigned(String messagePayload) {
+    public void handleDriverAssigned(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         log.info("Saga Success: Received driver.assigned: {}", messagePayload);
         try {
             JsonNode rootNode = objectMapper.readTree(messagePayload);
@@ -62,19 +63,22 @@ public class OrderSagaListener {
 
     @RabbitListener(queues = "queue.stock.failed")
     @Transactional
-    public void handleStockFailed(String messagePayload) {
+    public void handleStockFailed(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         cancelSagaOrder(messagePayload, "stock.failed");
     }
 
     @RabbitListener(queues = "queue.payment.failed")
     @Transactional
-    public void handlePaymentFailed(String messagePayload) {
+    public void handlePaymentFailed(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         cancelSagaOrder(messagePayload, "payment.failed");
     }
 
     @RabbitListener(queues = "queue.driver.unavailable")
     @Transactional
-    public void handleDriverUnavailable(String messagePayload) {
+    public void handleDriverUnavailable(org.springframework.amqp.core.Message message) {
+        String messagePayload = new String(message.getBody(), java.nio.charset.StandardCharsets.UTF_8);
         cancelSagaOrder(messagePayload, "driver.unavailable");
     }
 

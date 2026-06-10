@@ -97,7 +97,7 @@ public class PaymentService {
                 if (payment.getTempOrderData() != null) {
                     try {
                         OrderDto dto = objectMapper.readValue(payment.getTempOrderData(), OrderDto.class);
-                        orderClient.create(dto).subscribe();
+                        orderClient.create(dto);
                     } catch (Exception e) {
                         System.err.println("Error creando la orden post-validación: " + e.getMessage());
                     }
