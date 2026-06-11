@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BASE_ENDPOINT_MICRO_AUTH, BASE_ENDPOINT_MICRO_ORDERS } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { ApiResponseAll, OrderDto } from '../model/Dtos';
 
 @Injectable({
@@ -10,8 +10,7 @@ export class OrdersService {
 
  constructor(private http:HttpClient) { }
 
-public baseEndpointAuth =BASE_ENDPOINT_MICRO_AUTH;
-public baseEndpointOrders =BASE_ENDPOINT_MICRO_ORDERS;
+public baseEndpointOrders = `${environment.apiGateway}/api/orders`;
 
 // 1. Signal para almacenar y compartir los datos de la orden
   private orderSignal: WritableSignal<OrderDto | null> = signal<OrderDto | null>(null);
@@ -34,6 +33,14 @@ public baseEndpointOrders =BASE_ENDPOINT_MICRO_ORDERS;
 
   getOrdersByUserId(userId: number){
     return this.http.get<ApiResponseAll<OrderDto[]>>(`${this.baseEndpointOrders}/user/${userId}`);
+  }
+
+  /**
+   * Crea una orden directamente en micro-realtime.
+   * Usado para flujo sin pago o para testing manual.
+   */
+  createOrder(order: OrderDto){
+    return this.http.post<ApiResponseAll<OrderDto>>(`${this.baseEndpointOrders}`, order);
   }
 
 }

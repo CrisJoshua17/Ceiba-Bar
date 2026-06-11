@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -82,8 +82,29 @@ export class CustomerDeliveryComponent {
   currentFeedback: string = '';
 
 
+  private ordersLoaded = false;
+
+  constructor() {
+    // Reacciona cuando el customer.id real llegue al signal
+    effect(() => {
+      const customerId = this.usersService.userData()?.customer?.id;
+      if (customerId && customerId > 0 && !this.ordersLoaded) {
+        this.ordersLoaded = true;
+        this.refreshAllTabs();
+      }
+    });
+  }
+
   ngOnInit(): void {
-    this.refreshAllTabs();
+    // Si ya hay datos en el signal al entrar, cargar de inmediato
+    const customerId = this.usersService.userData()?.customer?.id;
+    if (customerId && customerId > 0) {
+      this.ordersLoaded = true;
+      this.refreshAllTabs();
+    } else {
+      // Si no hay datos, pedir getUserInfo para que el effect() reactive
+      this.usersService.getUserInfo().subscribe();
+    }
   }
 
   private filterOrders(orders: OrderDto[], term: string): OrderDto[] {
@@ -96,8 +117,8 @@ export class CustomerDeliveryComponent {
 
   refreshAllTabs() {
     // 1. Obtener ID del usuario logueado (Cliente)
-    const userId = this.usersService.userData()?.user?.id;
-    if (!userId) {
+    const customerId = this.usersService.userData()?.customer?.id;
+    if (!customerId) {
         this.messageService.error("Error", "No se identificó al usuario actual.");
         return;
     }
@@ -105,7 +126,7 @@ export class CustomerDeliveryComponent {
     this.isLoading.set(true);
 
     // 2. Consumir el nuevo endpoint de órdenes por usuario
-    this.ordersService.getOrdersByUserId(userId).subscribe({
+    this.ordersService.getOrdersByUserId(customerId).subscribe({
       next: (resp) => {
         if (resp.success) {
             // Aseguramos que data es un array, o array vacío si es null
@@ -115,7 +136,7 @@ export class CustomerDeliveryComponent {
             
             // 3. Filtrar localmente por estado
             // Nota: Verifica si los estados que vienen del backend coinciden exactamente (CREATED, EN_CAMINO, etc.)
-            this.ordersProcessing.set(orders.filter(o => o.status === 'EN_CAMINO'));
+            this.ordersProcessing.set(orders.filter(o => o.status === 'EN_CAMINO' || o.status === 'PREPARING' || o.status === 'CREATED' || o.status === 'PAGADO'));
             this.ordersDelivered.set(orders.filter(o => o.status === 'ENTREGADO'));
             this.ordersCancelled.set(orders.filter(o => o.status === 'CANCELADO'));
             // CREATED incluye también PAGADO si tu lógica lo requiere

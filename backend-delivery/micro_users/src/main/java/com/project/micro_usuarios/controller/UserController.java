@@ -29,6 +29,7 @@ import com.project.micro_usuarios.model.Role;
 import com.project.micro_usuarios.model.User;
 import com.project.micro_usuarios.model.dto.UserDto;
 import com.project.micro_usuarios.service.ImagesService;
+import com.project.micro_usuarios.service.KeycloakAdminService;
 import com.project.micro_usuarios.service.UserServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class UserController {
     private final CustomerClient customerClient;
     private final DriverClient driverClient;
     private final ImagesService imagesService;
+    private final KeycloakAdminService keycloakAdminService;
 
     // === ENDPOINT PARA DESARROLLO - Crear primer admin ===
     @PostMapping("/init-admin")
@@ -112,6 +114,12 @@ public class UserController {
         try {
 
             user.setRole(Role.DRIVER);
+
+            // 1. Crear en Keycloak primero
+            String keycloakId = keycloakAdminService.createUserInKeycloak(user);
+            user.setId(keycloakId);
+
+            // 2. Guardar en BD Local
             User userSave = service.createUser(user);
 
             // Agregar la llamada al microservicio de drivers
@@ -143,6 +151,12 @@ public class UserController {
         try {
 
             user.setRole(Role.ADMIN);
+
+            // 1. Crear en Keycloak primero
+            String keycloakId = keycloakAdminService.createUserInKeycloak(user);
+            user.setId(keycloakId);
+
+            // 2. Guardar en BD Local
             User userSave = service.createUser(user);
 
             // Los ADMINS no necesitan perfil en otros microservicios

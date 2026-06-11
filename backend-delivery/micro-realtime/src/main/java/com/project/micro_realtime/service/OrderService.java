@@ -141,7 +141,12 @@ public class OrderService {
     }
 
     public Flux<Order> getAllOrdersEnCamino() {
-        return Flux.fromIterable(orderRepository.findByStatus(OrderStatus.EN_CAMINO));
+        List<Order> preparing = orderRepository.findByStatus(OrderStatus.PREPARING);
+        List<Order> enCamino = orderRepository.findByStatus(OrderStatus.EN_CAMINO);
+        List<Order> combined = new java.util.ArrayList<>();
+        combined.addAll(preparing);
+        combined.addAll(enCamino);
+        return Flux.fromIterable(combined);
     }
 
     public Flux<Order> getAllOrdersEntregado() {
@@ -162,68 +167,59 @@ public class OrderService {
      */
     public Flux<OrderResponseDto> getOrdersWithDetailsByUserId(Long userId) {
         return Flux.fromIterable(orderRepository.findByCustomerId(userId))
-                .flatMap(order -> {
-                    // Crear el DTO base con datos de la orden
-                    OrderResponseDto dto = OrderResponseDto.builder()
-                            .id(order.getId())
-                            .userId(order.getCustomerId())
-                            .customerName(order.getCustomerName())
-                            .customerEmail(order.getCustomerEmail())
-                            .address(order.getDeliveryAddress() != null ? order.getDeliveryAddress().getStreet() : "")
-                            // COORDENADAS POR DEFECTO LEJANAS (Sur CDMX) si no están configuradas
-                            // Start (Zocalo): 19.4326, -99.1332
-                            // End (Sur): 19.3326, -99.1332
-                            .destinationLat(order.getDeliveryLatitude() != null && order.getDeliveryLatitude() != 0.0
-                                    ? order.getDeliveryLatitude()
-                                    : 19.3326)
-                            .destinationLng(order.getDeliveryLongitude() != null && order.getDeliveryLongitude() != 0.0
-                                    ? order.getDeliveryLongitude()
-                                    : -99.1332)
-                            .products(order.getItems() != null ? order.getItems().stream().map(item -> {
-                                com.project.micro_realtime.dto.ProductDto pdto = new com.project.micro_realtime.dto.ProductDto();
-                                pdto.setId(item.getProductId());
-                                pdto.setName(item.getProductName());
-                                pdto.setPrice(item.getUnitPrice() != null ? item.getUnitPrice().doubleValue() : 0.0);
-                                pdto.setImage(item.getProductImage());
-                                return pdto;
-                            }).collect(java.util.stream.Collectors.toList()) : new java.util.ArrayList<>())
-                            .status(order.getStatus())
-                            .rating(order.getRating())
-                            .feedback(order.getFeedback())
-                            .ratedAt(order.getRatedAt())
-                            .build();
+                .flatMap(this::mapToResponseDto);
+    }
 
-                    // Buscar información de delivery (si existe)
-                    return Mono
-                            .fromCallable(() -> deliveryRepository.findTopByOrderIdOrderByAssignedAtDesc(order.getId()))
-                            .flatMap(deliveryOpt -> {
-                                if (deliveryOpt.isPresent()) {
-                                    Delivery delivery = deliveryOpt.get();
-                                    dto.setDriverId(delivery.getDriverId());
-                                    dto.setAssignedAt(delivery.getAssignedAt());
-                                    dto.setCompletedAt(delivery.getCompletedAt());
+    public Mono<OrderResponseDto> mapToResponseDto(Order order) {
+        if (order == null) return Mono.empty();
+        
+        OrderResponseDto dto = OrderResponseDto.builder()
+                .id(order.getId())
+                .userId(order.getUserId() != null ? order.getUserId() : (order.getCustomerId() != null ? String.valueOf(order.getCustomerId()) : null))
+                .customerName(order.getCustomerName())
+                .customerEmail(order.getCustomerEmail())
+                .address(order.getDeliveryAddress() != null ? order.getDeliveryAddress().getStreet() : "")
+                .destinationLat(order.getDeliveryLatitude() != null && order.getDeliveryLatitude() != 0.0
+                        ? order.getDeliveryLatitude()
+                        : 19.3326)
+                .destinationLng(order.getDeliveryLongitude() != null && order.getDeliveryLongitude() != 0.0
+                        ? order.getDeliveryLongitude()
+                        : -99.1332)
+                .products(order.getItems() != null ? order.getItems().stream().map(item -> {
+                    com.project.micro_realtime.dto.ProductDto pdto = new com.project.micro_realtime.dto.ProductDto();
+                    pdto.setId(item.getProductId());
+                    pdto.setName(item.getProductName());
+                    pdto.setPrice(item.getUnitPrice() != null ? item.getUnitPrice().doubleValue() : 0.0);
+                    pdto.setImage(item.getProductImage());
+                    return pdto;
+                }).collect(java.util.stream.Collectors.toList()) : new java.util.ArrayList<>())
+                .status(order.getStatus())
+                .rating(order.getRating())
+                .feedback(order.getFeedback())
+                .ratedAt(order.getRatedAt())
+                .build();
 
-                                    // Calcular tiempo de entrega
-                                    dto.calculateDeliveryTime();
+        return Mono.fromCallable(() -> deliveryRepository.findTopByOrderIdOrderByAssignedAtDesc(order.getId()))
+                .flatMap(deliveryOpt -> {
+                    if (deliveryOpt.isPresent()) {
+                        Delivery delivery = deliveryOpt.get();
+                        dto.setDriverId(delivery.getDriverId());
+                        dto.setAssignedAt(delivery.getAssignedAt());
+                        dto.setCompletedAt(delivery.getCompletedAt());
+                        dto.calculateDeliveryTime();
 
-                                    // Obtener nombre del driver (con manejo de errores)
-                                    return Mono.fromCallable(() -> {
-                                        try {
-                                            DriverDto driver = driverClient.getDriverById(delivery.getDriverId());
-                                            dto.setDriverName(driver.getUserEmail()); // Usamos email como nombre por
-                                                                                      // ahora
-                                            return dto;
-                                        } catch (Exception e) {
-                                            // Si falla la llamada al servicio de drivers, usar un placeholder
-                                            dto.setDriverName("Driver #" + delivery.getDriverId());
-                                            return dto;
-                                        }
-                                    });
-                                } else {
-                                    // No hay delivery asignado
-                                    return Mono.just(dto);
-                                }
-                            });
+                        return Mono.fromCallable(() -> {
+                            try {
+                                DriverDto driver = driverClient.getDriverById(delivery.getDriverId());
+                                dto.setDriverName(driver.getUserEmail());
+                            } catch (Exception e) {
+                                dto.setDriverName("Driver #" + delivery.getDriverId());
+                            }
+                            return dto;
+                        });
+                    } else {
+                        return Mono.just(dto);
+                    }
                 });
     }
 

@@ -1,119 +1,51 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CardModule } from 'primeng/card';
-import { PasswordModule } from 'primeng/password';
 import { CommonModule } from '@angular/common';
-import { MessageModule } from 'primeng/message';
-import { Route, Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { NavbarSimpleComponent } from '../utils/navbar-simple/navbar-simple.component';
-import { ToastModule } from 'primeng/toast';
-import { InputTextModule } from 'primeng/inputtext';
-import { UsersService } from '../services/users.service';
-import { MessagesService } from '../services/messages.service';
+import { KeycloakService } from '../services/keycloak.service';
 
+/**
+ * RegisterPageComponent
+ *
+ * Ya no gestiona formulario de registro propio.
+ * Redirige al formulario de registro nativo de Keycloak.
+ * Keycloak valida los datos, crea el usuario y redirige de vuelta.
+ *
+ * En producción, el realm ceiba-bar tendrá un tema personalizado
+ * con la identidad visual de Ceiba Bar.
+ */
 @Component({
   selector: 'app-register-page',
+  standalone: true,
   imports: [
-    ButtonModule, 
-    ProgressSpinnerModule,
+    ButtonModule,
     CardModule,
-    PasswordModule,
-    ReactiveFormsModule, // Cambiado de FormsModule a ReactiveFormsModule
-    CommonModule, 
-    MessageModule,
+    CommonModule,
     RouterModule,
     NavbarSimpleComponent,
-    ToastModule,
-    InputTextModule
   ],
   templateUrl: './register-page.component.html',
   styleUrl: './register-page.component.scss'
 })
-export class RegisterPageComponent implements OnInit {
+export class RegisterPageComponent {
 
-  registerForm!: FormGroup;
-  loading: boolean = false;
+  loading = false;
 
-  constructor(
-    private userService: UsersService, 
-    private mensajeService: MessagesService,
-    private router: Router,
-    private fb: FormBuilder // Inyectar FormBuilder
-  ) {}
+  constructor(private keycloakService: KeycloakService) {}
 
-  ngOnInit(): void {
-    this.initForm();
-  }
-
-  initForm() {
-    this.registerForm = this.fb.group({
-      name: ['', [
-        Validators.required, 
-        Validators.minLength(2), 
-        Validators.maxLength(30)
-      ]],
-      lastname: ['', [
-        Validators.required, 
-        Validators.minLength(2), 
-        Validators.maxLength(30)
-      ]],
-      username: ['', [
-        Validators.required, 
-        Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')
-      ]],
-      phone: ['', [
-        Validators.pattern('^[0-9]{10}$')
-      ]],
-      password: ['', [
-        Validators.required, 
-        Validators.minLength(4), 
-        Validators.maxLength(20)
-      ]]
-    });
-  }
-
-  register() {
-    if (this.registerForm.invalid) {
-      // Marcar todos los campos como touched para mostrar errores
-      Object.keys(this.registerForm.controls).forEach(key => {
-        this.registerForm.get(key)?.markAsTouched();
-      });
-      return;
-    }
-
+  /**
+   * Redirige al formulario de registro de Keycloak.
+   * Tras el registro, Keycloak redirige al home de la app.
+   */
+  register(): void {
     this.loading = true;
-    const userRegisterGenericDto = {
-      name: this.registerForm.get('name')?.value,
-      lastName: this.registerForm.get('lastname')?.value,
-      email: this.registerForm.get('username')?.value,
-      password: this.registerForm.get('password')?.value,
-      phone: this.registerForm.get('phone')?.value
-      
-    };
-
-    this.userService.registerGeneric(userRegisterGenericDto).subscribe({
-      next: (response: any) => {
-        this.loading = false;
-        if (response.success) {
-          this.mensajeService.success("Éxito", response.message);
-          this.router.navigate(['/home']);
-        } else {
-          this.mensajeService.error("Error", response.message);
-        }
-      },
-      error: (error) => {
-        this.loading = false;
-        this.mensajeService.warn("¡Ups!", "Estamos teniendo inconvenientes");
-      }
-    });
+    this.keycloakService.register(`${window.location.origin}/home`);
   }
 
-  // Helper methods para acceder fácilmente a los controles
-  get name() { return this.registerForm.get('name'); }
-  get lastname() { return this.registerForm.get('lastname'); }
-  get username() { return this.registerForm.get('username'); }
-  get phone() { return this.registerForm.get('phone'); }
-  get password() { return this.registerForm.get('password'); }
+  /** Alternativa: ir al login si ya tiene cuenta */
+  goToLogin(): void {
+    this.keycloakService.login();
+  }
 }

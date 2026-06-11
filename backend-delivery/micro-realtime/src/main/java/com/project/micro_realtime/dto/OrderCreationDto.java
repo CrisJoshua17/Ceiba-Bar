@@ -1,16 +1,12 @@
-package com.project.micro_payments.dto;
+package com.project.micro_realtime.dto;
 
 import java.util.List;
-
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import com.project.micro_realtime.model.OrderStatus;
 import lombok.Data;
 
 @Data
-public class OrderDto {
-
+public class OrderCreationDto {
     private Long id;
-
     private String userId;
     private Long customerId;
     private String customerName;
@@ -19,7 +15,6 @@ public class OrderDto {
     private Double destinationLat;
     private Double destinationLng;
     private List<ProductDto> products;
-    @Enumerated(EnumType.STRING)
     private OrderStatus status = OrderStatus.CREATED;
 
     private Double subtotal;

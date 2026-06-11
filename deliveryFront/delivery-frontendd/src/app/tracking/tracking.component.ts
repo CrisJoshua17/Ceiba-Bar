@@ -91,9 +91,9 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
               if (order.address && !this.addressSent) {
                 this.address = order.address;
                 
-                if (order.status === 'EN_CAMINO') {
+                if (order.status === 'EN_CAMINO' || order.status === 'PREPARING') {
                   this.addressSent = true;
-                  this.status = 'Repartidor en camino...';
+                  this.status = order.status === 'PREPARING' ? 'Preparando pedido...' : 'Repartidor en camino...';
                   this.waitForMapInitialization().then(() => {
                     this.loadDestination();
                     this.connectWebSocket();
@@ -134,9 +134,9 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
           if (order.address) {
              this.address = order.address;
              // Si ya está en camino, activar inmediatamente
-             if (order.status === 'EN_CAMINO') {
+             if (order.status === 'EN_CAMINO' || order.status === 'PREPARING') {
                 this.addressSent = true;
-                this.status = 'Repartidor en camino...';
+                this.status = order.status === 'PREPARING' ? 'Preparando pedido...' : 'Repartidor en camino...';
              } else if (order.status === 'PAGADO' || order.status === 'CREATED') {
                 // Si aún no inicia, intentar enviar dirección para asegurar flujo
                  setTimeout(() => this.sendAddress(), 1000);

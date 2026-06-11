@@ -11,6 +11,6 @@ import com.project.micro_payments.dto.OrderDto;
 public interface OrderClient {
 
     @PostMapping
-    public ResponseEntity<?> create(@RequestBody OrderDto order);
+    public java.util.Map<String, Object> create(@RequestBody OrderDto order);
 
 }

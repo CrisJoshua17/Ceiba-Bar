@@ -22,30 +22,96 @@ import { DriversDeliveriesComponent } from './drivers-deliveries/drivers-deliver
 import { DriversHistoryComponent } from './drivers-history/drivers-history.component';
 import { CustomerDeliveryComponent } from './customer-delivery/customer-delivery.component';
 
-export const routes: Routes = [
-    { path: 'map/:id', component: TrackingComponent },
-     { path: 'home', component: HomeComponent },
-     { path: 'inicio', component: FirstViewComponent },
-     { path: '', component: FirstViewComponent },
-     {path: 'login', component: LoginPageComponent},
-     {path:'registro', component:RegisterPageComponent},
-     {path:'admin/dashboard', component:AdminDashboardComponent},
-     {path:'customer/dashboard', component:DashboardCustomerComponent},
-     {path:'customer/deliverys', component:CustomerDeliveryComponent},
-      {path:'drivers/dashboard', component:DriversDashboardComponent},
-      {path:'drivers/deliveries', component:DriversDeliveriesComponent},
-      {path:'drivers/history', component:DriversHistoryComponent},
-     {path:'my-profile', component:ProfileComponent},
-     {path:'admin/users', component:AdminUsersComponent},
-     {path:'admin/products', component:AdminProductsComponent},
-      {path:'menu/drinks', component:MenuDrinksComponent},
-      {path:'menu/snack', component:MenuSnackComponent},
-      {path:'menu/recetario', component:MenuRecetarioComponent},
-      {path:'menu/customer', component:CustomerMenuComponent},
-       {path:'payment', component:PaymentComponent},
-       {path: 'payments/pago-exitoso', component: PaymentSuccessComponent},
-       {path: 'payments/pago-cancelado', component: PaymentCancelComponent},
-       {path:'admin/orders', component:PedidosAdminComponent},
+import { authGuard } from './utils/guards/auth.guard';
+import { roleGuard } from './utils/guards/role.guard';
 
-       
+export const routes: Routes = [
+  // ── Rutas públicas ──────────────────────────────────────────────
+  { path: '', component: FirstViewComponent },
+  { path: 'inicio', component: FirstViewComponent },
+  { path: 'login', component: LoginPageComponent },
+  { path: 'registro', component: RegisterPageComponent },
+  { path: 'home', component: HomeComponent },
+
+  // Menús públicos (catálogo visible sin login)
+  { path: 'menu/drinks', component: MenuDrinksComponent },
+  { path: 'menu/snack', component: MenuSnackComponent },
+  { path: 'menu/recetario', component: MenuRecetarioComponent },
+
+  // Páginas de resultado de pago (acceso tras redirect de Stripe/PayPal)
+  { path: 'payments/pago-exitoso', component: PaymentSuccessComponent },
+  { path: 'payments/pago-cancelado', component: PaymentCancelComponent },
+
+  // ── Rutas autenticadas (cualquier rol) ───────────────────────────
+  {
+    path: 'my-profile',
+    component: ProfileComponent,
+    canActivate: [authGuard]
+  },
+  {
+    path: 'payment',
+    component: PaymentComponent,
+    canActivate: [authGuard]
+  },
+
+  // ── Rutas de Customer ────────────────────────────────────────────
+  {
+    path: 'menu/customer',
+    component: CustomerMenuComponent,
+    canActivate: [roleGuard('CUSTOMER', 'ADMIN')]
+  },
+  {
+    path: 'customer/dashboard',
+    component: DashboardCustomerComponent,
+    canActivate: [roleGuard('CUSTOMER', 'ADMIN')]
+  },
+  {
+    path: 'customer/deliverys',
+    component: CustomerDeliveryComponent,
+    canActivate: [roleGuard('CUSTOMER', 'ADMIN')]
+  },
+  {
+    path: 'map/:id',
+    component: TrackingComponent,
+    canActivate: [authGuard]
+  },
+
+  // ── Rutas de Driver ──────────────────────────────────────────────
+  {
+    path: 'drivers/dashboard',
+    component: DriversDashboardComponent,
+    canActivate: [roleGuard('DRIVER', 'ADMIN')]
+  },
+  {
+    path: 'drivers/deliveries',
+    component: DriversDeliveriesComponent,
+    canActivate: [roleGuard('DRIVER', 'ADMIN')]
+  },
+  {
+    path: 'drivers/history',
+    component: DriversHistoryComponent,
+    canActivate: [roleGuard('DRIVER', 'ADMIN')]
+  },
+
+  // ── Rutas de Admin ───────────────────────────────────────────────
+  {
+    path: 'admin/dashboard',
+    component: AdminDashboardComponent,
+    canActivate: [roleGuard('ADMIN')]
+  },
+  {
+    path: 'admin/users',
+    component: AdminUsersComponent,
+    canActivate: [roleGuard('ADMIN')]
+  },
+  {
+    path: 'admin/products',
+    component: AdminProductsComponent,
+    canActivate: [roleGuard('ADMIN')]
+  },
+  {
+    path: 'admin/orders',
+    component: PedidosAdminComponent,
+    canActivate: [roleGuard('ADMIN')]
+  },
 ];

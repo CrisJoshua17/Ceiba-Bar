@@ -16,8 +16,9 @@ import { OrdersService } from '../services/orders.service';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { SelectModule } from 'primeng/select';
-import { DriversService } from '../services/drivers.service';
+import { DriversService, DriverProfile } from '../services/drivers.service';
 import { DeliveriesService } from '../services/deliveries.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-pedidos-admin',
@@ -47,6 +48,7 @@ export class PedidosAdminComponent implements OnInit {
   private driversService = inject(DriversService);
   private deliveriesService = inject(DeliveriesService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   // Signals para búsqueda
   searchTerm = signal('');
@@ -59,11 +61,12 @@ export class PedidosAdminComponent implements OnInit {
   allOrders = signal<OrderDto[]>([]);
 
 
-  drivers :UserInfo[] = [];
-  driversData =this.driversService.driversData;
+  drivers: UserInfo[] = [];
+  driversData = this.driversService.driversData;
+  driverProfiles = this.driversService.driverProfiles;
 
-    selectDriver: UserInfo | null = null;
-    
+  selectDriverProfile: DriverProfile | null = null;
+  
   isLoading = signal(false);
 
   // Computed filters para cada señal
@@ -80,7 +83,7 @@ export class PedidosAdminComponent implements OnInit {
   ngOnInit(): void {
     this.refreshAllTabs();
     this.getDrivers();
-
+    this.driversService.getAllDriverProfiles().subscribe();
   }
 
   private filterOrders(orders: OrderDto[], term: string): OrderDto[] {
@@ -183,14 +186,14 @@ export class PedidosAdminComponent implements OnInit {
   }
 
   assignDriver() {
-    if (!this.selectedOrder || !this.selectDriver) {
+    if (!this.selectedOrder || !this.selectDriverProfile) {
       this.messageService.error("Error", "Debe seleccionar un conductor");
       return;
     }
 
     const request = {
       orderId: this.selectedOrder.id!,
-      driverId: this.selectDriver.id,
+      driverId: this.selectDriverProfile.id,  // id numérico Long de micro_drivers
       notes: `Asignado desde panel admin`
     };
 
@@ -199,7 +202,7 @@ export class PedidosAdminComponent implements OnInit {
         if (resp.success) {
           this.messageService.success("Éxito", `Driver asignado correctamente a la orden #${this.selectedOrder?.id}`);
           this.visible = false;
-          this.selectDriver = null;
+          this.selectDriverProfile = null;
           this.selectedOrder = null;
           this.refreshAllTabs();
         } else {
@@ -211,6 +214,12 @@ export class PedidosAdminComponent implements OnInit {
         console.error('Error asignando driver:', err);
       }
     });
+  }
+
+  viewOnMap(order: OrderDto) {
+    if (order.id) {
+      this.router.navigate(['/map', order.id]);
+    }
   }
 
 }

@@ -81,16 +81,24 @@
                     </td>
                     <td>
                         <div class="d-flex justify-content-center gap-2">
-                            <!-- Acciones según estado actual -->
-                            @if (order.status === 'EN_CAMINO') {
-                            <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
-                                (click)="showDialog(order)"></button>
-                            <button pButton icon="pi pi-times" label="Cancelar"
-                                class="p-button-sm p-button-danger p-button-outlined"
-                                (click)="updateStatus(order, 'CANCELADO')   "></button>
-                            } @else {
-                            <span class="text-muted small italic">Sin acciones</span>
-                            }
+                             <!-- Acciones según estado actual -->
+                             @if (order.status === 'PREPARING') {
+                             <button pButton icon="pi pi-map-marker" label="Iniciar Viaje" class="p-button-sm p-button-info"
+                                 (click)="startJourney(order)"></button>
+                             <button pButton icon="pi pi-times" label="Cancelar"
+                                 class="p-button-sm p-button-danger p-button-outlined"
+                                 (click)="updateStatus(order, 'CANCELADO')"></button>
+                             } @else if (order.status === 'EN_CAMINO') {
+                             <button pButton icon="pi pi-map-marker" label="Ver Mapa" class="p-button-sm p-button-info"
+                                 (click)="viewOnMap(order)"></button>
+                             <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
+                                 (click)="showDialog(order)"></button>
+                             <button pButton icon="pi pi-times" label="Cancelar"
+                                 class="p-button-sm p-button-danger p-button-outlined"
+                                 (click)="updateStatus(order, 'CANCELADO')"></button>
+                             } @else {
+                             <span class="text-muted small italic">Sin acciones</span>
+                             }
                         </div>
                     </td>
                 </tr>

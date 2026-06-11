@@ -86,19 +86,25 @@
                     <td>
                         <div class="d-flex justify-content-center gap-2">
                             <!-- Acciones según estado actual -->
-                            @if (order.status === 'CREATED' || order.status === 'PAGADO') {
-                            <button pButton icon="pi pi-truck" label="En Camino" class="p-button-sm p-button-info"
+                            @if (order.status === 'CREATED' || order.status === 'PAGADO' || order.status === 'PREPARING') {
+                            <button pButton icon="pi pi-truck" [label]="order.status === 'PREPARING' ? 'Reasignar' : 'Asignar'" class="p-button-sm p-button-info"
                                 (click)="confirmInRoad(order,'EN_CAMINO')"></button>
+                            }
+                            
+                            @if (order.status === 'EN_CAMINO' || order.status === 'PREPARING') {
+                            <button pButton icon="pi pi-map-marker" label="Ver Mapa" class="p-button-sm p-button-info"
+                                (click)="viewOnMap(order)"></button>
+                            <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
+                                (click)="updateStatus(order, 'ENTREGADO')"></button>
+                            }
+
+                            @if (order.status === 'CREATED' || order.status === 'PAGADO' || order.status === 'PREPARING' || order.status === 'EN_CAMINO') {
                             <button pButton icon="pi pi-times" label="Cancelar"
                                 class="p-button-sm p-button-danger p-button-outlined"
                                 (click)="updateStatus(order, 'CANCELADO')"></button>
-                            } @else if (order.status === 'EN_CAMINO') {
-                            <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
-                                (click)="confirmInRoad(order,'EN_CAMINO')"></button>
-                            <button pButton icon="pi pi-times" label="Cancelar"
-                                class="p-button-sm p-button-danger p-button-outlined"
-                                (click)="updateStatus(order, 'CANCELADO')   "></button>
-                            } @else {
+                            }
+
+                            @if (order.status === 'ENTREGADO' || order.status === 'CANCELADO') {
                             <span class="text-muted small italic">Sin acciones</span>
                             }
                         </div>
@@ -160,8 +166,8 @@
         </p-table>
     </ng-template>
     <ng-template #footer>
-        <p-select [options]="driversData()" [(ngModel)]="selectDriver" [checkmark]="true"
-            [ngModelOptions]="{standalone: true}" optionLabel="name" [showClear]="true"
+        <p-select [options]="driverProfiles()" [(ngModel)]="selectDriverProfile" [checkmark]="true"
+            [ngModelOptions]="{standalone: true}" optionLabel="userEmail" [showClear]="true"
             placeholder="Seleccionar conductor" class="w-full md:w-56">
 
         </p-select>

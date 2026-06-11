@@ -34,7 +34,7 @@ export interface UserRegisterGenericDto{
 }
 
 export interface UserInfo {
-  id: number;
+  id: string;
   email: string;
   name: string;
   role: UserRole;
@@ -63,11 +63,11 @@ export interface UserAdminDto{
   password: string;
   phone:number;
   photo:File | null;
-  id: number;
+  id: string;  // UUID de Keycloak
 }
 
 export interface UsersDtoTable{
-  id: number;
+  id: string;  // UUID de Keycloak
   name: string;
   lastName: string;
   email:string;
@@ -177,7 +177,8 @@ export interface ProductDto {
 
 export interface OrderDto {
     id?: number;
-    userId?: number;
+    userId?: string;       // UUID de Keycloak (string)
+    customerId?: number;   // ID Long numérico de micro_customer
     customerName: string;
     customerEmail: string;
     address: string;
@@ -201,6 +202,7 @@ export interface CheckoutRequest {
     orderDto: OrderDto;
     amount: number;
     itemProduct: string;
+    method?: string;
 }
 
 

@@ -247,8 +247,8 @@ export class ProfileComponent implements OnInit {
     next: (response) => {
       if(response.success){
         this.mensajeService.success("Éxito", "Perfil actualizado correctamente");
-        this.userService.getUserInfo().subscribe();
-        
+        // Refrescar el signal con datos frescos de BD (no desde token de Keycloak)
+        this.userService.refreshUserFromBackend().subscribe();
       }else{
       this.mensajeService.error("Error", "No se pudo actualizar el perfil");  
       }

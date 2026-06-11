@@ -9,9 +9,9 @@
 ## 🗺️ MAPA DE FASES
 
 ```
-FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4 → FASE 5 → FASE 6 → FASE 7 → FASE 8
-Setup    BD/Ent.  Auth     Negocio   Frontend  Docker    K8s      Deploy    Polish
-(1 día)  (3-5d)   (2-3d)   (5-7d)    (7-10d)   (2-3d)   (2-3d)   (1-2d)   (3-5d)
+FASE 0 → FASE 1 → FASE 2 → FASE 3 → FASE 4A → FASE 4B → FASE 5 → FASE 6 → FASE 7 → FASE 8
+Setup    BD/Ent.  Auth     Negocio   Angular    Next.js   Docker    K8s      Deploy    Polish
+(1 día)  (3-5d)   (2-3d)   (5-7d)   (2-3d)     (5-7d)   (2-3d)   (2-3d)   (1-2d)   (3-5d)
 ```
 
 **Tiempo estimado total:** 6-10 semanas trabajando algunas horas diarias.
@@ -1106,100 +1106,242 @@ public class OrderAssignmentService {
 
 ---
 
-## FASE 4 — Frontends 🔴
+## FASE 4A — Frontend Angular (Alineación con Backend v2) 🔴
 
-> **Objetivo:** Crear las dos versiones del frontend: Angular y Next.js.
-> **Tiempo estimado:** 7-10 días (3-5 por frontend)
+> **Objetivo:** Alinear el frontend Angular existente con la nueva lógica del backend v2.
+> El proyecto Angular ya existe en `deliveryFront/delivery-frontendd/`. No se crea desde cero.
+> **Tiempo estimado:** 2-3 días
 > **Prerequisito:** Fase 3
 
-### 4.1 Frontend Angular — Setup (1 día)
+### 4A.1 Autenticación — Migrar de JWT propio a Keycloak
 
+El frontend actualmente usa un sistema de login custom (`/api/auth/login`) con JWT propio guardado en `localStorage`. Debe migrarse al flujo de Keycloak.
+
+**Paso 1:** Instalar `keycloak-js`:
 ```bash
-# Crear proyecto Angular 19
-cd frontend-angular
-npx -y @angular/cli@19 new ceiba-bar --routing --style=scss --standalone
-
-# Instalar dependencias
-cd ceiba-bar
-npm install primeng primeicons @primeng/themes
-npm install leaflet @types/leaflet
-npm install keycloak-angular keycloak-js
-npm install @stripe/stripe-js
-npm install socket.io-client
-npm install @ngx-translate/core @ngx-translate/http-loader
+npm install keycloak-js
 ```
 
-### 4.2 Frontend Angular — Páginas (3-4 días)
+**Paso 2:** Crear `src/app/services/keycloak.service.ts`:
+```typescript
+import Keycloak from 'keycloak-js';
+import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
-Implementar en este orden:
-1. **Layout** — Header, Footer, Sidebar, tema PrimeNG
-2. **Home** — Landing con productos destacados
-3. **Menú** — Grid de productos con filtros por categoría
-4. **Carrito** — Agregar/quitar productos, dirección
-5. **Checkout** — Stripe Elements + PayPal Smart Buttons
-6. **Tracking** — Mapa Leaflet con posición del conductor en tiempo real (WebSocket)
-7. **Mis Pedidos** — Historial con estados
-8. **Perfil** — Datos, direcciones, preferencias
-9. **Admin Dashboard** — CRUD productos, ver pedidos, gestionar conductores
-10. **Auth Guard** — Proteger rutas con Keycloak
+@Injectable({ providedIn: 'root' })
+export class KeycloakService {
+  private keycloak = new Keycloak({
+    url: environment.keycloak.url,
+    realm: environment.keycloak.realm,
+    clientId: environment.keycloak.clientId
+  });
 
-### 4.3 Frontend Next.js — Setup (1 día)
+  async init(): Promise<boolean> {
+    return this.keycloak.init({ onLoad: 'check-sso', silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html' });
+  }
+
+  login() { this.keycloak.login(); }
+  logout() { this.keycloak.logout(); }
+  getToken(): string | undefined { return this.keycloak.token; }
+  isLoggedIn(): boolean { return !!this.keycloak.authenticated; }
+  getUsername(): string | undefined { return this.keycloak.tokenParsed?.preferred_username; }
+  getRoles(): string[] { return this.keycloak.tokenParsed?.realm_access?.roles ?? []; }
+}
+```
+
+**Paso 3:** Actualizar `AuthInterceptor.ts` — cambiar de `localStorage.getItem('token')` a `keycloakService.getToken()`:
+```typescript
+const token = this.keycloakService.getToken();
+```
+
+**Paso 4:** Actualizar `AuthService` — eliminar el login custom y delegar a Keycloak.
+
+**Paso 5:** Actualizar `UsersService` — el endpoint `/api/auth/user-info` debe devolver los datos del usuario a partir del JWT de Keycloak. Verificar que el backend expone este endpoint o usar los claims del token directamente.
+
+**Nota sobre registro:** El flujo de registro ahora es por Keycloak UI (Keycloak maneja formulario de registro). Ajustar `register-page` para redirigir a Keycloak Registration.
+
+---
+
+### 4A.2 Pagos — Alinear CheckoutRequest con el nuevo flujo Stripe
+
+El `PaymentsService` ya tiene la estructura correcta. Solo verificar los campos del `CheckoutRequest`:
+
+**Verificar `CheckoutRequest` en `Dtos.ts`:**
+- ✅ `orderDto: OrderDto` — OK
+- ✅ `amount: number` — OK (debe ser en centavos, ej: 25000 = $250.00 MXN)
+- ✅ `itemProduct: string` — OK
+- ➕ Agregar campo opcional `method: 'stripe' | 'paypal'` (actualmente hardcoded en el componente)
+
+**Actualizar `validatePayment` en `PaymentsService`:**
+El endpoint actual es `/validate/${sessionId}`. El nuevo backend espera:
+```
+GET /api/payments/validate/stripe/{sessionId}
+GET /api/payments/validate/paypal/{orderId}
+```
+Actualizar la URL para incluir el método de pago:
+```typescript
+validatePayment(sessionId: string, method: 'stripe' | 'paypal' = 'stripe'): Observable<ApiResponse<any>> {
+  return this.http.get<ApiResponse<any>>(`${this.baseEndpoint}/validate/${method}/${sessionId}`);
+}
+```
+
+---
+
+### 4A.3 Órdenes — Alinear con los nuevos endpoints de micro-realtime
+
+Los endpoints de órdenes han cambiado con la nueva arquitectura Saga. Actualizar `OrdersService`:
+
+| Endpoint anterior | Endpoint nuevo |
+|---|---|
+| `/api/orders/all` | `/api/orders/all` ✅ (misma ruta) |
+| `/api/orders/status/{status}` | `/api/orders/status/{status}` ✅ |
+| `/api/orders/{id}` (PUT) | `/api/orders/{id}` ✅ |
+| `/api/orders/user/{userId}` | `/api/orders/user/{userId}` ✅ |
+
+Agregar el método de creación directa de orden (para flujo sin pago / testing):
+```typescript
+createOrder(order: OrderDto): Observable<ApiResponseAll<OrderDto>> {
+  return this.http.post<ApiResponseAll<OrderDto>>(`${this.baseEndpointOrders}`, order);
+}
+```
+
+---
+
+### 4A.4 Tracking — Conectar WebSocket con micro-realtime
+
+El frontend ya tiene componente `tracking/` y `WS_TRACKING` definido. Verificar que el WebSocket apunta al endpoint correcto del gateway.
+
+**Endpoint WebSocket actual en `enviroment.ts`:**
+```typescript
+export const WS_TRACKING = 'ws://localhost:8090/ws/tracking';
+```
+**Ruta real en micro-realtime:** `/ws/tracking/{orderId}` (requiere orderId en la URL)
+
+Actualizar el `TrackingComponent` para conectar con `wss://gateway/ws/tracking/{orderId}` y recibir los mensajes de posición del conductor.
+
+---
+
+### 4A.5 Conductores — Alinear con los nuevos endpoints de micro-drivers
+
+Actualizar el `DriversService` para apuntar a los nuevos endpoints:
+
+| Acción | Endpoint |
+|---|---|
+| Obtener conductores disponibles | `GET /api/drivers/available` |
+| Registrar conductor disponible | `POST /api/drivers/available` |
+| Asignación manual (admin) | `POST /api/delivery/assign` ✅ ya en DeliveriesService |
+| Ver pedidos pendientes en cola | `GET /api/drivers/pending-assignments` |
+
+---
+
+### 4A.6 Variables de entorno — Revisar rutas del gateway
+
+El archivo `enviroment.ts` ya está bien estructurado con el gateway en `:8090`. Solo verificar que las rutas del gateway coincidan con las registradas en `micro-gateway`:
+
+```typescript
+// Verificar que estas rutas estén en el gateway:
+BASE_ENDPOINT_MICRO_PAYMENTS  → /micro-payments/api/payments  (vía gateway → /api/payments)
+BASE_ENDPOINT_MICRO_ORDERS    → /micro-realtime/api/orders     (vía gateway → /api/orders)
+BASE_ENDPOINT_MICRO_DRIVERS   → /micro-drivers/api/drivers     (vía gateway → /api/drivers)
+BASE_ENDPOINT_MICRO_DELIVERY  → /micro-realtime/api/delivery   (vía gateway → /api/delivery)
+```
+
+---
+
+### 4A.7 Guards de Autorización — Basados en roles de Keycloak
+
+Reemplazar cualquier guard basado en JWT propio con uno basado en los roles del token Keycloak:
+
+```typescript
+// src/app/utils/guards/role.guard.ts
+export const roleGuard = (allowedRoles: string[]) => {
+  return () => {
+    const keycloak = inject(KeycloakService);
+    const userRoles = keycloak.getRoles();
+    return allowedRoles.some(r => userRoles.includes(r));
+  };
+};
+```
+
+Aplicar en `app.routes.ts`:
+```typescript
+{ path: 'admin/dashboard', component: AdminDashboardComponent, canActivate: [() => roleGuard(['ADMIN'])()] },
+{ path: 'drivers/dashboard', component: DriversDashboardComponent, canActivate: [() => roleGuard(['DRIVER'])()] },
+```
+
+---
+
+### ✅ Verificación Fase 4A
+- [ ] Login redirige a Keycloak y regresa con token válido
+- [ ] Token de Keycloak se envía automáticamente en todas las peticiones (AuthInterceptor)
+- [ ] `payment` funciona — Stripe Checkout abre y redirige a `payment-success`
+- [ ] `payment-success` valida el pago con el endpoint correcto (`/validate/stripe/{id}`)
+- [ ] Las órdenes se crean y listan correctamente desde micro-realtime
+- [ ] Tracking conecta por WebSocket y muestra posición del conductor
+- [ ] Admin puede ver/gestionar pedidos en `admin/orders`
+- [ ] Driver ve sus entregas en `drivers/deliveries`
+- [ ] Guards bloquean rutas según rol de Keycloak
+- [ ] `ng build --configuration production` sin errores
+- [ ] Commit: `git commit -m "feat: alinear Angular con backend v2 — Keycloak, Saga, nuevos endpoints"`
+
+---
+
+## FASE 4B — Frontend Next.js (Nuevo) 🔴
+
+> **Objetivo:** Crear la versión Next.js del frontend desde cero.
+> **Tiempo estimado:** 5-7 días
+> **Prerequisito:** Fase 4A (para tener el backend validado)
+
+### 4B.1 Setup del proyecto (1 día)
 
 ```bash
-# Crear proyecto Next.js 15
 cd frontend-nextjs
 npx -y create-next-app@latest ceiba-bar --typescript --tailwind --eslint --app --src-dir
 
-# Instalar dependencias
 cd ceiba-bar
 npx shadcn@latest init
-npx shadcn@latest add button card input dialog toast sheet
+npx shadcn@latest add button card input dialog toast sheet badge separator
 npm install zustand @tanstack/react-query
 npm install leaflet react-leaflet @types/leaflet
 npm install @stripe/stripe-js @stripe/react-stripe-js
 npm install socket.io-client
 npm install next-intl
-npm install next-auth @auth/core
+npm install keycloak-js
 npm install framer-motion
 ```
 
-### 4.4 Frontend Next.js — Páginas (3-4 días)
+### 4B.2 Páginas a implementar (4-5 días)
 
-Mismo orden que Angular:
-1. **Layout** (app/layout.tsx) — Header, Footer, Providers (Query, Auth, Theme)
-2. **Home** (app/page.tsx) — Landing con SSR
-3. **Menú** (app/menu/page.tsx) — Productos con filtros
-4. **Carrito** — Zustand store + página
-5. **Checkout** — Stripe + PayPal
-6. **Tracking** (app/tracking/[orderId]/page.tsx) — Mapa con WebSocket
-7. **Pedidos** (app/orders/page.tsx) — Historial
-8. **Perfil** (app/profile/page.tsx)
-9. **Admin** (app/admin/...) — Dashboard protegido por rol
-10. **Middleware** — next-auth para proteger rutas
+En este orden (misma funcionalidad que el Angular, pero en Next.js/React):
+1. **Layout** (`app/layout.tsx`) — Header, Footer, Providers (QueryClient, Theme)
+2. **Home** (`app/page.tsx`) — Landing con SSR
+3. **Menú** (`app/menu/page.tsx`) — Productos con filtros y carrito
+4. **Checkout** (`app/checkout/page.tsx`) — Stripe + PayPal
+5. **Tracking** (`app/tracking/[orderId]/page.tsx`) — Mapa Leaflet + WebSocket
+6. **Pedidos** (`app/orders/page.tsx`) — Historial del cliente
+7. **Perfil** (`app/profile/page.tsx`) — Datos y direcciones
+8. **Admin Dashboard** (`app/admin/...`) — Gestión de productos, pedidos y conductores
+9. **Auth Middleware** — Keycloak SSR con `next-auth` o `keycloak-js`
 
-### 4.5 Componentes compartidos (ambos frontends)
+### 4B.3 State Management
 
-Ambos frontends necesitan estos componentes:
-- **ProductCard** — Tarjeta de producto con imagen, precio, botón agregar
-- **CartSummary** — Resumen del carrito con totales
-- **PaymentSelector** — Toggle entre Stripe y PayPal
-- **MapTracker** — Mapa Leaflet con marcadores animados
-- **OrderStatusBadge** — Badge con color según estado
-- **SkeletonLoader** — Placeholder mientras carga
-- **ToastNotification** — Notificación en tiempo real
+- **Zustand** para el carrito de compras y estado de usuario
+- **React Query** para fetching y caché de datos del backend
+- Mismos endpoints del gateway (`http://localhost:8090`)
 
-### ✅ Verificación Fase 4
-- [ ] Angular: `ng serve` funciona, todas las páginas navegan
-- [ ] Next.js: `npm run dev` funciona, todas las páginas navegan
-- [ ] Ambos: Login con Keycloak funciona
-- [ ] Ambos: Carrito persiste en estado global
-- [ ] Ambos: Checkout con Stripe/PayPal (sandbox)
-- [ ] Ambos: Tracking muestra mapa con posición simulada
-- [ ] Ambos: Responsive en móvil y desktop
-- [ ] Ambos: Dark mode toggle funciona
-- [ ] Commit: `git commit -m "feat: frontend Angular + frontend Next.js completos"`
+### ✅ Verificación Fase 4B
+- [ ] `npm run dev` funciona sin errores
+- [ ] Login con Keycloak funciona
+- [ ] Carrito persiste en Zustand
+- [ ] Checkout con Stripe/PayPal (sandbox)
+- [ ] Tracking con Leaflet y WebSocket
+- [ ] Responsive en móvil y desktop
+- [ ] Dark mode toggle
+- [ ] `npm run build` sin errores
+- [ ] Commit: `git commit -m "feat: frontend Next.js completo"`
 
 ---
+
 
 ## FASE 5 — Docker Compose Completo 🔴
 

@@ -1,28 +1,39 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BASE_ENDPOINT_MICRO_AUTH } from '../utils/enviroments/enviroment';
-import {  UserDto } from '../model/Dtos';
+import { KeycloakService } from './keycloak.service';
 
+/**
+ * AuthService — Fachada de autenticación.
+ *
+ * Antes gestionaba el login con JWT propio (localStorage).
+ * Ahora delega todo a KeycloakService.
+ *
+ * Mantiene la interfaz pública para no romper componentes existentes
+ * que inyecten este servicio.
+ */
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private keycloakService: KeycloakService) {}
 
-public baseEndpoint=BASE_ENDPOINT_MICRO_AUTH;
-   
- public login(user: UserDto){
-        return this.http.post<Response>(this.baseEndpoint+'/login',user);
-    }
-
-  logout() {
-    localStorage.removeItem('token');
+  /** Redirige al login de Keycloak */
+  login(): void {
+    this.keycloakService.login();
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('token');
+  /** Cierra la sesión en Keycloak */
+  logout(): void {
+    this.keycloakService.logout();
   }
 
-  
+  /** @deprecated Usar KeycloakService.getToken() directamente */
+  getToken(): string | undefined {
+    return this.keycloakService.getToken();
+  }
+
+  /** Retorna true si el usuario está autenticado con Keycloak */
+  isLoggedIn(): boolean {
+    return this.keycloakService.isLoggedIn();
+  }
 }

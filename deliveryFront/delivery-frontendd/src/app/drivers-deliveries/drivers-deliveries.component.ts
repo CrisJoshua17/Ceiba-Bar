@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, WritableSignal, computed, inject, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, WritableSignal, computed, effect, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AvatarModule } from 'primeng/avatar';
 import { ButtonModule } from 'primeng/button';
@@ -18,6 +18,7 @@ import { OrdersService } from '../services/orders.service';
 import { MessagesService } from '../services/messages.service';
 import { DriversService } from '../services/drivers.service';
 import { DeliveriesService } from '../services/deliveries.service';
+import { Router } from '@angular/router';
 
 // ... imports
 
@@ -46,6 +47,7 @@ export class DriversDeliveriesComponent {
   private driversService = inject(DriversService);
   private deliveriesService = inject(DeliveriesService);
   private usersService = inject(UsersService); // Inject UsersService
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
   // Signals para búsqueda
@@ -72,8 +74,26 @@ export class DriversDeliveriesComponent {
   selectedOrder: DeliveryDto | null = null;
 
 
+  private deliveriesLoaded = false;
+
+  constructor() {
+    effect(() => {
+      const driverId = this.usersService.userData()?.driver?.id;
+      if (driverId && driverId > 0 && !this.deliveriesLoaded) {
+        this.deliveriesLoaded = true;
+        this.refreshAllTabs();
+      }
+    });
+  }
+
   ngOnInit(): void {
-    this.refreshAllTabs();
+    const driverId = this.usersService.userData()?.driver?.id;
+    if (driverId && driverId > 0) {
+      this.deliveriesLoaded = true;
+      this.refreshAllTabs();
+    } else {
+      this.usersService.getUserInfo().subscribe();
+    }
   }
 
   private filterOrders(orders: DeliveryDto[], term: string): DeliveryDto[] {
@@ -103,7 +123,7 @@ export class DriversDeliveriesComponent {
             this.allOrders.set(deliveries);
             
             // Filter locally based on status
-            this.ordersProcessing.set(deliveries.filter(d => d.status === 'EN_CAMINO'));
+            this.ordersProcessing.set(deliveries.filter(d => d.status === 'EN_CAMINO' || d.status === 'PREPARING'));
             this.ordersDelivered.set(deliveries.filter(d => d.status === 'ENTREGADO'));
             this.ordersCancelled.set(deliveries.filter(d => d.status === 'CANCELADO'));
             this.ordersCreated.set(deliveries.filter(d => d.status === 'CREATED' || d.status === 'PAGADO'));
@@ -176,10 +196,31 @@ export class DriversDeliveriesComponent {
      this.visible = true;
   }
 
+  viewOnMap(order: DeliveryDto) {
+    if (order.orderId) {
+      this.router.navigate(['/map', order.orderId]);
+    }
+  }
 
- 
-
- 
- 
+  startJourney(delivery: DeliveryDto) {
+    if (!delivery.id) return;
+    this.isLoading.set(true);
+    this.deliveriesService.startDelivery(delivery.id).subscribe({
+      next: (resp) => {
+        this.isLoading.set(false);
+        if (resp.success) {
+          this.messageService.success("Éxito", "Viaje iniciado");
+          this.router.navigate(['/map', delivery.orderId]);
+        } else {
+          this.messageService.error("Error", resp.message || "No se pudo iniciar el viaje");
+        }
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        this.messageService.error("Error", "Error al iniciar el viaje");
+        console.error('Error starting delivery:', err);
+      }
+    });
+  }
 
 }

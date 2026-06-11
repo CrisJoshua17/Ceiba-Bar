@@ -106,6 +106,7 @@ form = this.fb.group({
     // Construir OrderDto
     const orderDto: OrderDto = {
       userId: userData?.user.id,
+      customerId: userData?.customer?.id,
       customerName: `${formValues.name} ${formValues.lastName}`,
       customerEmail: formValues.email ?? '',
       address: `${formValues.street}, ${formValues.colonia}, ${formValues.delegacion}, ${formValues.cp}`,
@@ -121,7 +122,8 @@ form = this.fb.group({
     const checkoutRequest: CheckoutRequest = {
       orderDto: orderDto,
       amount: amountInCents,
-      itemProduct: `Pedido de ${formValues.name}` 
+      itemProduct: `Pedido de ${formValues.name}`,
+      method: 'STRIPE'
     };
 
     this.paymentsService.createCheckoutSession(checkoutRequest).subscribe({
@@ -135,6 +137,59 @@ form = this.fb.group({
       },
       error: (err) => {
         console.error('Error de comunicación con pagos:', err);
+      }
+    });
+  }
+
+  payWithPayPal() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+
+    const formValues = this.form.getRawValue();
+    const userData = this.user();
+
+    const productsDto: ProductDto[] = this.cartItems().map(item => ({
+      id: item.product.id,
+      name: item.product.name,
+      description: item.product.description,
+      price: item.product.price,
+      image: item.product.image || '',
+      available: item.product.available
+    }));
+
+    const orderDto: OrderDto = {
+      userId: userData?.user.id,
+      customerId: userData?.customer?.id,
+      customerName: `${formValues.name} ${formValues.lastName}`,
+      customerEmail: formValues.email ?? '',
+      address: `${formValues.street}, ${formValues.colonia}, ${formValues.delegacion}, ${formValues.cp}`,
+      destinationLat: 0, 
+      destinationLng: 0, 
+      products: productsDto,
+      status: 'CREATED'
+    };
+
+    const amountInCents = Math.round(this.cartTotal() * 100);
+
+    const checkoutRequest: CheckoutRequest = {
+      orderDto: orderDto,
+      amount: amountInCents,
+      itemProduct: `Pedido de ${formValues.name}`,
+      method: 'PAYPAL'
+    };
+
+    this.paymentsService.createCheckoutSession(checkoutRequest).subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          window.location.href = response.data;
+        } else {
+          console.error('Error iniciando pago con PayPal:', response.message);
+        }
+      },
+      error: (err) => {
+        console.error('Error de comunicación con pagos (PayPal):', err);
       }
     });
   }

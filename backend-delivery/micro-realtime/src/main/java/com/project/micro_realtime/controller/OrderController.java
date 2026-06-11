@@ -35,16 +35,55 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public Mono<ResponseEntity<?>> create(@RequestBody Order order) {
+    public Mono<ResponseEntity<?>> create(@RequestBody com.project.micro_realtime.dto.OrderCreationDto dto) {
+        Order order = new Order();
+        order.setCustomerId(dto.getCustomerId());
+        order.setUserId(dto.getUserId());
+        order.setCustomerName(dto.getCustomerName());
+        order.setCustomerEmail(dto.getCustomerEmail());
+        
+        if (dto.getAddress() != null) {
+            com.project.micro_realtime.model.DeliveryAddress deliveryAddress = new com.project.micro_realtime.model.DeliveryAddress();
+            deliveryAddress.setStreet(dto.getAddress());
+            order.setDeliveryAddress(deliveryAddress);
+        }
+        
+        order.setDeliveryLatitude(dto.getDestinationLat());
+        order.setDeliveryLongitude(dto.getDestinationLng());
+        
+        order.setSubtotal(dto.getSubtotal() != null ? java.math.BigDecimal.valueOf(dto.getSubtotal()) : java.math.BigDecimal.ZERO);
+        order.setDeliveryFee(dto.getDeliveryFee() != null ? java.math.BigDecimal.valueOf(dto.getDeliveryFee()) : java.math.BigDecimal.ZERO);
+        order.setDiscount(dto.getDiscount() != null ? java.math.BigDecimal.valueOf(dto.getDiscount()) : java.math.BigDecimal.ZERO);
+        order.setTip(dto.getTip() != null ? java.math.BigDecimal.valueOf(dto.getTip()) : java.math.BigDecimal.ZERO);
+        order.setTotal(dto.getTotal() != null ? java.math.BigDecimal.valueOf(dto.getTotal()) : java.math.BigDecimal.ZERO);
+        order.setPaymentMethod(dto.getPaymentMethod());
+        order.setStatus(dto.getStatus() != null ? dto.getStatus() : OrderStatus.CREATED);
+
+        if (dto.getProducts() != null) {
+            java.util.List<com.project.micro_realtime.model.OrderItem> items = new java.util.ArrayList<>();
+            for (com.project.micro_realtime.dto.ProductDto prod : dto.getProducts()) {
+                com.project.micro_realtime.model.OrderItem item = new com.project.micro_realtime.model.OrderItem();
+                item.setProductId(prod.getId());
+                item.setProductName(prod.getName());
+                item.setProductImage(prod.getImage());
+                item.setUnitPrice(prod.getPrice() != null ? java.math.BigDecimal.valueOf(prod.getPrice()) : java.math.BigDecimal.ZERO);
+                item.setQuantity(1);
+                item.setSubtotal(item.getUnitPrice());
+                item.setOrder(order);
+                items.add(item);
+            }
+            order.setItems(items);
+        }
+
         return orderService.createOrder(order)
-                .flatMap(
-                        createdOrder -> successResponse("Orden creada exitosamente", createdOrder, HttpStatus.CREATED));
+                .flatMap(createdOrder -> successResponse("Orden creada exitosamente", createdOrder, HttpStatus.CREATED));
     }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<?>> get(@PathVariable Long id) {
         return orderService.getOrder(id)
-                .flatMap(order -> successResponse("Orden encontrada", order, HttpStatus.OK))
+                .flatMap(orderService::mapToResponseDto)
+                .flatMap(orderDto -> successResponse("Orden encontrada", orderDto, HttpStatus.OK))
                 .switchIfEmpty(Mono.error(new RuntimeException("Orden no encontrada con ID: " + id)));
     }
 
@@ -60,10 +99,12 @@ public class OrderController {
                                 && order.getStatus() != OrderStatus.ENTREGADO) {
                             order.setStatus(OrderStatus.EN_CAMINO);
                             return orderService.updateOrder(id, order)
+                                    .flatMap(orderService::mapToResponseDto)
                                     .flatMap(updated -> successResponse("Identidad verificada y tracking activado",
                                             updated, HttpStatus.OK));
                         }
-                        return successResponse("Identidad verificada", order, HttpStatus.OK);
+                        return orderService.mapToResponseDto(order)
+                                .flatMap(orderDto -> successResponse("Identidad verificada", orderDto, HttpStatus.OK));
                     } else {
                         return Mono.error(new RuntimeException("El email no coincide con el registro del pedido"));
                     }
@@ -74,6 +115,7 @@ public class OrderController {
     @GetMapping("/all")
     public Mono<ResponseEntity<?>> getAll() {
         return orderService.getAllOrders()
+                .flatMap(orderService::mapToResponseDto)
                 .collectList()
                 .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
                 .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
@@ -81,34 +123,28 @@ public class OrderController {
 
     @GetMapping("/status/{status}")
     public Mono<ResponseEntity<?>> getAllOrdersByStatus(@PathVariable String status) {
+        reactor.core.publisher.Flux<Order> orderFlux;
         switch (status) {
             case "CREATED":
-                return orderService.getAllOrdersCreated()
-                        .collectList()
-                        .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
-                        .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
-
+                orderFlux = orderService.getAllOrdersCreated();
+                break;
             case "EN_CAMINO":
-                return orderService.getAllOrdersEnCamino()
-                        .collectList()
-                        .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
-                        .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
-
+                orderFlux = orderService.getAllOrdersEnCamino();
+                break;
             case "ENTREGADO":
-                return orderService.getAllOrdersEntregado()
-                        .collectList()
-                        .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
-                        .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
-
+                orderFlux = orderService.getAllOrdersEntregado();
+                break;
             case "CANCELADO":
-                return orderService.getAllOrdersCancelled()
-                        .collectList()
-                        .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
-                        .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
-
+                orderFlux = orderService.getAllOrdersCancelled();
+                break;
             default:
                 return errorResponse("Estado no válido", HttpStatus.BAD_REQUEST);
         }
+        return orderFlux
+                .flatMap(orderService::mapToResponseDto)
+                .collectList()
+                .flatMap(orders -> successResponse("Órdenes obtenidas exitosamente", orders, HttpStatus.OK))
+                .switchIfEmpty(successResponse("No hay órdenes registradas", new HashMap<>(), HttpStatus.OK));
     }
 
     @GetMapping("/user/{userId}")

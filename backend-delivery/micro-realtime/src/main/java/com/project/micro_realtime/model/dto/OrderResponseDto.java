@@ -19,7 +19,7 @@ public class OrderResponseDto {
 
     // Campos de Order
     private Long id;
-    private Long userId;
+    private String userId;
     private String customerName;
     private String customerEmail;
     private String address;

@@ -28,8 +28,11 @@ export class PaymentSuccessComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       const sessionId = params['session_id'];
+      const paypalToken = params['token'];
       if (sessionId) {
-        this.validatePayment(sessionId);
+        this.validatePayment(sessionId, 'stripe');
+      } else if (paypalToken) {
+        this.validatePayment(paypalToken, 'paypal');
       } else {
         this.loading = false;
         this.error = true;
@@ -38,8 +41,8 @@ export class PaymentSuccessComponent implements OnInit {
     });
   }
 
-  validatePayment(sessionId: string) {
-    this.paymentsService.validatePayment(sessionId).subscribe({
+  validatePayment(id: string, method: 'stripe' | 'paypal') {
+    this.paymentsService.validatePayment(id, method).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.success) {

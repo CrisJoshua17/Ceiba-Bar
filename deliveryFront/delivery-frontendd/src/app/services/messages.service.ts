@@ -35,7 +35,7 @@ export class MessagesService {
 
 
 private ejecutarEliminacion(
-  user: { id: number },
+  user: { id: string },
   messages: ConfirmDeleteMessages,
   navigateAfter: boolean,
   onSuccess?: () => void
@@ -127,13 +127,13 @@ private mostrarConfirmacion(
 
 
 
-confirmDelete(event: Event, messages: ConfirmDeleteMessages, user: { id: number }) {
+confirmDelete(event: Event, messages: ConfirmDeleteMessages, user: { id: string }) {
   this.mostrarConfirmacion(event, messages, () => {
     this.ejecutarEliminacion(user, messages, true);
   });
 }
 
-confirmDeleteUsers(event: Event, messages: ConfirmDeleteMessages, user: { id: number }, onSuccess?: () => void) {
+confirmDeleteUsers(event: Event, messages: ConfirmDeleteMessages, user: { id: string }, onSuccess?: () => void) {
   this.mostrarConfirmacion(event, messages, () => {
     this.ejecutarEliminacion(user, messages, false, onSuccess);
   });

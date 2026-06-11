@@ -14,8 +14,13 @@ import com.project.micro_payments.model.enums.PaymentMethod;
 import com.project.micro_payments.model.enums.PaymentStatus;
 import com.project.micro_payments.repository.PaymentRepository;
 
+import io.github.resilience4j.bulkhead.annotation.Bulkhead;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentService {
@@ -89,22 +94,74 @@ public class PaymentService {
         if (gateway != null) {
             boolean isCompleted = gateway.validatePayment(payment);
             if (isCompleted) {
-                payment.setStatus(PaymentStatus.COMPLETED);
-                payment.setUpdatedAt(java.time.LocalDateTime.now());
-                paymentRepository.save(payment);
-
-                // Disparar orden
-                if (payment.getTempOrderData() != null) {
-                    try {
-                        OrderDto dto = objectMapper.readValue(payment.getTempOrderData(), OrderDto.class);
-                        orderClient.create(dto);
-                    } catch (Exception e) {
-                        System.err.println("Error creando la orden post-validación: " + e.getMessage());
-                    }
-                }
+                String intentOrCaptureId = (payment.getMethod() == PaymentMethod.STRIPE) ? payment.getStripePaymentIntentId() : payment.getPaypalOrderId();
+                completePaymentAndCreateOrder(payment, intentOrCaptureId);
             }
         }
 
         return payment;
+    }
+
+    @Transactional
+    public void completePaymentAndCreateOrder(Payment payment, String paymentIntentOrCaptureId) {
+        if (PaymentStatus.COMPLETED.equals(payment.getStatus()) && payment.getOrderId() != null) {
+            return; // Ya procesado y orden creada
+        }
+
+        payment.setStatus(PaymentStatus.COMPLETED);
+        if (payment.getMethod() == PaymentMethod.STRIPE) {
+            payment.setStripePaymentIntentId(paymentIntentOrCaptureId);
+        }
+        payment.setUpdatedAt(java.time.LocalDateTime.now());
+        paymentRepository.save(payment); // Guardamos estado COMPLETED inicial
+
+        // Disparar orden
+        if (payment.getTempOrderData() != null) {
+            try {
+                OrderDto dto = objectMapper.readValue(payment.getTempOrderData(), OrderDto.class);
+                dto.setTotal(payment.getAmount().doubleValue());
+                dto.setSubtotal(payment.getAmount().doubleValue()); // Simplificación
+                dto.setDeliveryFee(0.0);
+                dto.setDiscount(0.0);
+                dto.setTip(0.0);
+                dto.setPaymentMethod(payment.getMethod().name().toLowerCase());
+                
+                Long createdOrderId = callOrderClient(dto);
+                if (createdOrderId != null) {
+                    payment.setOrderId(createdOrderId);
+                    paymentRepository.save(payment);
+                    log.info("Pago ID {} completado y Orden ID {} asociada con éxito.", payment.getId(), createdOrderId);
+                }
+            } catch (Exception e) {
+                log.error("Error creando la orden tras completar el pago ID {}: {}", payment.getId(), e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Llama a orderClient.create() protegida con CircuitBreaker, Retry y Bulkhead.
+     */
+    @CircuitBreaker(name = "orderClient", fallbackMethod = "fallbackCreateOrder")
+    @Retry(name = "orderClient")
+    @Bulkhead(name = "orderClient")
+    public Long callOrderClient(OrderDto dto) {
+        log.info("[Resilience4j] Llamando a orderClient.create para orderId={}", dto.getId());
+        java.util.Map<String, Object> res = orderClient.create(dto);
+        if (res != null && res.get("data") != null) {
+            java.util.Map<String, Object> data = (java.util.Map<String, Object>) res.get("data");
+            if (data.containsKey("id")) {
+                return Long.valueOf(data.get("id").toString());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Fallback activado si orderClient falla tras los reintentos o el circuito está abierto.
+     */
+    public Long fallbackCreateOrder(OrderDto dto, Throwable t) {
+        log.error("[Resilience4j] Fallback activado para creación de orden id={}. Razón: {}",
+                dto != null ? dto.getId() : "null", t.getMessage());
+        return null;
     }
 }

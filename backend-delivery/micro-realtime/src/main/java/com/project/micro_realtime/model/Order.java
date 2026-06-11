@@ -47,8 +47,10 @@ import java.util.ArrayList;
 @Builder
 public class Order extends BaseEntity{
 
-   @Column(name = "customer_id")
-   private Long customerId;
+    @Column(name = "customer_id")
+    private Long customerId;
+    @Column(name = "user_id")
+    private String userId;
    @Column(name = "customer_name")
     private String customerName;    // Denormalizado (historial)
    @Column(name = "customer_email")

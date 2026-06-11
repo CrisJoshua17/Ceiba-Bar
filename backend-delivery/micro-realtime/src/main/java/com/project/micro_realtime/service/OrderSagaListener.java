@@ -51,6 +51,10 @@ public class OrderSagaListener {
                             .order(order)
                             .driverId(driverId)
                             .assignedAt(LocalDateTime.now())
+                            .deliveryLatitude(order.getDeliveryLatitude())
+                            .deliveryLongitude(order.getDeliveryLongitude())
+                            .pickupLatitude(19.4326)
+                            .pickupLongitude(-99.1332)
                             .status(com.project.micro_realtime.model.DeliveryStatus.ASSIGNED)
                             .build();
                     deliveryRepository.save(delivery);

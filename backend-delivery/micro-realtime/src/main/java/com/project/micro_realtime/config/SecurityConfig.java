@@ -22,7 +22,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.disable())
                 .authorizeExchange(auth -> auth
-                        .pathMatchers("/api/orders/**", "/actuator/**").permitAll()
+                        .pathMatchers("/api/orders/**", "/actuator/**", "/ws/tracking/**", "/api/delivery/**", "/api/tracking/**").permitAll()
                         .anyExchange().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2

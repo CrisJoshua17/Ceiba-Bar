@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class DriverDto {
 
     private Long id;
-    private Long userId;
+    private String userId;
     private String userEmail;
     private String motoId;
     private String licensePlate;

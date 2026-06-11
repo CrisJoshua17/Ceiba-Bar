@@ -37,8 +37,8 @@ public class LocationSimulator {
     private final Map<Long, OrderState> activeSimulations = new ConcurrentHashMap<>();
 
     // Velocidad de simulación (fracción del camino recorrido en cada paso)
-    // 0.15 significa que recorre el 15% restante en cada paso
-    private double movementFraction = 0.15;
+    // Ajustado a 0.005 (30 veces más lento que el original) a petición del usuario para mejor observación
+    private double movementFraction = 0.005;
 
     // Posición inicial default (restaurante)
     private static final double RESTAURANT_LAT = 19.4326;
