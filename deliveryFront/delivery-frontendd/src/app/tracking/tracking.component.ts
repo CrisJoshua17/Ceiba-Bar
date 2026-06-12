@@ -9,6 +9,8 @@ import { Tracking } from '../model/Tracking';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
 import { BASE_ENDPOINT_MICRO_ORDERS, BASE_ENDPOINT_MICRO_DELIVERY, BASE_ENDPOINT_MICRO_TRACKING, WS_TRACKING } from '../utils/enviroments/enviroment';
+import { ButtonModule } from 'primeng/button';
+import { ToastModule } from 'primeng/toast';
 
 import { NavbarCustomerComponent } from '../navbar-customer/navbar-customer.component';
 import { NavbarDriverComponent } from '../navbar-driver/navbar-driver.component';
@@ -19,7 +21,7 @@ import { NavbarAdminComponent } from '../navbar-admin/navbar-admin.component';
   templateUrl: './tracking.component.html',
   styleUrls: ['./tracking.component.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, NavbarCustomerComponent, NavbarDriverComponent, NavbarAdminComponent]
+  imports: [CommonModule, FormsModule, NavbarCustomerComponent, NavbarDriverComponent, NavbarAdminComponent, ButtonModule, ToastModule]
 })
 export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('map') mapElement!: ElementRef;

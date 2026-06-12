@@ -35,10 +35,10 @@
       </ul>
       <div class="d-flex align-items-center">
         <button class="cart-button">
-          <i class="pi pi-user mx-2 social-icon" style="color: black" [routerLink]="['/login']"></i>
+          <i class="pi pi-user mx-2 social-icon" [routerLink]="['/login']"></i>
         </button>
         <button class="cart-button" (click)="cartDrawerVisible = true">
-          <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+          <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
             <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
           </i>
         </button>
@@ -59,11 +59,11 @@
 
 <!-- Right Drawer (Sidebar) del carrito -->
 <p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
-  [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}">
+  [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
 
   <ng-template pTemplate="header">
     <div class="sidebar-header">
-      <h3 class="text-white">Tu Carrito 🛒</h3>
+      <h3>Tu Carrito 🛒</h3>
       <span class="cart-count">{{ cartService.cartItemsCount() }} items</span>
     </div>
   </ng-template>
@@ -76,7 +76,7 @@
     <div class="empty-cart">
       <i class="pi pi-shopping-cart empty-icon"></i>
       <p class="productText">Tu carrito está vacío</p>
-      <p-button label="Seguir Comprando" [style]="{'background-color':'#123458', 'color':'white', 'border':'none'}"
+      <p-button label="Seguir Comprando" [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none'}"
         (onClick)="cartDrawerVisible = false"></p-button>
     </div>
     }
@@ -114,10 +114,10 @@
         <strong class="productText">Total: {{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2' }}</strong>
       </div>
       <div class="cart-actions">
-        <p-button label="Limpiar Carrito" [style]="{'background-color':'#D4C9BE', 'color':'black', 'border':'none'}"
+        <p-button label="Limpiar Carrito" [style]="{'background-color':'var(--ceiba-cream)', 'color':'var(--ceiba-ink)', 'border':'none'}"
           (onClick)="clearCart()" class="mr-2" size="small"></p-button>
         <p-button label="Finalizar Compra"
-          [style]="{'background-color':'#123458', 'color':'white', 'border':'1px solid white'}"
+          [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none'}"
           (onClick)="cartService.finalizarCompra()" size="small"></p-button>
       </div>
     </div>
@@ -156,8 +156,8 @@
 
     <!-- Iconos  -->
     <div class="p-4 border-top d-flex justify-content-center gap-2">
-      <i class="pi pi-user mx-1 social-icon" style="color: black" [routerLink]="['/login']"></i>
-      <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+      <i class="pi pi-user mx-1 social-icon" [routerLink]="['/login']"></i>
+      <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
         <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
       </i>
 

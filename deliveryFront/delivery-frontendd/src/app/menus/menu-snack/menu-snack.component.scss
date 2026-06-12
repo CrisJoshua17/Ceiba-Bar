@@ -1,11 +1,11 @@
 // ========================================
 // VARIABLES DE COLORES - PALETA PERSONALIZADA
 // ========================================
-$primary-bg: #D4C9BE;           // Fondo principal beige
-$primary-dark: #123458;         // Azul oscuro principal
-$primary-dark-hover: #0f2b4a;   // Azul oscuro hover
-$card-bg: rgba(241, 239, 236, 0.6); // Fondo de tarjetas
-$card-bg-solid: #f1efec;        // Fondo sólido
+$primary-bg: var(--ceiba-paper);
+$primary-dark: var(--ceiba-leaf);
+$primary-dark-hover: var(--ceiba-leaf-dark);
+$card-bg: var(--ceiba-cream);
+$card-bg-solid: var(--ceiba-cream);
 $text-dark: #0f0f0f;            // Texto oscuro
 $text-medium: #495057;          // Texto medio
 $text-light: #6c757d;           // Texto claro
@@ -373,7 +373,7 @@ $border-radius-full: 30px;
   border-color: $primary-dark !important;
   color: $white !important;
   font-weight: 600 !important;
-  border: 1px solid black !important;
+  border: none !important;
   transition: all 0.3s ease !important;
 
   &:hover {

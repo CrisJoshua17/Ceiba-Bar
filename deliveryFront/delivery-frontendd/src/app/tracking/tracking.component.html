@@ -3,57 +3,72 @@
 <app-navbar-driver *ngIf="currentUserRole === 'DRIVER'"></app-navbar-driver>
 <app-navbar-customer *ngIf="currentUserRole === 'CUSTOMER'"></app-navbar-customer>
 
-<div class="container">
-  <div class="header-tracking">
-    <button class="btn-back" (click)="goBack()">
-      <i class="pi pi-arrow-left"></i> Volver
-    </button>
-    <h2>Seguimiento en Vivo - Pedido #{{ orderId }}</h2>
+<div class="container w-full max-w-5xl mx-auto py-8 px-4 font-ubuntu">
+  
+  <!-- Header de la sección -->
+  <div class="flex items-center justify-between gap-4 mb-6">
+    <p-button label="Volver" icon="pi pi-arrow-left" (onClick)="goBack()"
+      [style]="{'background-color':'transparent', 'color':'var(--ceiba-ink)', 'border':'1px solid var(--ceiba-line)', 'font-weight':'700', 'padding':'0.5rem 1rem'}">
+    </p-button>
+    <h2 class="text-xl md:text-2xl font-bold text-[var(--ceiba-ink)] m-0">Seguimiento en Vivo - Pedido #{{ orderId }}</h2>
   </div>
 
   <!-- Verificación para invitados (solo si no hay datos de usuario) -->
-  <div *ngIf="!isVerified && isGuest" class="verification-wrapper">
-    <div class="verification-card">
-      <i class="pi pi-lock-open mb-3" style="font-size: 2rem; color: #6366f1;"></i>
-      <h3>Verifica tu identidad</h3>
-      <p>Para rastrear tu pedido como invitado, ingresa el email utilizado en la compra.</p>
-      <div class="form">
-        <input [(ngModel)]="emailInput" placeholder="tu@email.com" class="input" type="email"
-          (keyup.enter)="verifyGuest()" />
-        <button (click)="verifyGuest()" class="btn" [disabled]="!emailInput.trim() || verifying">
-          {{ verifying ? 'Verificando...' : 'Verificar' }}
-        </button>
+  <div *ngIf="!isVerified && isGuest" class="bg-[var(--ceiba-paper)] border border-[var(--ceiba-line)] p-8 md:p-12 rounded-xl text-center shadow-lg my-6">
+    <div class="max-w-md mx-auto flex flex-col items-center">
+      <i class="pi pi-lock-open mb-4 text-[var(--ceiba-leaf)]" style="font-size: 3rem;"></i>
+      <h3 class="text-xl font-bold text-[var(--ceiba-ink)] mb-2">Verifica tu identidad</h3>
+      <p class="text-gray-600 mb-6">Para rastrear tu pedido como invitado, ingresa el email utilizado en la compra.</p>
+      
+      <div class="w-full flex flex-col gap-3">
+        <input [(ngModel)]="emailInput" placeholder="tu@email.com" 
+          class="input p-3 border border-[var(--ceiba-line)] rounded-lg focus:outline-none focus:border-[var(--ceiba-leaf)] focus:ring-2 focus:ring-[rgba(47,125,98,0.15)] transition-all w-full text-center" 
+          type="email" (keyup.enter)="verifyGuest()" />
+        
+        <p-button [label]="verifying ? 'Verificando...' : 'Verificar'" [disabled]="!emailInput.trim() || verifying"
+          (onClick)="verifyGuest()"
+          [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none', 'width':'100%', 'font-weight':'800', 'min-height':'44px'}">
+        </p-button>
       </div>
     </div>
   </div>
 
-  <div *ngIf="isVerified" class="tracking-content">
+  <div *ngIf="isVerified" class="flex flex-col gap-6">
     <!-- Formulario de dirección (Solo si no se ha enviado) -->
-    <div *ngIf="!addressSent" class="form">
-      <p class="info-text">Indica la dirección de entrega para comenzar el rastreo:</p>
-      <input [(ngModel)]="address" placeholder="Ej: Insurgentes Sur 300, CDMX" class="input"
-        (keyup.enter)="sendAddress()" />
-      <button (click)="sendAddress()" class="btn" [disabled]="!address.trim() || loading">
-        {{ loading ? 'Procesando...' : 'Enviar Dirección' }}
-      </button>
+    <div *ngIf="!addressSent" class="bg-[var(--ceiba-paper)] border border-[var(--ceiba-line)] p-6 md:p-8 rounded-xl shadow-md">
+      <p class="text-gray-700 font-medium mb-3">Indica la dirección de entrega para comenzar el rastreo:</p>
+      <div class="flex flex-col md:flex-row gap-3">
+        <input [(ngModel)]="address" placeholder="Ej: Insurgentes Sur 300, CDMX" 
+          class="input p-3 border border-[var(--ceiba-line)] rounded-lg focus:outline-none focus:border-[var(--ceiba-leaf)] focus:ring-2 focus:ring-[rgba(47,125,98,0.15)] transition-all flex-1"
+          (keyup.enter)="sendAddress()" />
+        
+        <p-button [label]="loading ? 'Procesando...' : 'Enviar Dirección'" [disabled]="!address.trim() || loading"
+          (onClick)="sendAddress()"
+          [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none', 'font-weight':'800', 'min-height':'46px'}">
+        </p-button>
+      </div>
     </div>
 
     <!-- Estado -->
-    <div *ngIf="addressSent" class="status-card">
-      <div class="status-header">
+    <div *ngIf="addressSent" class="bg-[var(--ceiba-paper)] border border-[var(--ceiba-line)] border-l-4 border-l-[var(--ceiba-leaf)] p-5 rounded-xl shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
         <span class="pulse"></span>
-        <p><strong>Estado:</strong> {{ status }}</p>
+        <p class="m-0 text-lg text-[var(--ceiba-ink)]">
+          <strong>Estado:</strong> {{ status }}
+        </p>
       </div>
 
-      <div class="route-info" *ngIf="distance !== null">
-        <p>
+      <div class="route-info bg-[var(--ceiba-cream)] px-4 py-2 border border-[var(--ceiba-line)] rounded-lg" *ngIf="distance !== null">
+        <p class="m-0 text-sm text-[var(--ceiba-ink)]">
           Distancia estimada:
-          <strong>{{ distance | number:'1.2-2' }} km</strong>
+          <strong class="text-[var(--ceiba-leaf-dark)] ml-1">{{ distance | number:'1.2-2' }} km</strong>
         </p>
       </div>
     </div>
 
     <!-- Mapa -->
-    <div #map class="map-container"></div>
+    <div #map class="map-container relative z-10"></div>
   </div>
 </div>
+
+<p-toast></p-toast>

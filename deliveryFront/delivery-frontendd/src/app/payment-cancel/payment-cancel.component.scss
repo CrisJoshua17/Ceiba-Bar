@@ -1,4 +1,13 @@
-.card {
-    max-width: 600px;
-    margin: 0 auto;
+.containerBase {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(47, 125, 98, 0.13), transparent 32rem),
+    linear-gradient(135deg, var(--ceiba-paper), #efe5d7);
+}
+
+::ng-deep .p-card {
+  background-color: var(--ceiba-paper) !important;
+  color: var(--ceiba-ink) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  border-radius: var(--ceiba-radius) !important;
+  box-shadow: var(--ceiba-shadow) !important;
 }

@@ -8,12 +8,12 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: rgba(16, 38, 63, 0.4);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 99999; // Por encima de todo
-  backdrop-filter: blur(3px);
+  z-index: 99999;
+  backdrop-filter: blur(4px);
 }
 
 .spinner-container {
@@ -21,23 +21,25 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
-  background-color: rgba(241, 239, 236, 0.95);
+  padding: 2.5rem;
+  background-color: var(--ceiba-paper);
+  border: 1px solid var(--ceiba-line);
   border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--ceiba-shadow);
 }
 
 .loading-text {
-  margin-top: 1rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #123458;
+  margin-top: 1.25rem;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ceiba-ink);
   text-align: center;
+  font-family: 'Ubuntu', sans-serif;
 }
 
 // Animación del spinner (PrimeNG)
 ::ng-deep .p-progress-spinner-circle {
-  stroke: #123458 !important;
+  stroke: var(--ceiba-leaf) !important;
   animation: spinner-dash 1.5s ease-in-out infinite;
 }
 

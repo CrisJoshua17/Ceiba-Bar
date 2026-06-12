@@ -1,14 +1,15 @@
-
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PaymentsService } from '../services/payments.service';
 import { CartService } from '../services/cart.service';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-payment-success',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CardModule, ButtonModule],
   templateUrl: './payment-success.component.html',
   styleUrls: ['./payment-success.component.scss']
 })

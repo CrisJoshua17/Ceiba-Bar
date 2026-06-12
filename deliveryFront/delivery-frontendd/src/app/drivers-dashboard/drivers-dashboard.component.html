@@ -1,26 +1,24 @@
 <app-navbar-driver></app-navbar-driver>
 
 <div class="container1 grid-center">
-
-
-    <p-card class="option-card">
-        <button class="option-btn" [routerLink]="['/drivers/history']">
+    <div class="option-card" [routerLink]="['/drivers/history']">
+        <button class="option-btn">
             <i class="pi pi-history" style="font-size: 2.0rem"></i>
         </button>
         <p class="option-label">Historial</p>
-    </p-card>
+    </div>
 
-    <p-card class="option-card">
-        <button class="option-btn" [routerLink]="['/drivers/deliveries']">
+    <div class="option-card" [routerLink]="['/drivers/deliveries']">
+        <button class="option-btn">
             <i class="pi pi-truck" style="font-size: 2.0rem"></i>
         </button>
         <p class="option-label">Entregas</p>
-    </p-card>
+    </div>
 
-    <p-card class="option-card">
-        <button class="option-btn" [routerLink]="['/my-profile']">
+    <div class="option-card" [routerLink]="['/my-profile']">
+        <button class="option-btn">
             <i class="pi pi-user" style="font-size: 2.0rem"></i>
         </button>
         <p class="option-label">Perfil</p>
-    </p-card>
+    </div>
 </div>

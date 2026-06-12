@@ -42,7 +42,7 @@ public class CheckoutController {
             var payment = paymentService.validatePaymentBySessionOrOrder(sessionId, method);
             if (payment == null) {
                 response.error("Pago no encontrado");
-                return ResponseEntity.status(404).body(response);
+                return ResponseEntity.status(404).body(response);   
             }
             if (com.project.micro_payments.model.enums.PaymentStatus.COMPLETED.equals(payment.getStatus())) {
                 response.ok("Pago validado exitosamente", payment.getOrderId() != null ? payment.getOrderId().toString() : "");

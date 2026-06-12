@@ -1,31 +1,31 @@
 <app-navbar-admin></app-navbar-admin>
 
 <div class="container1 grid-center">
-  <p-card class="option-card">
-    <button class="option-btn" [routerLink]="['/admin/users']">
+  <div class="option-card" [routerLink]="['/admin/users']">
+    <button class="option-btn">
       <i class="pi pi-users" style="font-size: 2.0rem"></i>
     </button>
     <p class="option-label">Usuarios</p>
-  </p-card>
+  </div>
 
-  <p-card class="option-card">
-    <button class="option-btn" [routerLink]="['/admin/products']">
+  <div class="option-card" [routerLink]="['/admin/products']">
+    <button class="option-btn">
       <i class="pi pi-shopping-cart" style="font-size: 2.0rem"></i>
     </button>
     <p class="option-label">Productos</p>
-  </p-card>
+  </div>
 
-  <p-card class="option-card">
-    <button class="option-btn" [routerLink]="['/admin/orders']">
+  <div class="option-card" [routerLink]="['/admin/orders']">
+    <button class="option-btn">
       <i class="pi pi-truck" style="font-size: 2.0rem"></i>
     </button>
     <p class="option-label">Entregas</p>
-  </p-card>
+  </div>
 
-  <p-card class="option-card">
-    <button class="option-btn" [routerLink]="['/my-profile']">
+  <div class="option-card" [routerLink]="['/my-profile']">
+    <button class="option-btn">
       <i class="pi pi-user" style="font-size: 2.0rem"></i>
     </button>
     <p class="option-label">Perfil</p>
-  </p-card>
+  </div>
 </div>

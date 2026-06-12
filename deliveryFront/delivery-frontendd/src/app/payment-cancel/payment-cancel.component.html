@@ -1,18 +1,24 @@
-<div class="container mt-5 text-center">
-    <div class="card shadow-lg p-5 border-0 rounded-4 animate__animated animate__fadeIn">
-        <div class="card-body">
-            <i class="pi pi-exclamation-circle text-warning" style="font-size: 5rem;"></i>
-            <h2 class="mt-4 mb-3 fw-bold text-warning">Pago Cancelado</h2>
-            <p class="lead text-muted mb-4">El proceso de pago fue cancelado. No se realizó ningún cargo.</p>
+<div class="containerBase w-full py-12 px-4 flex flex-col items-center justify-center min-h-[calc(100dvh-82px)]">
+    <div class="w-full max-w-xl mx-auto my-4">
+        
+        <p-card class="text-center block">
+            <ng-template #content>
+                <div class="flex flex-col items-center py-6">
+                    <i class="pi pi-exclamation-circle text-[var(--ceiba-coral)] mb-4" style="font-size: 5rem;"></i>
+                    <h2 class="text-3xl font-extrabold text-[var(--ceiba-coral)] m-0">Pago Cancelado</h2>
+                    <p class="text-gray-600 mt-2 text-base leading-relaxed">
+                        El proceso de pago fue cancelado. No se realizó ningún cargo a tu cuenta.
+                    </p>
 
-            <div class="mt-4">
-                <a routerLink="/cart" class="btn btn-primary btn-lg px-4 me-3">
-                    <i class="pi pi-shopping-cart me-2"></i>Volver al Carrito
-                </a>
-                <a routerLink="/" class="btn btn-outline-secondary btn-lg px-4">
-                    <i class="pi pi-home me-2"></i>Inicio
-                </a>
-            </div>
-        </div>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full justify-center mt-8">
+                        <p-button label="Volver al Menú" icon="pi pi-shopping-cart" routerLink="/menu/customer"
+                            [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none', 'font-weight':'800', 'min-height':'44px'}"></p-button>
+                        <p-button label="Inicio" icon="pi pi-home" routerLink="/"
+                            [style]="{'background-color':'transparent', 'color':'var(--ceiba-ink)', 'border':'1px solid var(--ceiba-line)', 'font-weight':'700', 'min-height':'44px'}"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-card>
+
     </div>
 </div>

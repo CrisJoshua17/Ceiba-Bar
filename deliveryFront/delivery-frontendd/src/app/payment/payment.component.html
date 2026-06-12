@@ -131,8 +131,15 @@
                                 privacidad.</p>
 
                             <br>
-                            <button class="btn btn-primary w-100 mb-2" (click)="payWithStripe()"><i class="pi pi-credit-card mx-2"></i> Pagar con Stripe</button>
-                            <button class="btn w-100" style="background-color: #0070ba; color: white; border: none;" (click)="payWithPayPal()"><i class="pi pi-paypal mx-2"></i> Pagar con PayPal</button>
+                              <div class="flex flex-col gap-3">
+                                    <p-button label="Pagar con Stripe" icon="pi pi-credit-card"
+                                        [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none', 'width':'100%', 'font-weight':'800', 'min-height':'46px'}"
+                                        (onClick)="payWithStripe()"></p-button>
+                                    
+                                    <p-button label="Pagar con PayPal" icon="pi pi-paypal"
+                                        [style]="{'background-color':'#0070ba', 'color':'white', 'border':'none', 'width':'100%', 'font-weight':'800', 'min-height':'46px'}"
+                                        (onClick)="payWithPayPal()"></p-button>
+                                </div>
                             <br>
                         </ng-template>
                     </p-panel>
@@ -141,3 +148,6 @@
         </ng-template>
     </p-card>
 </div>
+
+                              
+                   

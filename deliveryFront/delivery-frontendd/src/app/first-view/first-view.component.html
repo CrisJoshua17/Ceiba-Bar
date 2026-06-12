@@ -34,17 +34,18 @@
     </div>
   </div>
 
-  <div class="container-fluid p-0 m-0 w-100 myInvite">
-    <div class="tarros-container">
+
+  <div class="container-fluid p-0 m-0 w-100 myInvite ">
+    <div class="tarros-container mt-5">
       <img class="imgTarros my-3" src="assets/images/tarros.png" alt="tarros" data-aos="flip-up" data-aos-delay="200">
-      <p class="invitacion-text my-3" data-aos="fade-up" data-aos-delay="200">
+      <p class="invitacion-text pb-5" data-aos="fade-up" data-aos-delay="200">
         {{texts.invitacion}}
       </p>
     </div>
   </div>
 
 
-  <div class="container-fluid p-0 m-0 bg-black w-100 ">
+   <div class="container-fluid p-0 m-0 bg-mio ">
     <div class="d-flex justify-content-center align-items-center main-container">
 
       <!-- Sección de texto - Siempre visible -->
@@ -85,19 +86,8 @@
     </div>
   </div>
 
-
-  <div class="container-fluid p-0 m-0 w-100 myInvite">
-    <div class="tarros-container" data-aos="zoom-in">
-      <h3 class="text-white textHistory text-center">{{texts.tituloRecetario}}</h3>
-      <p class="recetario-text text-white my-3" data-aos="fade-up" data-aos-delay="200">
-        {{texts.textoRecetario}}
-      </p>
-      <img class="imgMojito my-3" src="assets/images/mojitos.png" alt="tarros" data-aos="flip-up" data-aos-delay="200">
-    </div>
-  </div>
-
   <!-- CAROUSEL DE PRODUCTOS -->
-  <div class="p-4" style="background: #D4C9BE; color: #0c0c0c">
+  <div class="products-carousel-section">
     <!-- Loading State -->
     <div *ngIf="isLoading" class="text-center py-5">
       <i class="pi pi-spin pi-spinner" style="font-size: 2rem"></i>
@@ -116,18 +106,16 @@
         [responsiveOptions]="carouselResponsiveOptions" [showNavigators]="true" [showIndicators]="false">
 
         <ng-template pTemplate="item" let-product>
-          <div
-            class="border border-surface-300 rounded-lg m-1 p-3 shadow-sm hover:shadow-md transition-shadow min-w-56 max-w-64 product-card">
-            <div class="mb-2 relative">
-              <img [src]="product.image" [alt]="product.name"
-                class="w-full h-32 md:h-36 object-cover rounded-lg product-image"
+          <div class="product-card">
+            <div class="image-wrapper">
+              <img [src]="product.image" [alt]="product.name" class="product-image"
                 (error)="product.image = 'assets/images/defaultProduct.jpg'" />
             </div>
-            <div class="font-bold text-lg mb-1 product-name">{{ product.name }}</div>
-            <div class="text-sm text-gray-600 mb-3 line-clamp-2 product-description">{{ product.description }}</div>
-            <div class="flex justify-between items-end">
-              <div class="font-bold text-xl product-price">${{ product.price }}</div>
-              <div class="d-flex justify-content-end">
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-description">{{ product.description }}</div>
+            <div class="product-card-footer">
+              <div class="product-price">${{ product.price }}</div>
+              <div class="button-wrapper">
                 <p-button icon="pi pi-shopping-cart" size="small" class="buttonCarrito" [disabled]="!product.available"
                   (onClick)="addToCart(product)">
                 </p-button>
@@ -145,14 +133,10 @@
 
 
 
-
-
-
-
-<!-- Modal con Galleria -->
+<!-- Modal con Galleria - Fondo ceiba-ink translúcido en lugar de negro -->
 <p-dialog [(visible)]="displayModal" [modal]="true"
-  [style]="{ width: '100vw', height: '100vh', maxWidth: '100vw', maxHeight: '100vh', margin: 0 }"
-  [contentStyle]="{ padding: 0, height: '100%', background: 'rgba(0, 0, 0, 0.95)' }" [dismissableMask]="true"
+  [style]="{ width: '90vw', height: '95vh', maxWidth: '90vw', maxHeight: '90vh', margin: 0 }"
+  [contentStyle]="{ padding: 0, height: '95vh' }" [dismissableMask]="true"
   [closable]="true" (onHide)="hideGallery()" class="lightbox-dialog">
 
   <ng-template pTemplate="header">

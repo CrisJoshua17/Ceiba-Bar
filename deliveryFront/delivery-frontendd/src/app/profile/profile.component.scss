@@ -1,135 +1,255 @@
 .container1 {
-  padding: 2rem;
-  background-color: #D4C9BE;
+  padding: 2.5rem 2rem;
+  background-color: var(--ceiba-paper);
   min-height: 100vh;
   width: 100% !important;
   margin: 0 !important;
   max-width: 100% !important;
+  font-family: 'Ubuntu', sans-serif;
 }
 
-// Card principal
+.cardheader {
+  margin-bottom: 2rem;
+  h2 {
+    color: var(--ceiba-ink);
+    font-weight: 700;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    i {
+      color: var(--ceiba-leaf);
+    }
+  }
+}
+
+// Card principal wrapping the entire view
 ::ng-deep .p-card {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-::ng-deep .p-card .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: none !important;
-  padding: 1.5rem !important;
-}
-
-// Card de imagen
-::ng-deep .p-card.cardImage {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 1rem !important;
-}
-
-::ng-deep .p-card.cardImage .p-card-body {
-  padding: 1rem !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-// Card de eliminar
-::ng-deep .p-card.card-Delete {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  color: black !important;
-}
-
-::ng-deep .p-card.card-Delete .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 1rem !important;
-}
-
-::ng-deep .p-card.card-Delete .p-card-body {
-  padding: 1rem !important;
-}
-
-// Card del formulario
+// ===== CONFIGURACIÓN DE LAS CARDS DE PERFIL =====
+::ng-deep .p-card.cardImage,
+::ng-deep .p-card.card-Delete,
 ::ng-deep .p-card.form-card {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  color: black !important;
-  height: 100% !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--ceiba-line) !important;
+  box-shadow: var(--ceiba-shadow) !important;
+  border-radius: var(--ceiba-radius) !important;
+  color: var(--ceiba-ink) !important;
+  margin-bottom: 1.5rem !important;
+  display: block !important;
+  
+  .p-card-header {
+    background-color: var(--ceiba-cream) !important;
+    border-bottom: 1px solid var(--ceiba-line) !important;
+    padding: 1.25rem 1.5rem !important;
+    color: var(--ceiba-ink) !important;
+    
+    .p-card-title {
+      color: var(--ceiba-ink) !important;
+      font-weight: 700 !important;
+      font-size: 1.25rem !important;
+      margin: 0 !important;
+    }
+    .p-card-subtitle {
+      color: rgba(16, 38, 63, 0.6) !important;
+      font-size: 0.875rem !important;
+      margin-top: 0.25rem !important;
+    }
+  }
+
+  .p-card-body {
+    padding: 1.5rem !important;
+  }
 }
 
-::ng-deep .p-card.form-card .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 1.5rem !important;
+::ng-deep .p-card.cardImage {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 2rem !important;
+  
+  .p-card-body {
+    padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .p-image {
+    border-radius: 50% !important;
+    border: 4px solid var(--ceiba-cream) !important;
+    box-shadow: 0 4px 12px rgba(16, 38, 63, 0.08) !important;
+    overflow: hidden !important;
+    
+    img {
+      border-radius: 50% !important;
+      object-fit: cover !important;
+    }
+  }
 }
 
-::ng-deep .p-card.form-card .p-card-body {
-  padding: 1.5rem !important;
-}
-
-// Estilos para los campos del formulario
+// ===== CAMPOS DE FORMULARIO =====
 .field {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   
   label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: #495057;
+    font-weight: 600;
+    color: var(--ceiba-ink);
+  }
+  
+  input, select, textarea {
+    width: 100% !important;
+    background-color: #ffffff !important;
+    color: var(--ceiba-ink) !important;
+    border: 1px solid var(--ceiba-line) !important;
+    border-radius: var(--ceiba-radius) !important;
+    padding: 0.75rem !important;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none !important;
+      border-color: var(--ceiba-leaf) !important;
+      box-shadow: 0 0 0 3px rgba(47, 125, 98, 0.15) !important;
+    }
+    
+    &:hover {
+      border-color: var(--ceiba-leaf) !important;
+    }
   }
 }
 
 .p-error {
-  color: #e24c4c;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
+  color: var(--ceiba-coral);
+  font-size: 0.85rem;
+  margin-top: 0.35rem;
   display: block;
 }
 
-// Botones
-::ng-deep .p-button.p-button-danger.p-ripple:hover {
-  background-color: rgba(125, 10, 10, 0.9) !important;
+// ===== BOTONES =====
+::ng-deep .p-button {
+  border-radius: var(--ceiba-radius) !important;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
 }
 
-// Estilos responsive
-@media (max-width: 992px) {
-  .container1 {
-    padding: 1rem;
-  }
+::ng-deep .buttonActu {
+  background-color: var(--ceiba-leaf) !important;
+  border-color: var(--ceiba-leaf) !important;
+  color: #ffffff !important;
   
-  .row {
-    flex-direction: column;
-  }
-  
-  .col-lg-4, .col-lg-8 {
-    width: 100%;
-    margin-bottom: 1rem;
-  }
-  
-  ::ng-deep .p-card.cardImage,
-  ::ng-deep .p-card.card-Delete,
-  ::ng-deep .p-card.form-card {
-    margin-bottom: 1rem;
+  &:hover {
+    background-color: var(--ceiba-leaf-dark) !important;
+    border-color: var(--ceiba-leaf-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(47, 125, 98, 0.15) !important;
   }
 }
 
-// Asegurar que el card-body tenga el padding correcto
+::ng-deep .p-button-secondary {
+  background-color: var(--ceiba-cream) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  color: var(--ceiba-ink) !important;
+  
+  &:hover {
+    background-color: var(--ceiba-sand) !important;
+    color: var(--ceiba-ink) !important;
+  }
+}
+
+// ===== UPLOAD DE IMAGEN =====
+::ng-deep .p-fileupload {
+  .p-button {
+    background-color: var(--ceiba-ink) !important;
+    border-color: var(--ceiba-ink) !important;
+    color: white !important;
+    border-radius: var(--ceiba-radius) !important;
+    font-weight: 600 !important;
+    
+    &:hover {
+      background-color: var(--ceiba-ink-soft) !important;
+      border-color: var(--ceiba-ink-soft) !important;
+    }
+  }
+}
+
+.image-info {
+  background-color: var(--ceiba-cream);
+  border: 1px solid var(--ceiba-line);
+  border-radius: var(--ceiba-radius);
+  padding: 0.5rem 0.75rem;
+  color: var(--ceiba-ink-soft);
+}
+
+// ===== DIALOG / DIRECCIONES =====
+::ng-deep .p-dialog {
+  background-color: var(--ceiba-paper) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  box-shadow: var(--ceiba-shadow) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  font-family: 'Ubuntu', sans-serif;
+  
+  .p-dialog-header {
+    background-color: var(--ceiba-cream) !important;
+    border-bottom: 1px solid var(--ceiba-line) !important;
+    color: var(--ceiba-ink) !important;
+    padding: 1.25rem 1.5rem !important;
+    
+    h3 {
+      font-weight: 700 !important;
+      margin: 0 !important;
+    }
+  }
+  
+  .p-dialog-content {
+    background-color: var(--ceiba-paper) !important;
+    color: var(--ceiba-ink) !important;
+    padding: 1.5rem !important;
+    
+    h5 {
+      color: var(--ceiba-ink) !important;
+      font-weight: 600 !important;
+      margin-bottom: 0.5rem;
+    }
+  }
+  
+  .p-dialog-footer {
+    background-color: var(--ceiba-cream) !important;
+    border-top: 1px solid var(--ceiba-line) !important;
+    padding: 1rem 1.5rem !important;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.75rem;
+  }
+}
+
+::ng-deep .p-select {
+  border-radius: var(--ceiba-radius) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  font-family: 'Ubuntu', sans-serif;
+  width: 100% !important;
+  margin-top: 1rem;
+  
+  &:focus {
+    border-color: var(--ceiba-leaf) !important;
+  }
+}
+
+// ===== LAYOUT / RESPONSIVE =====
 .card-body {
   padding: 1rem 0;
 }
 
-// Ajustes para el layout
 .row {
   margin: 0;
 }
@@ -138,64 +258,17 @@
   padding: 0 1rem;
 }
 
-.buttonActu{
-    background-color: #0f0f0f !important;
-  border-color: #123458 !important;
-  color: white;
-  
-  &:hover {
-    background-color: #0f2b4a !important;
-    border-color: #0f0f0f !important;
-    color:white;
+@media (max-width: 992px) {
+  .container1 {
+    padding: 1.25rem !important;
   }
-}
-
-.input{
-    border: none;
-}
-// Agregar estos estilos a tu profile.component.scss
-
-.image-info {
-  background-color: #f8f9fa;
-  border: 1px solid #e9ecef;
-  border-radius: 4px;
-  padding: 0.5rem;
   
-  small {
-    color: #495057;
+  .row {
+    flex-direction: column;
   }
-}
-
-// Estilos para el file upload
-::ng-deep .p-fileupload .p-button {
-  background-color: #0f0f0f !important;
-  border-color: #123458 !important;
-  color: white;
   
-  &:hover {
-    background-color: #0f2b4a !important;
-    border-color: #0f0f0f !important;
-    color:white;
+  .col-lg-4, .col-lg-8 {
+    width: 100%;
+    padding: 0;
   }
-}
-
-// Estilos para mensajes de error de imagen
-.p-error {
-  color: #e24c4c;
-  font-size: 0.875rem;
-  display: block;
-}
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-600 {
-  color: #6c757d;
-}
-
-
-::ng-deep .p-dialog{
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  color: #0f0f0f !important;
 }

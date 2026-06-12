@@ -2,22 +2,22 @@
 <nav class="navbar navbar-expand-lg w-100 myNavbar">
     <div class="container-fluid">
 
-        <a class="navbar-brand mx-auto" routerLink="/">
+        <a class="navbar-brand" routerLink="/">
             <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
         </a>
 
 
         <button class="cart-button" (click)="cartDrawerVisible = true">
-            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
                 <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
             </i>
         </button>
-        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler">
+        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler" styleClass="ceiba-sidebar-left">
             <br>
             <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
 
             <div class="sidebar-header my-2">
-                <h3 class="text-white">Panel Cliente</h3>
+                <h3>Panel Cliente</h3>
             </div>
 
             <button pButton label="Iniciar Sesión" class="logout-btn" routerLink="/login">
@@ -36,22 +36,22 @@
 <nav class="navbar navbar-expand-lg w-100 myNavbar">
     <div class="container-fluid">
 
-        <a class="navbar-brand mx-auto" routerLink="/customer/dashboard">
+        <a class="navbar-brand" routerLink="/customer/dashboard">
             <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
         </a>
 
 
         <button class="cart-button" (click)="cartDrawerVisible = true">
-            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge" style="color: black">
+            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
                 <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
             </i>
         </button>
-        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler">
+        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler" styleClass="ceiba-sidebar-left">
             <br>
             <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
 
             <div class="sidebar-header my-2">
-                <h3 class="text-white">Panel Cliente</h3>
+                <h3>Panel Cliente</h3>
             </div>
 
             <!-- Menú manual sin bucle -->
@@ -108,10 +108,10 @@
 
 <!-- Right Drawer (Sidebar) del carrito -->
 <p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
-    [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}">
+    [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
     <ng-template pTemplate="header">
         <div class="sidebar-header">
-            <h3 class="text-white">Tu Carrito 🛒</h3>
+            <h3>Tu Carrito 🛒</h3>
             <span class="cart-count">{{ cartService.cartItemsCount() }} items</span>
         </div>
     </ng-template>
@@ -123,7 +123,7 @@
             <i class="pi pi-shopping-cart empty-icon"></i>
             <p class="productText">Tu carrito está vacío</p>
             <p-button label="Seguir Comprando"
-                [style]="{'background-color':'#123458', 'color':'white', 'border':'none'}"
+                [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none'}"
                 (onClick)="cartDrawerVisible = false"></p-button>
         </div>
         }
@@ -162,10 +162,10 @@
             </div>
             <div class="cart-actions">
                 <p-button label="Limpiar Carrito"
-                    [style]="{'background-color':'#D4C9BE', 'color':'black', 'border':'none'}" (onClick)="clearCart()"
+                    [style]="{'background-color':'var(--ceiba-cream)', 'color':'var(--ceiba-ink)', 'border':'none'}" (onClick)="clearCart()"
                     class="mr-2" size="small"></p-button>
                 <p-button label="Finalizar Compra"
-                    [style]="{'background-color':'#123458', 'color':'white', 'border':'1px solid white'}"
+                    [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none'}"
                     (onClick)="cartService.finalizarCompra()" size="small"></p-button>
             </div>
         </div>

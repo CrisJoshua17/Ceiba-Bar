@@ -143,10 +143,10 @@
                       <button pButton type="button" label="Agregar Direccion" icon="pi pi-map" *ngIf="rol=='CUSTOMER'"
                         class="p-button-secondary" (click)="showDialog()"></button>
 
-                      <div class="card flex justify-center" *ngIf="rol=='CUSTOMER'">
+                      <div class="flex justify-content-center mt-3" *ngIf="rol=='CUSTOMER'">
                         <p-select [options]="addresses" [(ngModel)]="selectAddress" [checkmark]="true"
                           [ngModelOptions]="{standalone: true}" optionLabel="alias" [showClear]="true"
-                          placeholder="Select a City" class="w-full md:w-56" />
+                          placeholder="Seleccionar Dirección" class="w-full md:w-56" />
                       </div>
                       <div class="flex justify-content-between mt-4">
 

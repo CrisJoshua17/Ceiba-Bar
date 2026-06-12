@@ -1,425 +1,346 @@
 .container1 {
-  padding: 2rem;
-  background-color: #D4C9BE;
+  padding: 2.5rem 2rem;
+  background-color: var(--ceiba-paper);
   min-height: 100vh;
   width: 100% !important;
   margin: 0 !important;
   max-width: 100% !important;
+  font-family: 'Ubuntu', sans-serif;
 }
 
-// Card principal
+.cardheader {
+  margin-bottom: 2rem;
+  h2 {
+    color: var(--ceiba-ink);
+    font-weight: 700;
+    font-size: 1.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    i {
+      color: var(--ceiba-leaf);
+    }
+  }
+}
+
+// Card principal wrapping the tabs
 ::ng-deep .p-card {
   background-color: transparent !important;
   border: none !important;
   box-shadow: none !important;
 }
 
-::ng-deep .p-card .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: none !important;
-  padding: 1.5rem !important;
-}
-
 // ===== ESTILOS PARA LAS TABS =====
-::ng-deep .p-tabs .p-tablist {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  border-radius: 12px 12px 0 0 !important;
-  padding: 0.5rem !important;
-}
+::ng-deep .p-tabs {
+  background: transparent;
+  
+  .p-tablist {
+    background-color: var(--ceiba-cream) !important;
+    border: 1px solid var(--ceiba-line) !important;
+    border-radius: var(--ceiba-radius) var(--ceiba-radius) 0 0 !important;
+    padding: 0.35rem !important;
+    box-shadow: 0 4px 12px rgba(16, 38, 63, 0.05) !important;
+  }
 
-::ng-deep .p-tabs .p-tablist .p-tab {
-  margin-right: 0.5rem !important;
-  &:hover{
-    color: #0f0f0f;
+  .p-tablist-content {
+    border-bottom: none !important;
+  }
+
+  .p-tablist-active-bar {
+    background: var(--ceiba-leaf) !important;
+    height: 3px !important;
+    border-radius: 3px;
+  }
+
+  .p-tab {
+    font-family: 'Ubuntu', sans-serif;
+    font-weight: 600 !important;
+    color: var(--ceiba-ink) !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease !important;
+    margin-right: 0.25rem !important;
+    padding: 0.75rem 1.25rem !important;
+
+    &:hover {
+      color: var(--ceiba-leaf) !important;
+      background-color: rgba(47, 125, 98, 0.06) !important;
+    }
+
+    &.p-tab-active {
+      color: var(--ceiba-leaf) !important;
+      background-color: #ffffff !important;
+      box-shadow: 0 2px 6px rgba(16, 38, 63, 0.06) !important;
+    }
   }
 }
 
-::ng-deep .p-tablist-active-bar {
-    z-index: 1;
-    display: block;
-    position: absolute;
-    inset-block-end:  #123458 !important;
-    height:  #123458 !important;
-    background: #fcfeff !important;
-    transition: 250ms 
-cubic-bezier(0.35, 0, 0.25, 1);
-}
-
-
-::ng-deep .p-tab-active {
-    border-color: #123458 !important;
-    color:  #123458 !important;
-}
-
-
-.myInput{
-background-color: rgba(241, 239, 236, 0.8) !important;
-border:1px solid black;
-color:black
-}
-
-
-// ===== ESTILOS PARA EL CONTENEDOR DE LAS TABLAS =====
+// ===== TAB PANELS =====
 ::ng-deep .p-tabpanels {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  border-radius: 0 0 12px 12px !important;
-  overflow: hidden !important;
-  margin-top: 0 !important;
+  background-color: #ffffff !important;
+  border: 1px solid var(--ceiba-line) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--ceiba-radius) var(--ceiba-radius) !important;
+  box-shadow: 0 8px 24px rgba(16, 38, 63, 0.04) !important;
+  padding: 1.5rem !important;
 }
 
-// ===== ESTILOS ESPECÍFICOS PARA LAS TABLAS PRIMENG =====
+// ===== INPUTS =====
+.myInput {
+  background-color: #ffffff !important;
+  border: 1px solid var(--ceiba-line) !important;
+  color: var(--ceiba-ink) !important;
+  border-radius: var(--ceiba-radius) !important;
+  padding: 0.75rem 1rem !important;
+  transition: all 0.2s ease;
+  font-family: 'Ubuntu', sans-serif;
+  
+  &:focus {
+    border-color: var(--ceiba-leaf) !important;
+    box-shadow: 0 0 0 3px rgba(47, 125, 98, 0.15) !important;
+    outline: none !important;
+  }
+  
+  &:hover {
+    border-color: var(--ceiba-leaf) !important;
+  }
+
+  &::placeholder {
+    color: rgba(16, 38, 63, 0.4) !important;
+  }
+}
+
+// ===== TABLAS =====
 ::ng-deep .p-datatable {
   background: transparent !important;
+  border: 1px solid var(--ceiba-line) !important;
+  border-radius: var(--ceiba-radius) !important;
+  overflow: hidden !important;
   
-  // Header de la tabla
+  .p-datatable-table {
+    border-collapse: collapse !important;
+  }
+  
   .p-datatable-thead > tr > th {
-    background-color: #123458 !important;
-    color: white !important;
+    background-color: var(--ceiba-ink) !important;
+    color: #ffffff !important;
     border: none !important;
     padding: 1rem 1.5rem !important;
     font-weight: 600 !important;
     font-size: 0.95rem !important;
     text-align: left !important;
+    font-family: 'Ubuntu', sans-serif;
   }
 
-  // Filas de la tabla
   .p-datatable-tbody > tr {
     background-color: transparent !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.2s ease !important;
     
     > td {
       background-color: transparent !important;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+      border-bottom: 1px solid var(--ceiba-line) !important;
       padding: 1rem 1.5rem !important;
-      color: #495057 !important;
+      color: var(--ceiba-ink) !important;
+      font-family: 'Ubuntu', sans-serif;
     }
 
-    // Efecto hover en filas
     &:hover {
-      background-color: rgba(18, 52, 88, 0.05) !important;
-      transform: translateY(-2px) !important;
+      background-color: rgba(47, 125, 98, 0.04) !important;
       
       > td {
-        color: #123458 !important;
-        background-color: rgba(18, 52, 88, 0.02) !important;
+        color: var(--ceiba-leaf-dark) !important;
       }
     }
 
-    // Alternar colores de filas
     &:nth-child(even) {
-      background-color: rgba(255, 255, 255, 0.3) !important;
+      background-color: rgba(16, 38, 63, 0.02) !important;
       
       &:hover {
-        background-color: rgba(18, 52, 88, 0.08) !important;
+        background-color: rgba(47, 125, 98, 0.06) !important;
       }
+    }
+
+    &:last-child > td {
+      border-bottom: none !important;
     }
   }
 }
 
-// ===== ESTILOS PARA EL PAGINADOR =====
+// ===== PAGINADOR =====
 ::ng-deep .p-paginator {
-  background-color: rgba(241, 239, 236, 0.8) !important;
+  background-color: transparent !important;
   border: none !important;
-  border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+  border-top: 1px solid var(--ceiba-line) !important;
   padding: 1rem !important;
+  justify-content: center !important;
   
   .p-paginator-element {
     background: transparent !important;
-    border: 1px solid rgba(18, 52, 88, 0.2) !important;
-    color: #123458 !important;
-    border-radius: 6px !important;
-    min-width: 2.5rem !important;
-    height: 2.5rem !important;
+    border: 1px solid transparent !important;
+    color: var(--ceiba-ink) !important;
+    border-radius: var(--ceiba-radius) !important;
+    min-width: 2.25rem !important;
+    height: 2.25rem !important;
+    margin: 0 0.15rem !important;
+    transition: all 0.2s ease !important;
     
     &:hover {
-      background-color: #123458 !important;
-      color: white !important;
-      border-color: #123458 !important;
+      background-color: var(--ceiba-cream) !important;
+      color: var(--ceiba-leaf) !important;
+      border-color: var(--ceiba-line) !important;
     }
     
     &.p-highlight {
-      background-color: #123458 !important;
+      background-color: var(--ceiba-leaf) !important;
       color: white !important;
-      border-color: #123458 !important;
-    }
-  }
-  
-  .p-paginator-pages .p-paginator-page {
-    background: transparent !important;
-    border: 1px solid rgba(18, 52, 88, 0.2) !important;
-    color: #123458 !important;
-    
-    &.p-highlight {
-      background-color: #123458 !important;
-      color: white !important;
-      border-color: #123458 !important;
-    }
-    
-    &:hover {
-      background-color: rgba(18, 52, 88, 0.1) !important;
+      border-color: var(--ceiba-leaf) !important;
+      font-weight: 700 !important;
     }
   }
 }
 
-// ===== ESTILOS ESPECÍFICOS PARA LOS INPUTS DE BÚSQUEDA =====
-::ng-deep .p-input-icon-left {
-  width: 100% !important;
-  
-  .p-inputtext {
-    width: 100% !important;
-    background-color: rgba(255, 255, 255, 0.9) !important;
-    border: 1px solid rgba(18, 52, 88, 0.3) !important;
-    border-radius: 8px !important;
-    padding: 0.75rem 1rem 0.75rem 3rem !important;
-    color: #495057 !important;
-    transition: all 0.3s ease !important;
-    font-size: 1rem !important;
-    
-    &:focus {
-      box-shadow: 0 0 0 2px rgba(18, 52, 88, 0.2) !important;
-      border-color: #123458 !important;
-      outline: none !important;
-    }
-    
-    &:hover {
-      border-color: #123458 !important;
-      background-color: rgba(255, 255, 255, 1) !important;
-    }
-    
-    &::placeholder {
-      color: #6c757d !important;
-    }
-  }
-  
-  .pi-search {
-    color: #123458 !important;
-    left: 1rem !important;
-    font-size: 1.1rem !important;
-    z-index: 1 !important;
-  }
-}
-
-// ===== ESTILOS RESPONSIVE =====
-@media (max-width: 768px) {
-  .container1 {
-    padding: 1rem !important;
-  }
-  
-  ::ng-deep .p-tabs .p-tablist .p-tab .p-tab-link {
-    padding: 0.75rem 1rem !important;
-    font-size: 0.9rem !important;
-  }
-  
-  ::ng-deep .p-datatable {
-    .p-datatable-thead > tr > th,
-    .p-datatable-tbody > tr > td {
-      padding: 0.75rem 1rem !important;
-      font-size: 0.9rem !important;
-    }
-  }
-  
-  ::ng-deep .p-input-icon-left .p-inputtext {
-    padding: 0.6rem 0.8rem 0.6rem 2.5rem !important;
-    font-size: 0.9rem !important;
-  }
-}
-
-// ===== MANTENER TUS ESTILOS EXISTENTES (los que funcionan bien) =====
-
-// Card de imagen
-::ng-deep .p-card.cardImage {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  padding: 1rem !important;
-}
-
-::ng-deep .p-card.cardImage .p-card-body {
-  padding: 1rem !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-// Card de eliminar
-::ng-deep .p-card.card-Delete {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  color: black !important;
-}
-
-::ng-deep .p-card.card-Delete .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 1rem !important;
-}
-
-::ng-deep .p-card.card-Delete .p-card-body {
-  padding: 1rem !important;
-}
-
-// Card del formulario
-::ng-deep .p-card.form-card {
-  background-color: rgba(241, 239, 236, 0.6) !important;
-  border: none !important;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4) !important;
-  color: black !important;
-  height: 100% !important;
-}
-
-::ng-deep .p-card.form-card .p-card-header {
-  color: black !important;
-  background: transparent !important;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
-  padding: 1.5rem !important;
-}
-
-::ng-deep .p-card.form-card .p-card-body {
-  padding: 1.5rem !important;
-}
-
-.form-row {
-  display: flex;
-  align-items: end;
-  margin: 0.75rem 0;
-
-  label {
-    width: 120px; /* 👈 ancho fijo para alinear */
-    font-weight: 600;
-    color: #000;
-  }
-
-  input {
-    flex: 1; /* 👈 el input ocupa todo lo demás */
-     background-color:white!important;
-     color:black;
-  }
-}
-.p-error {
-  color: #e24c4c;
-  font-size: 0.875rem;
-  margin-top: 0.25rem;
-  display: block;
-}
-
-// ===== ESTILOS PARA LOS BOTONES EN LAS TABLAS =====
+// ===== BOTONES =====
 ::ng-deep .buttonActu {
-  background-color: #D4C9BE !important;
-  color: rgb(15, 15, 15) !important;
-  border: 1px solid black !important;
+  background-color: var(--ceiba-leaf) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--ceiba-leaf) !important;
+  border-radius: var(--ceiba-radius) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(47, 125, 98, 0.1) !important;
+  
   &:hover {
-    background-color: #0f2b4a !important;
-    border-color: #0f2b4a !important;
-    color:white !important;
-     border: 1px solid black;
+    background-color: var(--ceiba-leaf-dark) !important;
+    border-color: var(--ceiba-leaf-dark) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(47, 125, 98, 0.2) !important;
+  }
+
+  &:active {
+    transform: translateY(0) !important;
   }
 }
 
 ::ng-deep .p-button.p-button-danger {
-  background-color: #c41212 !important;
-  border-color: #c41212 !important;
-  color: white;
-  
-  &:hover {
-    background-color: #ff0000 !important;
-    border-color: #ff0000 !important;
-  }
-}
-
-
-
-.text-sm {
-  font-size: 0.875rem;
-}
-
-.text-600 {
-  color: #6c757d;
-}
-
-::ng-deep .p-dialog{
-   background-color: #D4C9BE !important;
-}
-
- ::ng-deep .deleteDialog{
-   background-color: #0f0f0f !important;
-   .p-button-outlined.p-button-secondary{
-    color:white;
-    &:hover{
-      color:rgb(17, 17, 17) !important;
-      background-color: #D4C9BE !important; 
-    }
-   }.p-ripple.p-button.p-component.p-confirmdialog-accept-button.p-button {
-     background-color: #c41212 !important;
-  border-color: #c41212 !important;
+  background-color: var(--ceiba-coral) !important;
+  border: 1px solid var(--ceiba-coral) !important;
   color: white !important;
+  border-radius: var(--ceiba-radius) !important;
+  transition: all 0.2s ease !important;
   
   &:hover {
-    background-color: #ff0000 !important;
-    border-color: #ff0000 !important;
-    color: white !important;
-  }
-   }
-}
-
-
-// Estilos para el file upload
-::ng-deep .p-fileupload .p-button {
-  background-color: #0f0f0f !important;
-  border-color: #123458 !important;
-  color: white;
-   border: 1px solid black;
-  
-  &:hover {
-    background-color: #0f2b4a !important;
-    border-color: #0f0f0f !important;
-     border: 1px solid black !important;
-    color:white;
+    background-color: #b0513d !important;
+    border-color: #b0513d !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 10px rgba(196, 97, 74, 0.2) !important;
   }
 }
 
-::ng-deep .p-button-outlined {
-    background: transparent;
-    border-color:transparent;
-    color: black;
-    &:hover{
-       background: transparent;
-    border-color:transparent;
-     color: black !important;
-    }
-}
-.p-button-outlined:not(:disabled):active {
-  background-color: rgb(18, 52, 88,0.5) !important;
-}
-.p-button-outlined:not(:disabled):hover {
-  color: #123458 !important;
+::ng-deep .p-button.p-button-secondary {
+  background-color: var(--ceiba-cream) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  color: var(--ceiba-ink) !important;
+  border-radius: var(--ceiba-radius) !important;
+  transition: all 0.2s ease !important;
+  
+  &:hover {
+    background-color: var(--ceiba-sand) !important;
+    color: var(--ceiba-ink) !important;
+    border-color: var(--ceiba-line) !important;
+  }
 }
 
-.ng-star-inserted{
-  color: #0f0f0f 
-}
-
-
-// ===== ESTILOS PARA EL MODAL DE CREACIÓN =====
+// ===== DIALOG / MODAL =====
 ::ng-deep .p-dialog {
-  background-color: #D4C9BE !important;
+  background-color: var(--ceiba-paper) !important;
+  border: 1px solid var(--ceiba-line) !important;
+  box-shadow: var(--ceiba-shadow) !important;
+  border-radius: 12px !important;
+  overflow: hidden;
+  font-family: 'Ubuntu', sans-serif;
+  
+  .p-dialog-header {
+    background-color: var(--ceiba-cream) !important;
+    border-bottom: 1px solid var(--ceiba-line) !important;
+    color: var(--ceiba-ink) !important;
+    padding: 1.25rem 1.5rem !important;
+
+    .p-dialog-title {
+      font-weight: 700 !important;
+    }
+  }
   
   .p-dialog-content {
-    background-color: #D4C9BE !important;
+    background-color: var(--ceiba-paper) !important;
+    color: var(--ceiba-ink) !important;
     padding: 1.5rem !important;
+  }
+  
+  .p-dialog-footer {
+    background-color: var(--ceiba-cream) !important;
+    border-top: 1px solid var(--ceiba-line) !important;
+    padding: 1rem 1.5rem !important;
   }
 }
 
-// ===== ESTILOS PARA LOS CAMPOS DEL FORMULARIO =====
+::ng-deep .deleteDialog {
+  .p-dialog-header {
+    background-color: var(--ceiba-coral) !important;
+    color: #ffffff !important;
+    
+    .p-dialog-title {
+      color: #ffffff !important;
+    }
+    .p-dialog-header-actions .p-dialog-header-action {
+      color: #ffffff !important;
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+  }
+
+  .p-dialog-content {
+    background-color: var(--ceiba-paper) !important;
+    color: var(--ceiba-ink) !important;
+  }
+}
+
+// ===== FORMULARIOS =====
+.form-row {
+  display: flex;
+  align-items: center;
+  margin: 1rem 0;
+  gap: 1rem;
+
+  label {
+    width: 120px;
+    font-weight: 600;
+    color: var(--ceiba-ink);
+  }
+
+  input, select, textarea {
+    flex: 1;
+    background-color: #ffffff !important;
+    color: var(--ceiba-ink) !important;
+    border: 1px solid var(--ceiba-line) !important;
+    border-radius: var(--ceiba-radius) !important;
+    padding: 0.75rem !important;
+    transition: all 0.2s ease;
+    
+    &:focus {
+      outline: none !important;
+      border-color: var(--ceiba-leaf) !important;
+      box-shadow: 0 0 0 3px rgba(47, 125, 98, 0.15) !important;
+    }
+    
+    &:hover {
+      border-color: var(--ceiba-leaf) !important;
+    }
+  }
+}
+
 .field {
   margin-bottom: 1.5rem !important;
   
@@ -427,77 +348,71 @@ color:black
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 600;
-    color: #000;
+    color: var(--ceiba-ink);
   }
   
-  input {
+  input, select, textarea {
     width: 100% !important;
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #ced4da !important;
-    border-radius: 6px !important;
+    background-color: #ffffff !important;
+    color: var(--ceiba-ink) !important;
+    border: 1px solid var(--ceiba-line) !important;
+    border-radius: var(--ceiba-radius) !important;
     padding: 0.75rem !important;
+    transition: all 0.2s ease;
     
     &:focus {
-      outline: none;
-      border-color: #123458 !important;
-      box-shadow: 0 0 0 2px rgba(18, 52, 88, 0.2) !important;
+      outline: none !important;
+      border-color: var(--ceiba-leaf) !important;
+      box-shadow: 0 0 0 3px rgba(47, 125, 98, 0.15) !important;
     }
     
     &:hover {
-      border-color: #123458 !important;
+      border-color: var(--ceiba-leaf) !important;
     }
   }
 }
 
-// ===== ESTILOS PARA LOS MENSAJES DE ERROR =====
-::ng-deep .p-message {
-  display: block !important;
-  width: 100% !important;
-  margin-top: 0.5rem !important;
-  
-  &.p-message-error {
-    background: transparent !important;
-    border: none !important;
-    color: #e24c4c !important;
-    padding: 0 !important;
-    
-    .p-message-icon {
-      display: none !important;
-    }
-    
-    .p-message-text {
-      font-size: 0.875rem !important;
-      padding: 0 !important;
-    }
-  }
-}
-
-// ===== ESTILOS PARA FILE UPLOAD =====
+// ===== FILE UPLOAD =====
 ::ng-deep .p-fileupload {
+  .p-fileupload-buttonbar {
+    background-color: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+
   .p-button {
-    background-color: #0f0f0f !important;
-    border-color: #123458 !important;
-    color: white;
-    border: 1px solid black;
+    background-color: var(--ceiba-ink) !important;
+    border-color: var(--ceiba-ink) !important;
+    color: white !important;
+    border-radius: var(--ceiba-radius) !important;
+    font-weight: 600 !important;
+    transition: all 0.2s ease !important;
     
     &:hover {
-      background-color: #0f2b4a !important;
-      border-color: #0f0f0f !important;
-      border: 1px solid black !important;
-      color: white;
+      background-color: var(--ceiba-ink-soft) !important;
+      border-color: var(--ceiba-ink-soft) !important;
     }
   }
 }
 
-// ===== ESTILOS RESPONSIVE PARA EL MODAL =====
+// ===== RESPONSIVE =====
 @media (max-width: 768px) {
+  .container1 {
+    padding: 1.25rem !important;
+  }
+
+  .form-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+
+    label {
+      width: 100%;
+    }
+  }
+
   ::ng-deep .p-dialog {
     width: 95% !important;
     margin: 1rem !important;
-    
-    .p-dialog-content {
-      padding: 1rem !important;
-    }
   }
 }

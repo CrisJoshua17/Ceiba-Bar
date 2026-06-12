@@ -4,6 +4,7 @@ import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { CurrencyPipe } from '@angular/common';
 import { PanelModule } from 'primeng/panel';
+import { ButtonModule } from 'primeng/button';
 import { CartService } from '../services/cart.service';
 import { CartItem, ProductsDtoTable, ProductDto, OrderDto, CheckoutRequest } from '../model/Dtos';
 import { UsersService } from '../services/users.service';
@@ -18,7 +19,8 @@ import { PaymentsService } from '../services/payments.service';
   TableModule,
   CurrencyPipe,
   PanelModule,
-  ReactiveFormsModule],
+  ReactiveFormsModule,
+  ButtonModule],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.scss'
 })

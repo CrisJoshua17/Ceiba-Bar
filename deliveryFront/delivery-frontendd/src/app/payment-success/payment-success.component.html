@@ -1,48 +1,55 @@
-<div class="container mt-5 text-center">
-    <div *ngIf="loading" class="d-flex flex-column align-items-center justify-content-center" style="height: 50vh;">
-        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-            <span class="visually-hidden">Validando pago...</span>
+<div class="containerBase w-full py-12 px-4 flex flex-col items-center justify-center min-h-[calc(100dvh-82px)]">
+    <div class="w-full max-w-xl mx-auto my-4">
+        
+        <!-- Loading State -->
+        <div *ngIf="loading" class="flex flex-col items-center justify-center p-8 bg-[var(--ceiba-paper)] border border-[var(--ceiba-line)] rounded-lg shadow-sm" style="min-height: 300px;">
+            <i class="pi pi-spin pi-spinner text-[var(--ceiba-leaf)] mb-4" style="font-size: 3rem;"></i>
+            <h4 class="text-xl font-bold text-[var(--ceiba-ink)] mt-2">Confirmando tu pago con Stripe...</h4>
+            <p class="text-gray-500 mt-1">Por favor no cierres esta ventana.</p>
         </div>
-        <h4 class="mt-3">Confirmando tu pago con Stripe...</h4>
-        <p class="text-muted">Por favor no cierres esta ventana.</p>
-    </div>
 
-    <div *ngIf="success" class="card shadow-lg p-5 border-0 rounded-4 animate__animated animate__fadeIn">
-        <div class="card-body">
-            <i class="pi pi-check-circle text-success" style="font-size: 5rem;"></i>
-            <h2 class="mt-4 mb-3 fw-bold text-success">¡Pago Exitoso!</h2>
-            <p class="lead mb-4">Tu orden ha sido confirmada correctamente.</p>
+        <!-- Success State -->
+        <p-card *ngIf="success" class="text-center block">
+            <ng-template #content>
+                <div class="flex flex-col items-center py-6">
+                    <i class="pi pi-check-circle text-[var(--ceiba-leaf)] mb-4" style="font-size: 5rem;"></i>
+                    <h2 class="text-3xl font-extrabold text-[var(--ceiba-leaf-dark)] m-0">¡Pago Exitoso!</h2>
+                    <p class="text-gray-600 mt-2 text-base">Tu orden ha sido confirmada correctamente.</p>
 
-            <div class="alert alert-success d-inline-block px-5">
-                <strong>Orden ID:</strong> {{ orderId }}
-            </div>
+                    <div class="my-6 px-6 py-3 bg-[var(--ceiba-cream)] border border-[var(--ceiba-line)] rounded-lg inline-flex items-center gap-2">
+                        <span class="text-sm font-bold text-[var(--ceiba-ink)]">Orden ID:</span>
+                        <span class="text-sm font-extrabold text-[var(--ceiba-leaf-dark)]">{{ orderId }}</span>
+                    </div>
 
-            <div class="mt-5">
-                <a routerLink="/customer/dashboard" class="btn btn-outline-primary btn-lg px-4 me-3">
-                    <i class="pi pi-home me-2"></i>Inicio
-                </a>
-                <a routerLink="/customer/deliverys" class="btn btn-primary btn-lg px-4">
-                    <i class="pi pi-list me-2"></i>Mis Pedidos
-                </a>
-            </div>
-        </div>
-    </div>
+                    <div class="flex flex-col sm:flex-row gap-3 w-full justify-center mt-4">
+                        <p-button label="Inicio" icon="pi pi-home" routerLink="/customer/dashboard"
+                            [style]="{'background-color':'transparent', 'color':'var(--ceiba-ink)', 'border':'1px solid var(--ceiba-line)', 'font-weight':'700', 'min-height':'44px'}"></p-button>
+                        <p-button label="Mis Pedidos" icon="pi pi-list" routerLink="/customer/deliverys"
+                            [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none', 'font-weight':'800', 'min-height':'44px'}"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-card>
 
-    <div *ngIf="error" class="card shadow-lg p-5 border-0 rounded-4 animate__animated animate__shakeX">
-        <div class="card-body">
-            <i class="pi pi-times-circle text-danger" style="font-size: 5rem;"></i>
-            <h2 class="mt-4 mb-3 fw-bold text-danger">Error en el Pago</h2>
-            <p class="lead text-muted mb-4">{{ message }}</p>
+        <!-- Error State -->
+        <p-card *ngIf="error" class="text-center block">
+            <ng-template #content>
+                <div class="flex flex-col items-center py-6">
+                    <i class="pi pi-times-circle text-[var(--ceiba-coral)] mb-4" style="font-size: 5rem;"></i>
+                    <h2 class="text-3xl font-extrabold text-[var(--ceiba-coral)] m-0">Error en el Pago</h2>
+                    <p class="text-gray-600 mt-2 text-base">{{ message }}</p>
 
-            <div class="alert alert-warning">
-                Si crees que esto es un error, por favor contacta a soporte o intenta nuevamente.
-            </div>
+                    <div class="my-6 px-6 py-4 bg-orange-50 border border-orange-200 rounded-lg text-left text-sm text-orange-800 leading-relaxed max-w-md">
+                        Si crees que esto es un error, por favor contacta a soporte o intenta nuevamente.
+                    </div>
 
-            <div class="mt-5">
-                <a routerLink="/cart" class="btn btn-primary btn-lg px-4">
-                    <i class="pi pi-shopping-cart me-2"></i>Volver al Carrito
-                </a>
-            </div>
-        </div>
+                    <div class="w-full max-w-xs justify-center mt-2">
+                        <p-button label="Volver al Carrito" icon="pi pi-shopping-cart" routerLink="/menu/customer"
+                            [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none', 'font-weight':'800', 'min-height':'44px', 'width':'100%'}"></p-button>
+                    </div>
+                </div>
+            </ng-template>
+        </p-card>
+
     </div>
 </div>
