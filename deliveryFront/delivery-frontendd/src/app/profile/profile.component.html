@@ -12,7 +12,7 @@
   <p-card>
     <ng-template #header>
       <div class="cardheader">
-        <h2 class="d-flex justify-content-center">
+        <h2 class="flex justify-center">
           Editar Perfil
           <i class="pi pi-spin pi-cog mx-3" style="font-size: 2rem"></i>
         </h2>
@@ -29,7 +29,7 @@
                 [preview]="true" style="border-radius: 50%; overflow: hidden;">
               </p-image>
               @if (rol === 'DRIVER') {
-              <p class="d-flex justify-content-start mt-4 text-black font-weight-bold">Calificacion:
+              <p class="flex justify-start mt-4 text-black font-bold">Calificacion:
                 {{userData?.driver?.rating || 5}} <i class="pi pi-star-fill mx-3"
                   style="color: #FFD700; font-size: 2rem;"></i></p>
               }
@@ -43,7 +43,7 @@
                 <div class="row">
                   <p class="m-0">Se eliminará permanentemente.</p>
                 </div>
-                <div class="d-flex justify-content-end mt-3">
+                <div class="flex justify-end mt-3">
                   <p-button icon="pi pi-trash" [rounded]="true" [text]="true" [raised]="true" severity="danger"
                     (click)="eliminar($event)" />
                 </div>

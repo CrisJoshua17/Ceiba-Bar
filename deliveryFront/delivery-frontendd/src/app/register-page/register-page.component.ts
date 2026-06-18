@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { NavbarSimpleComponent } from '../utils/navbar-simple/navbar-simple.component';
@@ -21,7 +20,6 @@ import { KeycloakService } from '../services/keycloak.service';
   standalone: true,
   imports: [
     ButtonModule,
-    CardModule,
     CommonModule,
     RouterModule,
     NavbarSimpleComponent,

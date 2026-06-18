@@ -13,5 +13,6 @@ public class ProductDto {
     private Double price;
     private String image;
     private Boolean available = true;
+    private Integer quantity;
 
 }

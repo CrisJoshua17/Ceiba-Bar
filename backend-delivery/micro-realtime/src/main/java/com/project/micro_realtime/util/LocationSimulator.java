@@ -55,7 +55,7 @@ public class LocationSimulator {
 
     @Scheduled(fixedRate = 3000)
     public void simulateMovement() {
-        log.debug("Ejecutando ciclo de simulación de movimiento...");
+        log.info("⏳ Ejecutando ciclo de simulación de movimiento...");
 
         Mono.fromCallable(() -> orderRepository.findByStatus(OrderStatus.EN_CAMINO))
                 .subscribeOn(Schedulers.boundedElastic())
@@ -66,14 +66,7 @@ public class LocationSimulator {
 
     private Mono<Void> processOrderMovement(Order order) {
         Long orderId = order.getId();
-
-        // OPTIMIZACIÓN: Solo simular si hay alguien viendo (WebSocket activo)
-        if (!trackingWebSocketHandler.hasActiveSubscribers(orderId)) {
-            if (activeSimulations.containsKey(orderId)) {
-                log.debug("⏸️ Pausando simulación para Orden {} (sin espectadores)", orderId);
-            }
-            return Mono.empty();
-        }
+        log.info("⚙️ Procesando movimiento para pedido ID: {}", orderId);
 
         double destLat = order.getDeliveryLatitude() != null ? order.getDeliveryLatitude() : 0.0;
         double destLng = order.getDeliveryLongitude() != null ? order.getDeliveryLongitude() : 0.0;

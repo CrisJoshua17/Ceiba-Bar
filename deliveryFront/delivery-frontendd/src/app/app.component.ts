@@ -6,6 +6,7 @@ import { UsersService } from './services/users.service';
 import { KeycloakService } from './services/keycloak.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { CommonModule } from '@angular/common';
+import * as AOS from 'aos';
 
 @Component({
   selector: 'app-root',
@@ -62,6 +63,14 @@ export class AppComponent implements OnInit {
         event instanceof NavigationError
       ) {
         this.loadingService.hide();
+        setTimeout(() => {
+          AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+          });
+          AOS.refresh();
+        }, 150);
       }
     });
   }

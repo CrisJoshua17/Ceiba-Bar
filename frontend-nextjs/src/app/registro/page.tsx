@@ -24,7 +24,7 @@ export default function RegisterPage() {
   }, [initialized, authenticated, user, router]);
 
   const handleRegister = () => {
-    register(window.location.origin + '/customer/dashboard');
+    register(window.location.origin + '/login');
   };
 
   return (

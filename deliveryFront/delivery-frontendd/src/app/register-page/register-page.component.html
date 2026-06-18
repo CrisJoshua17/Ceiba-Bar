@@ -1,46 +1,54 @@
 <app-navbar-simple></app-navbar-simple>
 
-<div class="containerBase w-100">
-  <div class="container w-100 containerLog">
-    <p-card class="cardLog text-start">
-      <ng-template pTemplate="header">
-        <span class="customHeader mx-2">Crear Cuenta</span>
-      </ng-template>
-
-      <div class="p-fluid text-center">
-
-        <div class="mb-4">
-          <i class="pi pi-user-plus" style="font-size: 3rem; color: var(--ceiba-leaf);"></i>
-          <p class="mt-3 text-color-secondary">
-            Crea tu cuenta de Ceiba Bar.<br>
-            El registro es seguro y rápido.
-          </p>
+<div class="min-h-[calc(100vh-82px)] w-full flex items-center justify-center bg-gradient-to-b from-ceiba-cream/40 via-transparent to-transparent p-4 sm:p-8">
+  <div class="w-full max-w-md bg-white border border-ceiba-line rounded-2xl shadow-xl overflow-hidden backdrop-blur-md" data-aos="zoom-in">
+    <!-- Card Header with Ceiba Ink background -->
+    <div class="bg-ceiba-ink text-ceiba-cream px-6 py-5 border-b border-ceiba-line flex items-center justify-center gap-3">
+      <i class="pi pi-user-plus text-xl text-ceiba-leaf"></i>
+      <h2 class="text-xl font-bold tracking-wider m-0 text-white uppercase">Crear Cuenta</h2>
+    </div>
+    
+    <!-- Card Body -->
+    <div class="p-8 space-y-6 text-center">
+      <div class="flex flex-col items-center gap-3">
+        <div class="w-16 h-16 rounded-full bg-ceiba-leaf/10 flex items-center justify-center border border-ceiba-leaf/20 shadow-inner">
+          <i class="pi pi-id-card text-3xl text-ceiba-leaf"></i>
         </div>
+        <h3 class="text-lg font-bold text-ceiba-ink mt-2">Únete a Ceiba Bar</h3>
+        <p class="text-xs text-ceiba-ink/70 leading-relaxed max-w-[280px]">
+          Crea tu cuenta de forma rápida y segura para disfrutar de la experiencia legendaria.
+        </p>
+      </div>
 
-        <!-- Botón principal: redirige a Keycloak Register -->
-        <p-button
-          id="btn-register-keycloak"
-          label="Crear mi cuenta"
-          icon="pi pi-user-plus"
-          [loading]="loading"
-          class="w-full mt-2"
-          [styleClass]="'w-full registerButton'"
-          (click)="register()">
-        </p-button>
+      <!-- Botón principal: redirige a Keycloak Register -->
+      <p-button
+        id="btn-register-keycloak"
+        label="Registrarme ahora"
+        icon="pi pi-user-plus"
+        [loading]="loading"
+        styleClass="w-full bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white border-none py-3.5 px-4 rounded-xl font-bold transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+        (click)="register()">
+      </p-button>
 
-        <p class="mt-4 mb-1">¿Ya tienes cuenta?</p>
+      <!-- Divisor elegante -->
+      <div class="relative flex py-2 items-center">
+        <div class="flex-grow border-t border-ceiba-line"></div>
+        <span class="flex-shrink mx-3 text-[10px] font-bold text-ceiba-ink/30 uppercase tracking-widest">ó</span>
+        <div class="flex-grow border-t border-ceiba-line"></div>
+      </div>
+
+      <!-- Ir a Login -->
+      <div class="space-y-2">
+        <p class="text-[11px] text-ceiba-ink/50 font-bold m-0">¿Ya tienes una cuenta registrada?</p>
         <p-button
           id="btn-goto-login"
           label="Iniciar Sesión"
           icon="pi pi-sign-in"
-          severity="secondary"
-          [outlined]="true"
-          class="w-full mt-1"
-          [styleClass]="'w-full loginButton'"
+          styleClass="w-full bg-transparent hover:bg-ceiba-cream text-ceiba-ink border border-ceiba-line py-3 px-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer"
           (click)="goToLogin()">
         </p-button>
-
       </div>
-    </p-card>
+
+    </div>
   </div>
 </div>

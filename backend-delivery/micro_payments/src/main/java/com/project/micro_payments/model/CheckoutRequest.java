@@ -10,8 +10,7 @@ public class CheckoutRequest {
     @NotNull
     private OrderDto orderDto; // La orden completa
 
-    @NotNull
-    private Long amount; // Monto en centavos (ej: 10000 = $100.00 MXN)
+    private Long amount; // Opcional: el backend recalcula este monto de forma segura
 
     @NotBlank
     private String itemProduct; // Nombre del producto para mostrar en Stripe

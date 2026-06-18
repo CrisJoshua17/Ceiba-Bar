@@ -67,8 +67,9 @@ public class OrderController {
                 item.setProductName(prod.getName());
                 item.setProductImage(prod.getImage());
                 item.setUnitPrice(prod.getPrice() != null ? java.math.BigDecimal.valueOf(prod.getPrice()) : java.math.BigDecimal.ZERO);
-                item.setQuantity(1);
-                item.setSubtotal(item.getUnitPrice());
+                int qty = prod.getQuantity() != null && prod.getQuantity() > 0 ? prod.getQuantity() : 1;
+                item.setQuantity(qty);
+                item.setSubtotal(item.getUnitPrice().multiply(java.math.BigDecimal.valueOf(qty)));
                 item.setOrder(order);
                 items.add(item);
             }

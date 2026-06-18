@@ -80,11 +80,14 @@
                     </td>
                     <td>
                         <span class="status-badge" [ngClass]="getStatusClass(order.status)">
-                            {{ order.status }}
+                            {{ getStatusLabel(order.status) }}
                         </span>
                     </td>
                     <td>
-                        <div class="d-flex justify-content-center gap-2">
+                        <div class="flex flex-wrap items-center justify-center gap-2">
+                            <button pButton icon="pi pi-eye" label="Detalles" class="p-button-sm p-button-secondary p-button-outlined"
+                                (click)="viewDetails(order)"></button>
+
                             <!-- Acciones según estado actual -->
                             @if (order.status === 'CREATED' || order.status === 'PAGADO' || order.status === 'PREPARING') {
                             <button pButton icon="pi pi-truck" [label]="order.status === 'PREPARING' ? 'Reasignar' : 'Asignar'" class="p-button-sm p-button-info"
@@ -127,7 +130,7 @@
 <p-toast></p-toast>
 <p-confirmdialog></p-confirmdialog>
 
-<p-dialog [(visible)]="visible" [style]="{ width: '35rem', height: '25rem' }">
+<p-dialog [(visible)]="visible" [style]="{ width: '45rem' }" [modal]="true">
     <ng-template #header>
         <h3 #title>Detalle de la Orden</h3>
     </ng-template>
@@ -166,14 +169,15 @@
         </p-table>
     </ng-template>
     <ng-template #footer>
-        <p-select [options]="driverProfiles()" [(ngModel)]="selectDriverProfile" [checkmark]="true"
-            [ngModelOptions]="{standalone: true}" optionLabel="userEmail" [showClear]="true"
-            placeholder="Seleccionar conductor" class="w-full md:w-56">
-
-        </p-select>
+        @if (selectedOrder?.status === 'CREATED' || selectedOrder?.status === 'PAGADO' || selectedOrder?.status === 'PREPARING') {
+            <p-select [options]="driverProfiles()" [(ngModel)]="selectDriverProfile" [checkmark]="true"
+                [ngModelOptions]="{standalone: true}" optionLabel="userEmail" [showClear]="true"
+                placeholder="Seleccionar conductor" class="w-full md:w-56">
+            </p-select>
+            <button pButton type="button" label="Guardar" icon="pi pi-check" class="buttonActu"
+                (click)="assignDriver()"></button>
+        }
         <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary"
             (click)="visible = false"></button>
-        <button pButton type="button" label="Guardar" icon="pi pi-check" class="buttonActu"
-            (click)="assignDriver()"></button>
     </ng-template>
 </p-dialog>

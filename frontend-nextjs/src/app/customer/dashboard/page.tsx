@@ -10,19 +10,25 @@ import Link from 'next/link';
 
 export default function CustomerDashboardPage() {
   const router = useRouter();
-  const { authenticated, profile, fetchProfile, initialized } = useAuthStore();
+  const { authenticated, user, profile, fetchProfile, initialized } = useAuthStore();
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole === 'ADMIN') {
+        router.push('/admin/dashboard');
+      } else if (user?.primaryRole === 'DRIVER') {
+        router.push('/drivers/dashboard');
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && user?.primaryRole === 'CUSTOMER') {
       fetchProfile();
     }
-  }, [authenticated, fetchProfile]);
+  }, [authenticated, user, fetchProfile]);
 
   const dashboardItems = [
     {

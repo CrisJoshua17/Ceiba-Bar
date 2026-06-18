@@ -22,6 +22,7 @@ import { BASE_PATH_IMAGES_PRODUCTS } from '../../utils/enviroments/enviroment';
   styleUrl: './navbar-home.component.scss'
 })
 export class NavbarHomeComponent {
+  visible: boolean = false;
 
   constructor(public cartService: CartService ,private cdr: ChangeDetectorRef){}
 

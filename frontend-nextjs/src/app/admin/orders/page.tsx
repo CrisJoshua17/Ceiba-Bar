@@ -29,7 +29,7 @@ interface DriverProfile {
 
 export default function AdminOrdersPage() {
   const router = useRouter();
-  const { authenticated, initialized } = useAuthStore();
+  const { authenticated, user, initialized } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [orders, setOrders] = useState<OrderDto[]>([]);
@@ -47,10 +47,16 @@ export default function AdminOrdersPage() {
   const [notes, setNotes] = useState('');
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole === 'CUSTOMER') {
+        router.push('/customer/dashboard');
+      } else if (user?.primaryRole === 'DRIVER') {
+        router.push('/drivers/dashboard');
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
 
   const loadOrdersAndDrivers = async () => {
     setLoadingOrders(true);
@@ -67,18 +73,19 @@ export default function AdminOrdersPage() {
         setDrivers(driversResp.data.data || []);
       }
     } catch (err) {
-      console.error('Error loading admin orders/drivers:', err);
-      toast.error('Error al conectar con los microservicios.');
+      console.error('Error loading orders or drivers:', err);
+      toast.error('Error al conectar con el servidor.');
     } finally {
       setLoadingOrders(false);
     }
   };
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && user?.primaryRole === 'ADMIN') {
       loadOrdersAndDrivers();
     }
-  }, [authenticated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authenticated, user]);
 
   const handleOpenAssign = (order: OrderDto) => {
     setOrderToAssign(order);

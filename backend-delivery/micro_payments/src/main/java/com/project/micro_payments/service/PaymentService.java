@@ -8,11 +8,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.micro_payments.dto.CheckoutRequest;
 import com.project.micro_payments.dto.OrderDto;
+import com.project.micro_payments.dto.ProductDto;
 import com.project.micro_payments.feign.OrderClient;
+import com.project.micro_payments.feign.ProductClient;
 import com.project.micro_payments.model.Payment;
 import com.project.micro_payments.model.enums.PaymentMethod;
 import com.project.micro_payments.model.enums.PaymentStatus;
 import com.project.micro_payments.repository.PaymentRepository;
+import java.math.BigDecimal;
 
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
@@ -28,6 +31,7 @@ public class PaymentService {
     private final Map<String, PaymentGateway> gateways; // Spring injects both stripe and paypal
     private final PaymentRepository paymentRepository;
     private final OrderClient orderClient;
+    private final ProductClient productClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Transactional
@@ -56,9 +60,36 @@ public class PaymentService {
             throw new IllegalArgumentException("Pasarela de pago no soportada: " + req.getMethod());
         }
 
+        BigDecimal calculatedAmount = BigDecimal.ZERO;
+        if (req.getOrderDto().getProducts() != null) {
+            for (ProductDto prod : req.getOrderDto().getProducts()) {
+                int qty = (prod.getQuantity() != null && prod.getQuantity() > 0) ? prod.getQuantity() : 1;
+                try {
+                    Map<String, Object> response = productClient.getProductById(prod.getId());
+                    if (response != null && Boolean.TRUE.equals(response.get("success"))) {
+                        Map<String, Object> data = (Map<String, Object>) response.get("data");
+                        if (data != null && data.get("price") != null) {
+                            double realPrice = Double.parseDouble(data.get("price").toString());
+                            BigDecimal itemCost = BigDecimal.valueOf(realPrice).multiply(BigDecimal.valueOf(qty));
+                            calculatedAmount = calculatedAmount.add(itemCost);
+                            // Sincronizar el DTO temporal
+                            prod.setPrice(realPrice);
+                        } else {
+                            throw new IllegalStateException("El producto con ID " + prod.getId() + " no tiene un precio configurado en el catálogo.");
+                        }
+                    } else {
+                        throw new IllegalStateException("El servicio de catálogo no encontró el producto ID: " + prod.getId());
+                    }
+                } catch (Exception e) {
+                    log.error("Fallo al validar precio del producto ID {}: {}", prod.getId(), e.getMessage());
+                    throw new IllegalArgumentException("No se pudo validar el precio real del producto ID " + prod.getId() + ": " + e.getMessage());
+                }
+            }
+        }
+
         Payment payment = Payment.builder()
                 .orderId(req.getOrderDto().getId())
-                .amount(java.math.BigDecimal.valueOf(req.getAmount() / 100.0)) // Asumiendo que req.getAmount() está en centavos
+                .amount(calculatedAmount)
                 .method(method)
                 .status(PaymentStatus.PENDING)
                 .idempotencyKey(req.getIdempotencyKey())

@@ -26,7 +26,7 @@ public class GeocodingService {
         .baseUrl("https://nominatim.openstreetmap.org")
         .defaultHeader(HttpHeaders.USER_AGENT,
             "RealtimeDeliveryApp/2.0 (+https://aunnotengo.com; cristopher_170498@hotmail.com)")
-        .defaultHeader("From", " cristopher_170498@hotmail.com")
+        .defaultHeader("From", "cristopher_170498@hotmail.com")
         .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
         .defaultHeader(HttpHeaders.ACCEPT_LANGUAGE, "es-MX,es;q=0.9")
         .build();

@@ -17,7 +17,7 @@ import Link from 'next/link';
 
 export default function AdminUsersPage() {
   const router = useRouter();
-  const { authenticated, initialized } = useAuthStore();
+  const { authenticated, user, initialized } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [users, setUsers] = useState<UsersDtoTable[]>([]);
@@ -25,10 +25,18 @@ export default function AdminUsersPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole !== 'ADMIN') {
+        if (user?.primaryRole === 'DRIVER') {
+          router.push('/drivers/dashboard');
+        } else {
+          router.push('/customer/dashboard');
+        }
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
 
   const loadUsers = async () => {
     setLoading(true);

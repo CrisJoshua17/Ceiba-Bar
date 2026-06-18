@@ -54,8 +54,10 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // Icono por defecto
   private iconDefault = L.icon({
-    iconUrl: '/assets/images/marker-icon.png',
-    iconSize: [41, 41],
+    iconUrl: 'assets/images/marker-icon.png',
+    iconRetinaUrl: 'assets/images/marker-icon-2x.png',
+    shadowUrl: 'assets/images/marker-shadow.png',
+    iconSize: [25, 41],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
     shadowSize: [41, 41]
@@ -185,7 +187,13 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     try {
-      // Configurar icono por defecto
+      // Resolver problema de iconos perdidos en Leaflet
+      delete (L.Icon.Default.prototype as any)._getIconUrl;
+      L.Icon.Default.mergeOptions({
+        iconRetinaUrl: 'assets/images/marker-icon-2x.png',
+        iconUrl: 'assets/images/marker-icon.png',
+        shadowUrl: 'assets/images/marker-shadow.png',
+      });
       L.Marker.prototype.options.icon = this.iconDefault;
       
       // Inicializar mapa
@@ -198,7 +206,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       // Inicializar marcador del repartidor
       this.driverMarker = L.marker([19.4326, -99.1332], {
         icon: L.icon({
-          iconUrl: '/assets/images/delivery-truck.png',
+          iconUrl: 'assets/images/delivery-truck.png',
           iconSize: [40, 40],
           iconAnchor: [20, 20]
         })
@@ -286,7 +294,8 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
           console.log('🎯 Datos del destino:', data);
           
           if (data && data.deliveryLat && data.deliveryLng) {
-            this.setupDestination(data.deliveryLat, data.deliveryLng);
+            const label = data.status === 'DRIVER_ARRIVING' ? 'Restaurante 🏪' : 'Destino de Entrega 🏠';
+            this.setupDestination(data.deliveryLat, data.deliveryLng, label);
           } else {
             console.warn('⚠️ No hay coordenadas de destino disponibles');
           }
@@ -297,7 +306,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       });
   }
 
-  private setupDestination(lat: number, lng: number) {
+  private setupDestination(lat: number, lng: number, label: string = 'Destino') {
     if (!this.map || !this.driverMarker) {
       console.error('❌ Mapa o driverMarker no inicializados en setupDestination');
       return;
@@ -314,14 +323,14 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       // Crear nuevo marcador de destino
       this.destinationMarker = L.marker(dest, {
         icon: this.iconDefault
-      }).addTo(this.map).bindPopup('Destino').openPopup();
+      }).addTo(this.map).bindPopup(`<b>${label}</b>`).openPopup();
 
       // Limpiar ruta anterior
       this.routeLine.setLatLngs([]);
 
       // Ajustar vista del mapa
       const driverLatLng = this.driverMarker.getLatLng();
-      this.map.fitBounds(L.latLngBounds([driverLatLng, dest]));
+      this.map.fitBounds(L.latLngBounds([driverLatLng, dest]), { padding: [50, 50] });
 
       // Forzar actualización del tamaño después del fitBounds
       setTimeout(() => {
@@ -330,7 +339,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
         }
       }, 100);
 
-      console.log('📍 Destino configurado correctamente:', dest);
+      console.log('📍 Destino configurado correctamente:', dest, label);
 
     } catch (error) {
       console.error('❌ Error en setupDestination:', error);
@@ -395,6 +404,20 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       currentPoints.push(latlng);
       this.routeLine.setLatLngs(currentPoints);
 
+      // Si nos envía coordenadas de entrega en el evento, asegurar que tenemos el marcador de destino
+      if (data.deliveryLat && data.deliveryLng) {
+        const label = data.status === 'DRIVER_ARRIVING' ? 'Restaurante 🏪' : 'Destino de Entrega 🏠';
+        if (!this.destinationMarker) {
+          this.setupDestination(data.deliveryLat, data.deliveryLng, label);
+        } else {
+          // Si ya existe pero las coordenadas cambiaron (ej: cambio de fase)
+          const currentDestLatLng = this.destinationMarker.getLatLng();
+          if (currentDestLatLng.lat !== data.deliveryLat || currentDestLatLng.lng !== data.deliveryLng) {
+             this.setupDestination(data.deliveryLat, data.deliveryLng, label);
+          }
+        }
+      }
+
       // Calcular distancia si hay destino
       if (this.destinationMarker) {
         const destLatLng = this.destinationMarker.getLatLng();
@@ -409,11 +432,11 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
         // Cambiar icono del destino cuando se entregue
         if (this.destinationMarker) {
           const deliveredIcon = L.icon({
-            iconUrl: '/assets/images/marker-shadow.png',
-            iconSize: [41, 41],
-            iconAnchor: [12, 41],
-            popupAnchor: [1, -34],
-            shadowSize: [41, 41]
+            iconUrl: 'assets/images/marker-shadow.png',
+            iconSize: [36, 36],
+            iconAnchor: [18, 36],
+            popupAnchor: [0, -32],
+            shadowSize: [36, 36]
           });
           this.destinationMarker.setIcon(deliveredIcon);
           this.destinationMarker.bindPopup('<b>¡Entregado! 🎉</b>').openPopup();
@@ -432,7 +455,8 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
           alert('¡Pedido entregado exitosamente! 🎉');
         }, 1000);
       } else {
-        this.status = `En camino... (${this.distance?.toFixed(2)} km)`;
+        const label = data.status === 'DRIVER_ARRIVING' ? 'yendo al restaurante' : 'en camino al cliente';
+        this.status = `Repartidor ${label}... (${this.distance?.toFixed(2)} km)`;
       }
 
       // Centrar mapa en la nueva posición

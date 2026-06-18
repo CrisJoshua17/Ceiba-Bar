@@ -244,34 +244,7 @@
   }
 }
 
-::ng-deep .lightbox-dialog {
-  .p-dialog {
-    border-radius: 0 !important;
-    height: 100vh !important;
-    margin: 0 !important;
-    max-height: 100vh !important;
-    max-width: 100vw !important;
-    overflow: hidden;
-    width: 100vw !important;
-  }
 
-  .p-dialog-header {
-    background: rgba(16, 38, 63, 0.92) !important;
-    border-bottom: 1px solid rgba(244, 239, 231, 0.12);
-    color: var(--ceiba-cream);
-    padding: 1rem;
-  }
-
-  .p-dialog-content {
-    align-items: center;
-    background: rgba(16, 38, 63, 0.6) !important;
-    display: flex;
-    height: calc(100vh - 70px);
-    justify-content: center;
-    overflow: hidden;
-    padding: 0;
-  }
-}
 
 
 .bg-mio {
@@ -283,25 +256,7 @@
   width: 100%;
 }
 
-.swiper-lightbox,
-.swiper-lightbox-container {
-  height: 90%;
-  width: 90%;
-}
 
-.swiper-slide,
-.swiper-zoom-container {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-}
-
-.elementor-lightbox-image {
-  border-radius: var(--ceiba-radius);
-  max-height: 88vh;
-  max-width: 92vw;
-  object-fit: contain;
-}
 
 @media (max-width: 1023px) {
   .main-container {

@@ -1,90 +1,41 @@
-<nav class="navbar navbar-expand-lg w-100 myNavbar">
-  <div class="container-fluid">
+<header class="sticky top-0 z-40 w-full bg-ceiba-paper border-b border-ceiba-line shadow-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
     
-    <!-- Logo siempre centrado -->
-    <a class="navbar-brand mx-auto" routerLink="/">
-      <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
-    </a>
+    <!-- Left: Back button to home -->
+    <div class="flex items-center">
+      <a routerLink="/" class="p-2 rounded-xl hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center no-underline transition-all" title="Volver al inicio">
+        <i class="pi pi-arrow-left text-sm"></i>
+        <span class="ml-2 text-xs font-bold uppercase tracking-wider hidden sm:inline">Inicio</span>
+      </a>
+    </div>
 
-    <!-- Redes sociales siempre al final -->
-    <div class="social-icons-container">
-      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-facebook social-icon facebook"></i>
+    <!-- Center: Centered Logo -->
+    <div class="absolute left-1/2 -translate-x-1/2 flex items-center">
+      <a routerLink="/" class="flex items-center gap-3 no-underline">
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-ceiba-line shadow-xs hover:scale-105 transition-transform duration-300">
+          <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-bold text-base tracking-wider text-ceiba-ink hidden md:block">
+          Ceiba Bar
+        </span>
       </a>
-      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-whatsapp social-icon whatsapp"></i>
+    </div>
+
+    <!-- Right: Social Media -->
+    <div class="flex items-center gap-1">
+      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
+        class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center transition-colors">
+        <i class="pi pi-facebook text-base"></i>
       </a>
-      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-instagram social-icon instagram"></i>
+      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer"
+        class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center transition-colors">
+        <i class="pi pi-whatsapp text-base"></i>
+      </a>
+      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer"
+        class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center transition-colors">
+        <i class="pi pi-instagram text-base"></i>
       </a>
     </div>
 
   </div>
-</nav>
-
-<!-- OFFCANVAS SIDEBAR -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-  <div class="offcanvas-header text-white">
-    <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">Menú</h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body p-0">
-    <ul class="list-group list-group-flush">
-      <!-- INICIO -->
-      <li class="list-group-item">
-        <a routerLink="/" class="nav-link text-white fw-bold d-block py-3 px-4 hover-scale">
-          INICIO
-        </a>
-      </li>
-
-      <!-- PROMOCIONES -->
-      <li class="list-group-item">
-        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
-          PROMOCIONES
-        </a>
-      </li>
-
-      <!-- MENÚ con dropdown -->
-      <li class="list-group-item hover-parent">
-        <a class="nav-link dropdown-toggle text-black d-block py-3 px-4" routerLink="#" role="button"
-          data-bs-toggle="dropdown" aria-expanded="false">
-          MENÚ
-        </a>
-        <ul class="dropdown-menu w-100">
-          <li><a class="dropdown-item" routerLink="#">Drinks</a></li>
-          <li><a class="dropdown-item" routerLink="#">Snacks</a></li>
-        </ul>
-      </li>
-
-      <!-- TIENDA EN LÍNEA -->
-      <li class="list-group-item">
-        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
-          TIENDA EN LÍNEA
-        </a>
-      </li>
-
-      <!-- CONTACTO -->
-      <li class="list-group-item">
-        <a routerLink="#" class="nav-link text-black d-block py-3 px-4 hover-scale">
-          CONTACTO
-        </a>
-      </li>
-    </ul>
-
-    <!-- Iconos en sidebar -->
-    <div class="p-4 border-top d-flex justify-content-center gap-3">
-      <i class="pi pi-user social-icon" [routerLink]="['/login']"></i>
-      <i class="pi pi-shopping-cart social-icon" pBadge value="0"></i>
-      
-      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-facebook social-icon facebook"></i>
-      </a>
-      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-whatsapp social-icon whatsapp"></i>
-      </a>
-      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-instagram social-icon instagram"></i>
-      </a>
-    </div>
-  </div>
-</div>
+</header>

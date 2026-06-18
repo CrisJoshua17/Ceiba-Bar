@@ -1,24 +1,130 @@
 <app-navbar-customer></app-navbar-customer>
 
-<div class="container1 grid-center">
-    <div class="option-card" [routerLink]="['/menu/customer']">
-        <button class="option-btn">
-            <i class="pi pi-shopping-cart" style="font-size: 2.0rem"></i>
-        </button>
-        <p class="option-label">Menú</p>
+<div class="flex flex-col min-h-[calc(100vh-80px)] bg-ceiba-paper text-ceiba-ink">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <!-- Welcome Block -->
+    <div class="bg-white border border-ceiba-line p-8 rounded-3xl shadow-xs text-left relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-3 relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ceiba-leaf/10 text-ceiba-leaf text-xs font-bold tracking-wider uppercase">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+          Bienvenido de vuelta
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-ceiba-ink">
+          Hola, {{ userData()?.user?.name || 'Cliente' }} 👋
+        </h1>
+        <p class="text-xs text-ceiba-ink/65 max-w-md leading-relaxed">
+          ¿Listo para disfrutar de un cóctel legendario? Selecciona una opción a continuación para comenzar tu experiencia Ceiba Bar.
+        </p>
+      </div>
+
+      <div class="hidden md:block w-32 h-32 opacity-15 absolute right-6 bottom-0 translate-y-4">
+        <svg class="w-full h-full text-ceiba-ink" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </div>
     </div>
 
-    <div class="option-card" [routerLink]="['/customer/deliverys']">
-        <button class="option-btn">
-            <i class="pi pi-truck" style="font-size: 2.0rem"></i>
-        </button>
-        <p class="option-label">Pedidos</p>
-    </div>
+    <!-- Dashboard Actions Grid -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Hacer un Pedido -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-ceiba-leaf/10 text-ceiba-leaf">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Hacer un Pedido
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Explora nuestra carta digital y pide bebidas premium, snacks y recetas directamente a tu casa.
+              </p>
+            </div>
+          </div>
 
-    <div class="option-card" [routerLink]="['/my-profile']">
-        <button class="option-btn">
-            <i class="pi pi-user" style="font-size: 2.0rem"></i>
-        </button>
-        <p class="option-label">Perfil</p>
+          <a [routerLink]="['/menu/customer']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Explorar Menú
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mis Pedidos -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-ceiba-coral/10 text-ceiba-coral">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Mis Pedidos
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Sigue el estado de tus entregas en tiempo real o consulta tu historial de compras.
+              </p>
+            </div>
+          </div>
+
+          <a [routerLink]="['/customer/deliverys']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Ver Pedidos
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Mi Perfil -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-ceiba-ink/15 text-ceiba-ink">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Mi Perfil
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Administra tu información de contacto, contraseña y direcciones guardadas.
+              </p>
+            </div>
+          </div>
+
+          <a [routerLink]="['/my-profile']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Editar Perfil
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
     </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-ceiba-ink text-ceiba-paper py-10 mt-auto border-t border-ceiba-line/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-ceiba-paper/50">
+      © 2026 Ceiba Bar. Todos los derechos reservados.
+    </div>
+  </footer>
 </div>

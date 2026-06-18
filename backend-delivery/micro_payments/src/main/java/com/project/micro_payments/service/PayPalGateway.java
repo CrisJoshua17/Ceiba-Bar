@@ -66,12 +66,12 @@ public class PayPalGateway implements PaymentGateway {
         orderPayload.put("purchase_units", List.of(purchaseUnit));
         
         Map<String, Object> applicationContext = new HashMap<>();
-        applicationContext.put("return_url", successUrl + "?method=paypal&token=PAYPAL_TOKEN");
+        applicationContext.put("return_url", successUrl + "?method=paypal");
         applicationContext.put("cancel_url", cancelUrl);
         applicationContext.put("user_action", "PAY_NOW");
         orderPayload.put("payment_source", Map.of("paypal", Map.of("experience_context", applicationContext)));
 
-        ResponseEntity<Map<String, Object>> response = payPalClient.createOrder(token, "application/json", orderPayload);
+        ResponseEntity<Map<String, Object>> response = payPalClient.createOrder(token, orderPayload);
         Map<String, Object> body = response.getBody();
         
         if (body != null && body.containsKey("id")) {
@@ -104,7 +104,7 @@ public class PayPalGateway implements PaymentGateway {
                 return true;
             } else if ("APPROVED".equals(status)) {
                 // Capturar el pago si el usuario lo aprobó
-                ResponseEntity<Map<String, Object>> captureResponse = payPalClient.captureOrder(token, "application/json", payment.getPaypalOrderId());
+                ResponseEntity<Map<String, Object>> captureResponse = payPalClient.captureOrder(token, payment.getPaypalOrderId());
                 Map<String, Object> captureBody = captureResponse.getBody();
                 if (captureBody != null && "COMPLETED".equals(captureBody.get("status"))) {
                     return true;

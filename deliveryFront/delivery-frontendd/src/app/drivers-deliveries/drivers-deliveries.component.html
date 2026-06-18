@@ -76,11 +76,13 @@
                     </td>
                     <td>
                         <span class="status-badge" [ngClass]="getStatusClass(order.status)">
-                            {{ order.status }}
+                            {{ getStatusLabel(order.status) }}
                         </span>
                     </td>
                     <td>
-                        <div class="d-flex justify-content-center gap-2">
+                        <div class="flex flex-wrap items-center justify-center gap-2">
+                             <button pButton icon="pi pi-eye" label="Detalles" class="p-button-sm p-button-secondary p-button-outlined"
+                                 (click)="showDialog(order)"></button>
                              <!-- Acciones según estado actual -->
                              @if (order.status === 'PREPARING') {
                              <button pButton icon="pi pi-map-marker" label="Iniciar Viaje" class="p-button-sm p-button-info"
@@ -161,7 +163,9 @@
 
         <button pButton type="button" label="Cerrar" icon="pi pi-times" class="p-button-secondary"
             (click)="visible = false"></button>
+        @if (selectedOrder?.status === 'EN_CAMINO') {
         <button pButton type="button" label="Guardar" icon="pi pi-check" class="buttonActu"
             (click)="selectedOrder && updateStatus(selectedOrder, 'ENTREGADO')"></button>
+        }
     </ng-template>
 </p-dialog>

@@ -4,7 +4,7 @@
         <!-- Loading State -->
         <div *ngIf="loading" class="flex flex-col items-center justify-center p-8 bg-[var(--ceiba-paper)] border border-[var(--ceiba-line)] rounded-lg shadow-sm" style="min-height: 300px;">
             <i class="pi pi-spin pi-spinner text-[var(--ceiba-leaf)] mb-4" style="font-size: 3rem;"></i>
-            <h4 class="text-xl font-bold text-[var(--ceiba-ink)] mt-2">Confirmando tu pago con Stripe...</h4>
+            <h4 class="text-xl font-bold text-[var(--ceiba-ink)] mt-2">Confirmando tu pago con {{ paymentMethod === 'paypal' ? 'PayPal' : 'Stripe' }}...</h4>
             <p class="text-gray-500 mt-1">Por favor no cierres esta ventana.</p>
         </div>
 

@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@source "./app/**/*.{html,ts}";
+
+@theme {
+  --color-ceiba-ink: #10263f;
+  --color-ceiba-ink-soft: #183a5f;
+  --color-ceiba-leaf: #2f7d62;
+  --color-ceiba-leaf-dark: #1f5d49;
+  --color-ceiba-coral: #c4614a;
+  --color-ceiba-cream: #f4efe7;
+  --color-ceiba-sand: #d8cab8;
+  --color-ceiba-paper: #fbf8f2;
+  --color-ceiba-line: rgba(16, 38, 63, 0.14);
+}

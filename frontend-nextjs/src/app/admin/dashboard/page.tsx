@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 export default function AdminDashboardPage() {
   const router = useRouter();
-  const { authenticated, profile, fetchProfile, initialized } = useAuthStore();
+  const { authenticated, user, profile, fetchProfile, initialized } = useAuthStore();
 
   const [stats, setStats] = useState({
     usersCount: 0,
@@ -21,18 +21,24 @@ export default function AdminDashboardPage() {
   const [loadingStats, setLoadingStats] = useState(false);
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole === 'CUSTOMER') {
+        router.push('/customer/dashboard');
+      } else if (user?.primaryRole === 'DRIVER') {
+        router.push('/drivers/dashboard');
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && user?.primaryRole === 'ADMIN') {
       fetchProfile();
       loadStats();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [authenticated]);
+  }, [authenticated, user]);
 
   const loadStats = async () => {
     setLoadingStats(true);

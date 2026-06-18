@@ -115,10 +115,23 @@ export class DriversHistoryComponent {
   getStatusClass(status: string | undefined): string {
     switch (status) {
       case 'CREATED': case 'PAGADO': return 'status-created';
+      case 'PREPARING': return 'status-preparing';
       case 'EN_CAMINO': return 'status-processing';
       case 'ENTREGADO': return 'status-delivered';
       case 'CANCELADO': return 'status-cancelled';
       default: return '';
+    }
+  }
+
+  getStatusLabel(status: string | undefined): string {
+    switch (status) {
+      case 'CREATED': return 'Creado';
+      case 'PAGADO': return 'Pagado';
+      case 'PREPARING': return 'Preparando / Asignado';
+      case 'EN_CAMINO': return 'En camino';
+      case 'ENTREGADO': return 'Entregado';
+      case 'CANCELADO': return 'Cancelado';
+      default: return status || '';
     }
   }
 

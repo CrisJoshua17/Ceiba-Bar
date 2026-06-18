@@ -1,174 +1,228 @@
 @if(!full()){
-<nav class="navbar navbar-expand-lg w-100 myNavbar">
-    <div class="container-fluid">
+<header class="sticky top-0 z-40 w-full bg-ceiba-paper border-b border-ceiba-line shadow-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    
+    <div class="flex items-center gap-4">
+      <button (click)="visible = true"
+        class="lg:hidden p-2 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-bars text-lg"></i>
+      </button>
 
-        <a class="navbar-brand" routerLink="/">
-            <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
-        </a>
-
-
-        <button class="cart-button" (click)="cartDrawerVisible = true">
-            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
-                <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
-            </i>
-        </button>
-        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler" styleClass="ceiba-sidebar-left">
-            <br>
-            <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
-
-            <div class="sidebar-header my-2">
-                <h3>Panel Cliente</h3>
-            </div>
-
-            <button pButton label="Iniciar Sesión" class="logout-btn" routerLink="/login">
-                <i class="pi pi-sign-out"></i>
-            </button>
-        </p-drawer>
-
-        <button pButton icon="pi pi-bars" class="open-sidebar-btn" (click)="visible = true">
-        </button>
-
+      <a routerLink="/" class="flex items-center gap-3 no-underline">
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-ceiba-line shadow-xs">
+          <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-bold text-base tracking-wider text-ceiba-ink hidden sm:block">
+          Ceiba Bar
+        </span>
+      </a>
     </div>
-</nav>
 
+    <!-- Desktop nav links -->
+    <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm tracking-wider text-ceiba-ink">
+      <a routerLink="/login" class="flex items-center gap-2 transition-colors hover:text-ceiba-leaf no-underline">
+        <i class="pi pi-sign-in"></i>
+        Iniciar Sesión
+      </a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+      <button (click)="cartDrawerVisible = true"
+        class="relative p-2.5 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-shopping-cart text-lg"></i>
+        <span *ngIf="cartService.cartItemsCount() > 0"
+          class="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-ceiba-coral text-[9px] font-extrabold text-white">
+          {{ cartService.cartItemsCount() }}
+        </span>
+      </button>
+    </div>
+
+  </div>
+</header>
 }@else {
+<header class="sticky top-0 z-40 w-full bg-ceiba-paper border-b border-ceiba-line shadow-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    
+    <div class="flex items-center gap-4">
+      <button (click)="visible = true"
+        class="lg:hidden p-2 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-bars text-lg"></i>
+      </button>
 
-<nav class="navbar navbar-expand-lg w-100 myNavbar">
-    <div class="container-fluid">
-
-        <a class="navbar-brand" routerLink="/customer/dashboard">
-            <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
-        </a>
-
-
-        <button class="cart-button" (click)="cartDrawerVisible = true">
-            <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
-                <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
-            </i>
-        </button>
-        <p-drawer [(visible)]="visible" position="left" [closable]="false" class="navbar-toggler" styleClass="ceiba-sidebar-left">
-            <br>
-            <p-avatar image="assets/images/logoarbol.jpg" shape="circle" size="large"></p-avatar>
-
-            <div class="sidebar-header my-2">
-                <h3>Panel Cliente</h3>
-            </div>
-
-            <!-- Menú manual sin bucle -->
-            <div class="custom-sidebar-menu">
-                <ul class="p-menu-list" style="list-style: none; padding: 0; margin: 0;">
-
-                    <!-- Item Menu -->
-                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <div class="p-menu-item-content">
-                            <a class="p-menu-item-link" style="cursor: pointer;" [routerLink]="['/menu/customer']">
-                                <span class="p-menu-item-icon pi pi-shopping-cart"></span>
-                                <span class="p-menu-item-text">Menú</span>
-                            </a>
-                        </div>
-                    </li>
-
-                    <!-- Item Pedidos -->
-                    <li class="p-menu-item" style="margin: 0.25rem 0; border-bottom: 1px solid rgba(255,255,255,0.2);">
-                        <div class="p-menu-item-content">
-                            <a class="p-menu-item-link" style="cursor: pointer;" [routerLink]="['/customer/deliverys']">
-                                <span class="p-menu-item-icon pi pi-truck"></span>
-                                <span class="p-menu-item-text">Pedidos</span>
-                            </a>
-                        </div>
-                    </li>
-
-                    <!-- Item Perfil -->
-                    <li class="p-menu-item" style="margin: 0.25rem 0;">
-                        <div class="p-menu-item-content">
-                            <a class="p-menu-item-link" style="cursor: pointer;" [routerLink]="['/my-profile']">
-                                <span class="p-menu-item-icon pi pi-cog"></span>
-                                <span class="p-menu-item-text">Perfil</span>
-                            </a>
-                        </div>
-                    </li>
-
-                </ul>
-            </div>
-
-            <button pButton label="Cerrar Sesión" class="logout-btn" (click)="cerrarSesion()">
-                <i class="pi pi-sign-out"></i>
-            </button>
-        </p-drawer>
-
-        <button pButton icon="pi pi-bars" class="open-sidebar-btn" (click)="visible = true">
-        </button>
-
+      <a routerLink="/customer/dashboard" class="flex items-center gap-3 no-underline">
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-ceiba-line shadow-xs">
+          <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-bold text-base tracking-wider text-ceiba-ink hidden sm:block">
+          Ceiba Bar
+        </span>
+      </a>
     </div>
-</nav>
+
+    <!-- Desktop nav links -->
+    <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm tracking-wider text-ceiba-ink">
+      <a routerLink="/menu/customer" class="flex items-center gap-2 transition-colors hover:text-ceiba-leaf no-underline">
+        <i class="pi pi-shopping-bag text-sm"></i>
+        Menú
+      </a>
+      <a routerLink="/customer/deliverys" class="flex items-center gap-2 transition-colors hover:text-ceiba-leaf no-underline">
+        <i class="pi pi-truck text-sm"></i>
+        Pedidos
+      </a>
+      <a routerLink="/my-profile" class="flex items-center gap-2 transition-colors hover:text-ceiba-leaf no-underline">
+        <i class="pi pi-user text-sm"></i>
+        Perfil
+      </a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-4">
+      <div class="hidden lg:flex items-center gap-3 text-right">
+        <p class="text-xs font-bold text-ceiba-ink m-0">{{ usersService.userData()?.user?.name || 'Cliente' }}</p>
+        <button (click)="cerrarSesion()"
+          class="p-2 rounded-full hover:bg-ceiba-coral/10 hover:text-ceiba-coral text-ceiba-ink border border-transparent hover:border-ceiba-coral/20 cursor-pointer flex items-center justify-center"
+          title="Cerrar Sesión">
+          <i class="pi pi-sign-out text-sm"></i>
+        </button>
+      </div>
+
+      <button (click)="cartDrawerVisible = true"
+        class="relative p-2.5 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-shopping-cart text-lg"></i>
+        <span *ngIf="cartService.cartItemsCount() > 0"
+          class="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-ceiba-coral text-[9px] font-extrabold text-white">
+          {{ cartService.cartItemsCount() }}
+        </span>
+      </button>
+    </div>
+
+  </div>
+</header>
 }
 
-
-
-
-<!-- Right Drawer (Sidebar) del carrito -->
-<p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
-    [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
-    <ng-template pTemplate="header">
-        <div class="sidebar-header">
-            <h3>Tu Carrito 🛒</h3>
-            <span class="cart-count">{{ cartService.cartItemsCount() }} items</span>
-        </div>
-    </ng-template>
-    <!-- Contenido del carrito -->
-    <div class="cart-content">
-        <!-- Si el carrito está vacío -->
-        @if(cartService.getCartItems().length === 0){
-        <div class="empty-cart">
-            <i class="pi pi-shopping-cart empty-icon"></i>
-            <p class="productText">Tu carrito está vacío</p>
-            <p-button label="Seguir Comprando"
-                [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none'}"
-                (onClick)="cartDrawerVisible = false"></p-button>
-        </div>
-        }
-        @else {
-        <!-- Lista de productos -->
-        <div class="cart-items">
-            <div class="cart-item" *ngFor="let item of cartService.getCartItems()">
-                <!-- Imagen del producto -->
-                <div class="cart-product-image mr-3">
-                    <img [src]="getImageUrl(item.product.image)" [alt]="item.product.name"
-                        style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
-                </div>
-                <!-- Info del producto -->
-                <div class="item-info">
-                    <h4 class="productText">{{ item.product.name }}</h4>
-                    <p class="item-price">{{ item.product.price | currency:'MXN':'symbol':'1.2-2' }}</p>
-                </div>
-                <!-- Controles (+ - eliminar) -->
-                <div class="item-controls">
-                    <div class="quantity-controls">
-                        <button (click)="decreaseQuantity(item.product.id)" class="qty-btn">-</button>
-                        <span class="quantity">{{ item.quantity }}</span>
-                        <button (click)="increaseQuantity(item.product.id)" class="qty-btn">+</button>
-                    </div>
-                    <button (click)="removeFromCart(item.product.id)" class="remove-btn">
-                        <i class="pi pi-trash"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        <!-- Footer del carrito -->
-        <div class="cart-footer">
-            <div class="cart-total">
-                <strong class="productText">Total: {{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2'
-                    }}</strong>
-            </div>
-            <div class="cart-actions">
-                <p-button label="Limpiar Carrito"
-                    [style]="{'background-color':'var(--ceiba-cream)', 'color':'var(--ceiba-ink)', 'border':'none'}" (onClick)="clearCart()"
-                    class="mr-2" size="small"></p-button>
-                <p-button label="Finalizar Compra"
-                    [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none'}"
-                    (onClick)="cartService.finalizarCompra()" size="small"></p-button>
-            </div>
-        </div>
-        }
+<!-- Left Drawer for Mobile Navigation -->
+<p-drawer [(visible)]="visible" position="left" [blockScroll]="true" [dismissible]="true"
+  [showCloseIcon]="true" [style]="{'width': '300px'}" styleClass="ceiba-sidebar-left">
+  <ng-template pTemplate="header">
+    <div class="flex items-center gap-3 py-2">
+      <div class="w-12 h-12 rounded-full overflow-hidden border border-ceiba-line shadow-xs">
+        <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+      </div>
+      <div class="text-left">
+        <h4 class="font-bold text-sm text-ceiba-ink m-0">{{ usersService.userData()?.user?.name || 'Cliente' }}</h4>
+        <p class="text-[10px] text-ceiba-ink/60 m-0">{{ usersService.userData()?.user?.email || 'Bienvenido' }}</p>
+      </div>
     </div>
+  </ng-template>
+
+  <div class="flex flex-col h-full py-4 justify-between">
+    <div class="space-y-2">
+      @if(!full()) {
+        <a routerLink="/login" (click)="visible = false"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+          <i class="pi pi-sign-in text-ceiba-ink/75"></i>
+          Iniciar Sesión
+        </a>
+      } @else {
+        <a routerLink="/menu/customer" (click)="visible = false"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+          <i class="pi pi-shopping-bag text-ceiba-ink/75"></i>
+          Menú
+        </a>
+        <a routerLink="/customer/deliverys" (click)="visible = false"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+          <i class="pi pi-truck text-ceiba-ink/75"></i>
+          Pedidos
+        </a>
+        <a routerLink="/my-profile" (click)="visible = false"
+          class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+          <i class="pi pi-user text-ceiba-ink/75"></i>
+          Perfil
+        </a>
+      }
+    </div>
+
+    @if(full()) {
+      <div class="pt-4 border-t border-ceiba-line mt-auto">
+        <button pButton label="Cerrar Sesión" icon="pi pi-sign-out"
+          class="w-full justify-start gap-3 border-ceiba-coral text-ceiba-coral hover:bg-ceiba-coral hover:text-white rounded-xl py-3 font-bold transition-all p-button-outlined"
+          (click)="cerrarSesion(); visible = false">
+        </button>
+      </div>
+    }
+  </div>
+</p-drawer>
+
+<!-- Right Drawer for Cart -->
+<p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
+  [showCloseIcon]="true" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-between w-full pr-4 py-1">
+      <h3 class="font-extrabold text-lg text-ceiba-ink m-0">Tu Carrito 🛒</h3>
+      <span class="bg-ceiba-cream px-3 py-1.5 rounded-full border border-ceiba-line text-xs font-bold text-ceiba-ink">
+        {{ cartService.cartItemsCount() }} items
+      </span>
+    </div>
+  </ng-template>
+
+  <div class="flex flex-col h-full justify-between">
+    <!-- Items list -->
+    <div class="flex-1 overflow-y-auto py-4 space-y-4">
+      @if(cartService.getCartItems().length === 0){
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+          <i class="pi pi-shopping-cart text-5xl text-ceiba-ink/20 mb-3"></i>
+          <p class="font-bold text-sm text-ceiba-ink">Tu carrito está vacío</p>
+          <button pButton label="Seguir Comprando" class="mt-4 bg-ceiba-ink text-white border-none rounded-xl py-2 px-4 text-xs font-bold"
+            (click)="cartDrawerVisible = false"></button>
+        </div>
+      } @else {
+        <div *ngFor="let item of cartService.getCartItems()"
+          class="flex items-center gap-4 bg-white border border-ceiba-line p-3 rounded-2xl shadow-xs hover:shadow-md transition-all">
+          <div class="w-16 h-16 rounded-xl overflow-hidden border border-ceiba-line flex-shrink-0">
+            <img [src]="getImageUrl(item.product.image)" [alt]="item.product.name" class="w-full h-full object-cover" />
+          </div>
+          
+          <div class="flex-1 text-left min-w-0">
+            <h4 class="font-extrabold text-sm text-ceiba-ink truncate m-0">{{ item.product.name }}</h4>
+            <p class="text-xs text-ceiba-leaf-dark font-extrabold mt-1 m-0">{{ item.product.price | currency:'MXN':'symbol':'1.2-2' }}</p>
+          </div>
+          
+          <div class="flex flex-col items-end gap-2">
+            <div class="flex items-center bg-ceiba-cream border border-ceiba-line rounded-full p-1 gap-2 scale-90">
+              <button (click)="decreaseQuantity(item.product.id)"
+                class="w-6 h-6 rounded-full bg-white border border-ceiba-line text-ceiba-ink font-bold hover:bg-ceiba-cream transition-all flex items-center justify-center">-</button>
+              <span class="font-extrabold text-xs text-ceiba-ink min-w-[15px] text-center">{{ item.quantity }}</span>
+              <button (click)="increaseQuantity(item.product.id)"
+                class="w-6 h-6 rounded-full bg-white border border-ceiba-line text-ceiba-ink font-bold hover:bg-ceiba-cream transition-all flex items-center justify-center">+</button>
+            </div>
+            
+            <button (click)="removeFromCart(item.product.id)"
+              class="p-2 rounded-full bg-ceiba-coral/10 hover:bg-ceiba-coral/20 text-ceiba-coral border-none cursor-pointer flex items-center justify-center scale-90">
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Footer total and actions -->
+    <div *ngIf="cartService.getCartItems().length > 0" class="pt-6 border-t border-ceiba-line space-y-4">
+      <div class="flex items-center justify-between px-2">
+        <span class="text-sm font-semibold text-ceiba-ink/70">Subtotal</span>
+        <span class="font-black text-xl text-ceiba-ink">{{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2' }}</span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3 pb-6">
+        <button pButton label="Limpiar" icon="pi pi-trash"
+          class="border-ceiba-line text-ceiba-ink hover:bg-ceiba-cream rounded-xl py-3 font-bold transition-all p-button-outlined"
+          (click)="clearCart()"></button>
+        <button pButton label="Pagar" icon="pi pi-credit-card"
+          class="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white border-none rounded-xl py-3 font-bold transition-all"
+          (click)="cartService.finalizarCompra(); cartDrawerVisible = false"></button>
+      </div>
+    </div>
+  </div>
+
 </p-drawer>

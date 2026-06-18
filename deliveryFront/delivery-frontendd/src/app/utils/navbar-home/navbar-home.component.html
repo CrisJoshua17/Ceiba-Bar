@@ -1,176 +1,216 @@
-<nav class="navbar navbar-expand-lg w-100 myNavbar">
-  <div class="container-fluid">
-    <!-- Logo Desktop -->
-    <a class="navbar-brand d-none d-lg-block" routerLink="/">
-      <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
-    </a>
+<header class="sticky top-0 z-40 w-full bg-ceiba-paper border-b border-ceiba-line shadow-xs">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+    
+    <div class="flex items-center gap-4">
+      <!-- Hamburguesa en móvil -->
+      <button (click)="visible = true"
+        class="lg:hidden p-2 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-bars text-lg"></i>
+      </button>
 
-    <!-- Logo centrado en móvil -->
-    <a class="navbar-brand d-lg-none mx-auto" routerLink="/">
-      <p-avatar class="myLogo" image="assets/images/logoarbol.jpg" shape="circle" />
-    </a>
+      <a routerLink="/" class="flex items-center gap-3 no-underline">
+        <div class="w-10 h-10 rounded-full overflow-hidden border border-ceiba-line shadow-xs">
+          <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+        </div>
+        <span class="font-bold text-base tracking-wider text-ceiba-ink hidden sm:block">
+          Ceiba Bar
+        </span>
+      </a>
+    </div>
 
-    <!-- Botón hamburguesa -->
-    <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"
-      aria-controls="sidebarMenu" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <!-- Menú horizontal (solo desktop) -->
-    <div class="collapse navbar-collapse" id="navbarDesktop">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" routerLink="/">INICIO</a>
-        </li>
-        <li class="nav-item dropdown mx-2">
-          <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            MENÚ
-          </a>
-          <ul class="dropdown-menu">
-            <li><a class="dropdown-item" routerLink="/menu/drinks">Drinks</a></li>
-            <li><a class="dropdown-item" routerLink="/menu/snack">Snacks</a></li>
-            <li><a class="dropdown-item" routerLink="/menu/recetario">Recetario</a></li>
-          </ul>
-        </li>
-      </ul>
-      <div class="d-flex align-items-center">
-        <button class="cart-button">
-          <i class="pi pi-user mx-2 social-icon" [routerLink]="['/login']"></i>
-        </button>
-        <button class="cart-button" (click)="cartDrawerVisible = true">
-          <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
-            <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
-          </i>
-        </button>
-        <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
-          <i class="pi pi-facebook mx-2 social-icon facebook"></i>
+    <!-- Desktop Menu horizontal navigation -->
+    <nav class="hidden lg:flex items-center gap-8 font-semibold text-sm tracking-wider text-ceiba-ink">
+      <a routerLink="/" class="transition-colors hover:text-ceiba-leaf no-underline">INICIO</a>
+      
+      <!-- Menú Dropdown -->
+      <div class="relative group">
+        <a class="flex items-center gap-1 transition-colors hover:text-ceiba-leaf no-underline cursor-pointer py-2">
+          MENÚ <i class="pi pi-chevron-down text-[10px]"></i>
         </a>
-        <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
-          <i class="pi pi-whatsapp social-icon whatsapp mx-2"></i>
+        <div class="absolute top-full left-0 w-40 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto transition-all duration-200 z-50 pt-2">
+          <div class="bg-white border border-ceiba-line rounded-xl shadow-lg py-1">
+            <a routerLink="/menu/drinks" class="block px-4 py-2 text-xs font-bold text-ceiba-ink hover:bg-ceiba-cream/50 hover:text-ceiba-leaf no-underline">Drinks</a>
+            <a routerLink="/menu/snack" class="block px-4 py-2 text-xs font-bold text-ceiba-ink hover:bg-ceiba-cream/50 hover:text-ceiba-leaf no-underline">Snacks</a>
+            <a routerLink="/menu/recetario" class="block px-4 py-2 text-xs font-bold text-ceiba-ink hover:bg-ceiba-cream/50 hover:text-ceiba-leaf no-underline">Recetario</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-3">
+      <!-- Perfil/Login -->
+      <button [routerLink]="['/login']"
+        class="p-2.5 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center"
+        title="Iniciar Sesión / Mi Perfil">
+        <i class="pi pi-user text-lg"></i>
+      </button>
+
+      <!-- Carrito -->
+      <button (click)="cartDrawerVisible = true"
+        class="relative p-2.5 rounded-full hover:bg-ceiba-cream border border-ceiba-line text-ceiba-ink cursor-pointer flex items-center justify-center">
+        <i class="pi pi-shopping-cart text-lg"></i>
+        <span *ngIf="cartService.cartItemsCount() > 0"
+          class="absolute -top-1 -right-1 flex h-4.5 w-4.5 items-center justify-center rounded-full bg-ceiba-coral text-[9px] font-extrabold text-white">
+          {{ cartService.cartItemsCount() }}
+        </span>
+      </button>
+
+      <!-- Redes Sociales (Desktop Only) -->
+      <div class="hidden sm:flex items-center gap-1 border-l border-ceiba-line pl-3">
+        <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
+          class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center">
+          <i class="pi pi-facebook text-base"></i>
         </a>
-        <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank"
-          rel="noopener noreferrer">
-          <i class="pi pi-instagram social-icon instagram mx-2"></i>
+        <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer"
+          class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center">
+          <i class="pi pi-whatsapp text-base"></i>
+        </a>
+        <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer"
+          class="p-2 hover:text-ceiba-leaf text-ceiba-ink/70 flex items-center justify-center">
+          <i class="pi pi-instagram text-base"></i>
         </a>
       </div>
     </div>
+
   </div>
-</nav>
+</header>
 
-<!-- Right Drawer (Sidebar) del carrito -->
-<p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
-  [showCloseIcon]="true" [baseZIndex]="10000" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
-
+<!-- Left Drawer for Mobile Navigation -->
+<p-drawer [(visible)]="visible" position="left" [blockScroll]="true" [dismissible]="true"
+  [showCloseIcon]="true" [style]="{'width': '300px'}" styleClass="ceiba-sidebar-left">
   <ng-template pTemplate="header">
-    <div class="sidebar-header">
-      <h3>Tu Carrito 🛒</h3>
-      <span class="cart-count">{{ cartService.cartItemsCount() }} items</span>
+    <div class="flex items-center gap-3 py-2">
+      <div class="w-12 h-12 rounded-full overflow-hidden border border-ceiba-line shadow-xs">
+        <img src="assets/images/logoarbol.jpg" alt="Ceiba Bar Logo" class="w-full h-full object-cover" />
+      </div>
+      <span class="font-bold text-sm text-ceiba-ink">Ceiba Bar</span>
     </div>
   </ng-template>
 
-  <!-- Contenido del carrito -->
-  <div class="cart-content">
+  <div class="flex flex-col h-full py-4 justify-between">
+    <div class="space-y-2">
+      <a routerLink="/" (click)="visible = false"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+        <i class="pi pi-home text-ceiba-ink/75"></i>
+        Inicio
+      </a>
+      
+      <!-- Sección Menú Acordeón en móvil -->
+      <div class="px-4 py-2 text-xs font-bold text-ceiba-ink/40 uppercase tracking-wider">Menú</div>
+      <a routerLink="/menu/drinks" (click)="visible = false"
+        class="flex items-center gap-3 px-6 py-2 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+        <i class="pi pi-minus text-[10px] text-ceiba-leaf"></i>
+        Drinks
+      </a>
+      <a routerLink="/menu/snack" (click)="visible = false"
+        class="flex items-center gap-3 px-6 py-2 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+        <i class="pi pi-minus text-[10px] text-ceiba-leaf"></i>
+        Snacks
+      </a>
+      <a routerLink="/menu/recetario" (click)="visible = false"
+        class="flex items-center gap-3 px-6 py-2 rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/10 text-ceiba-ink no-underline transition-all">
+        <i class="pi pi-minus text-[10px] text-ceiba-leaf"></i>
+        Recetario
+      </a>
 
-    <!-- Si el carrito está vacío -->
-    @if(cartService.getCartItems().length === 0){
-    <div class="empty-cart">
-      <i class="pi pi-shopping-cart empty-icon"></i>
-      <p class="productText">Tu carrito está vacío</p>
-      <p-button label="Seguir Comprando" [style]="{'background-color':'var(--ceiba-ink)', 'color':'white', 'border':'none'}"
-        (onClick)="cartDrawerVisible = false"></p-button>
+      <!-- Perfil/Iniciar Sesión -->
+      <div class="px-4 py-2 border-t border-ceiba-line/50 mt-4 pt-4">
+        <a [routerLink]="['/login']" (click)="visible = false"
+          class="flex items-center gap-3 px-4 py-3 bg-ceiba-cream rounded-xl text-sm font-semibold tracking-wide hover:bg-ceiba-line/15 text-ceiba-ink no-underline transition-all">
+          <i class="pi pi-user text-ceiba-ink/75"></i>
+          Iniciar Sesión
+        </a>
+      </div>
     </div>
-    }
-    @else {
-    <!-- Lista de productos -->
-    <div class="cart-items">
-      <div class="cart-item" *ngFor="let item of cartService.getCartItems()">
 
-        <!-- Imagen del producto -->
-        <div class="cart-product-image mr-3">
-          <img [src]="getImageUrl(item.product.image)" [alt]="item.product.name"
-            style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" />
-        </div>
-        <!-- Info del producto -->
-        <div class="item-info">
-          <h4 class="productText">{{ item.product.name }}</h4>
-          <p class="item-price">{{ item.product.price | currency:'MXN':'symbol':'1.2-2' }}</p>
-        </div>
-        <!-- Controles (+ - eliminar) -->
-        <div class="item-controls">
-          <div class="quantity-controls">
-            <button (click)="decreaseQuantity(item.product.id)" class="qty-btn">-</button>
-            <span class="quantity">{{ item.quantity }}</span>
-            <button (click)="increaseQuantity(item.product.id)" class="qty-btn">+</button>
-          </div>
-          <button (click)="removeFromCart(item.product.id)" class="remove-btn">
-            <i class="pi pi-trash"></i>
-          </button>
-        </div>
-      </div>
+    <!-- Redes Sociales en móvil footer -->
+    <div class="pt-4 border-t border-ceiba-line mt-auto flex justify-center gap-4 py-2">
+      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer"
+        class="p-2.5 rounded-full hover:bg-ceiba-line/10 text-ceiba-ink/80 flex items-center justify-center border border-ceiba-line">
+        <i class="pi pi-facebook text-sm"></i>
+      </a>
+      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer"
+        class="p-2.5 rounded-full hover:bg-ceiba-line/10 text-ceiba-ink/80 flex items-center justify-center border border-ceiba-line">
+        <i class="pi pi-whatsapp text-sm"></i>
+      </a>
+      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank" rel="noopener noreferrer"
+        class="p-2.5 rounded-full hover:bg-ceiba-line/10 text-ceiba-ink/80 flex items-center justify-center border border-ceiba-line">
+        <i class="pi pi-instagram text-sm"></i>
+      </a>
     </div>
-    <!-- Footer del carrito -->
-    <div class="cart-footer">
-      <div class="cart-total">
-        <strong class="productText">Total: {{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2' }}</strong>
-      </div>
-      <div class="cart-actions">
-        <p-button label="Limpiar Carrito" [style]="{'background-color':'var(--ceiba-cream)', 'color':'var(--ceiba-ink)', 'border':'none'}"
-          (onClick)="clearCart()" class="mr-2" size="small"></p-button>
-        <p-button label="Finalizar Compra"
-          [style]="{'background-color':'var(--ceiba-leaf)', 'color':'white', 'border':'none'}"
-          (onClick)="cartService.finalizarCompra()" size="small"></p-button>
-      </div>
-    </div>
-    }
   </div>
 </p-drawer>
 
-<!-- OFFCANVAS SIDEBAR -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
-  <div class="offcanvas-header text-white">
-    <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel">Menú</h5>
-    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-  </div>
-  <div class="offcanvas-body p-0">
-    <ul class="list-group list-group-flush">
-      <!-- INICIO -->
-      <li class="list-group-item">
-        <a routerLink="/" class="nav-link text-white fw-bold d-block py-3 px-4 hover-scale">
-          INICIO
-        </a>
-      </li>
+<!-- Right Drawer for Cart -->
+<p-drawer [(visible)]="cartDrawerVisible" position="right" [blockScroll]="true" [dismissible]="true"
+  [showCloseIcon]="true" [style]="{'width': '450px'}" styleClass="ceiba-cart-drawer">
+  
+  <ng-template pTemplate="header">
+    <div class="flex items-center justify-between w-full pr-4 py-1">
+      <h3 class="font-extrabold text-lg text-ceiba-ink m-0">Tu Carrito 🛒</h3>
+      <span class="bg-ceiba-cream px-3 py-1.5 rounded-full border border-ceiba-line text-xs font-bold text-ceiba-ink">
+        {{ cartService.cartItemsCount() }} items
+      </span>
+    </div>
+  </ng-template>
 
-      <!-- MENÚ con dropdown -->
-      <li class="list-group-item hover-parent">
-        <a class="nav-link dropdown-toggle text-black d-block py-3 px-4" role="button" data-bs-toggle="dropdown"
-          aria-expanded="false">
-          MENÚ
-        </a>
-        <ul class="dropdown-menu w-100">
-          <li><a class="dropdown-item" routerLink="/menu/drinks">Drinks</a></li>
-          <li><a class="dropdown-item" routerLink="/menu/snack">Snacks</a></li>
-          <li><a class="dropdown-item" routerLink="/menu/recetario">Recetario</a></li>
-        </ul>
-      </li>
-    </ul>
+  <div class="flex flex-col h-full justify-between">
+    <!-- Items list -->
+    <div class="flex-1 overflow-y-auto py-4 space-y-4">
+      @if(cartService.getCartItems().length === 0){
+        <div class="flex flex-col items-center justify-center py-16 text-center">
+          <i class="pi pi-shopping-cart text-5xl text-ceiba-ink/20 mb-3"></i>
+          <p class="font-bold text-sm text-ceiba-ink">Tu carrito está vacío</p>
+          <button pButton label="Seguir Comprando" class="mt-4 bg-ceiba-ink text-white border-none rounded-xl py-2 px-4 text-xs font-bold"
+            (click)="cartDrawerVisible = false"></button>
+        </div>
+      } @else {
+        <div *ngFor="let item of cartService.getCartItems()"
+          class="flex items-center gap-4 bg-white border border-ceiba-line p-3 rounded-2xl shadow-xs hover:shadow-md transition-all">
+          <div class="w-16 h-16 rounded-xl overflow-hidden border border-ceiba-line flex-shrink-0">
+            <img [src]="getImageUrl(item.product.image)" [alt]="item.product.name" class="w-full h-full object-cover" />
+          </div>
+          
+          <div class="flex-1 text-left min-w-0">
+            <h4 class="font-extrabold text-sm text-ceiba-ink truncate m-0">{{ item.product.name }}</h4>
+            <p class="text-xs text-ceiba-leaf-dark font-extrabold mt-1 m-0">{{ item.product.price | currency:'MXN':'symbol':'1.2-2' }}</p>
+          </div>
+          
+          <div class="flex flex-col items-end gap-2">
+            <div class="flex items-center bg-ceiba-cream border border-ceiba-line rounded-full p-1 gap-2 scale-90">
+              <button (click)="decreaseQuantity(item.product.id)"
+                class="w-6 h-6 rounded-full bg-white border border-ceiba-line text-ceiba-ink font-bold hover:bg-ceiba-cream transition-all flex items-center justify-center">-</button>
+              <span class="font-extrabold text-xs text-ceiba-ink min-w-[15px] text-center">{{ item.quantity }}</span>
+              <button (click)="increaseQuantity(item.product.id)"
+                class="w-6 h-6 rounded-full bg-white border border-ceiba-line text-ceiba-ink font-bold hover:bg-ceiba-cream transition-all flex items-center justify-center">+</button>
+            </div>
+            
+            <button (click)="removeFromCart(item.product.id)"
+              class="p-2 rounded-full bg-ceiba-coral/10 hover:bg-ceiba-coral/20 text-ceiba-coral border-none cursor-pointer flex items-center justify-center scale-90">
+              <i class="pi pi-trash text-xs"></i>
+            </button>
+          </div>
+        </div>
+      }
+    </div>
 
-    <!-- Iconos  -->
-    <div class="p-4 border-top d-flex justify-content-center gap-2">
-      <i class="pi pi-user mx-1 social-icon" [routerLink]="['/login']"></i>
-      <i class="pi pi-shopping-cart mx-3 social-icon p-overlay-badge">
-        <p-badge [value]="cartService.cartItemsCount()" severity="danger"></p-badge>
-      </i>
-
-      <a href="https://www.facebook.com/share/15fkBAVpr5/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-facebook mx-1 social-icon facebook"></i>
-      </a>
-      <a href="https://wa.me/525578951973" target="_blank" rel="noopener noreferrer">
-        <i class="pi pi-whatsapp social-icon whatsapp mx-1"></i>
-      </a>
-      <a href="https://www.instagram.com/elhombre.globo?igsh=MXN0aDRrdndsOGRi&utm_source=qr" target="_blank"
-        rel="noopener noreferrer">
-        <i class="pi pi-instagram social-icon instagram mx-1"></i>
-      </a>
+    <!-- Footer total and actions -->
+    <div *ngIf="cartService.getCartItems().length > 0" class="pt-6 border-t border-ceiba-line space-y-4">
+      <div class="flex items-center justify-between px-2">
+        <span class="text-sm font-semibold text-ceiba-ink/70">Subtotal</span>
+        <span class="font-black text-xl text-ceiba-ink">{{ cartService.cartTotal() | currency:'MXN':'symbol':'1.2-2' }}</span>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3 pb-6">
+        <button pButton label="Limpiar" icon="pi pi-trash"
+          class="border-ceiba-line text-ceiba-ink hover:bg-ceiba-cream rounded-xl py-3 font-bold transition-all p-button-outlined"
+          (click)="clearCart()"></button>
+        <button pButton label="Pagar" icon="pi pi-credit-card"
+          class="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white border-none rounded-xl py-3 font-bold transition-all"
+          (click)="cartService.finalizarCompra(); cartDrawerVisible = false"></button>
+      </div>
     </div>
   </div>
-</div>
+
+</p-drawer>

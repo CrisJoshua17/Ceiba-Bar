@@ -2,10 +2,7 @@ import { NavbarHomeComponent } from "../utils/navbar-home/navbar-home.component"
 import { GalleriaModule } from 'primeng/galleria';
 import { CommonModule } from '@angular/common';
 import { DialogModule } from 'primeng/dialog';
-import { Component, AfterViewInit, ViewChild, ElementRef, CUSTOM_ELEMENTS_SCHEMA, ChangeDetectorRef } from '@angular/core';
-import { SwiperContainer } from 'swiper/element';
-import { SwiperOptions } from 'swiper/types';
-import { register } from 'swiper/element/bundle';
+import { Component, AfterViewInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { Texts } from "../utils/Text/text";
 import * as AOS from 'aos';
 import { ImagesService } from "../services/images.service";
@@ -23,11 +20,10 @@ import { MessagesService } from "../services/messages.service";
   selector: 'app-first-view',
   imports: [NavbarHomeComponent,CommonModule,GalleriaModule,DialogModule,CarouselModule,ButtonModule,ToastModule  ],
   templateUrl: './first-view.component.html',
-  styleUrl: './first-view.component.scss',
-    schemas: [CUSTOM_ELEMENTS_SCHEMA] ,
+  styleUrl: './first-view.component.scss'
 })
 export class FirstViewComponent {
-@ViewChild('swiper') swiperRef!: ElementRef;
+
 
 activeIndexGalleria: number = 0;
 isLoading: boolean = true;
@@ -148,64 +144,39 @@ constructor(private imagesService: ImagesService, private cdr:ChangeDetectorRef,
     once: true,
     offset: 100
   });
-
-  register();
-
- 
-  
 }
 
   // Método para abrir el modal en la imagen específica
   showImage(index: number) {
     this.activeIndex = index;
     this.displayModal = true;
-    
-    // Esperar a que el modal se renderice para inicializar Swiper
-    setTimeout(() => {
-      this.initSwiper();
-    }, 100);
   }
-
-  initSwiper() {
-  const swiperEl = this.swiperRef?.nativeElement;
-  if (!swiperEl) return;
-
-  const swiper = swiperEl.swiper;
-
-  // Evitar reconfigurar si ya existe
-  if (swiper && !swiper.destroyed) {
-    swiper.slideTo(this.activeIndex);
-    swiper.update();
-    return;
-  }
-
-  // Configuración solo una vez
-  Object.assign(swiperEl, {
-    slidesPerView: 1,
-    spaceBetween: 0,
-    centeredSlides: true,
-    navigation: true, 
-    pagination: {
-      type: 'fraction'
-    },
-    zoom: true,
-    keyboard: { enabled: true },
-    on: {
-      slideChange: () => {
-        this.activeIndex = swiper.activeIndex;
-        this.cdr.detectChanges();
-      }
-    }
-  });
-
-  // Registrar Swiper si no lo está
-  swiperEl.initialize();
-}
-
 
   // Método para cerrar el modal
   hideGallery() {
     this.displayModal = false;
+  }
+
+  prevImage(event: Event) {
+    event.stopPropagation();
+    this.activeIndex = (this.activeIndex - 1 + this.images.length) % this.images.length;
+  }
+  
+  nextImage(event: Event) {
+    event.stopPropagation();
+    this.activeIndex = (this.activeIndex + 1) % this.images.length;
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (!this.displayModal) return;
+    if (event.key === 'ArrowRight') {
+      this.activeIndex = (this.activeIndex + 1) % this.images.length;
+    } else if (event.key === 'ArrowLeft') {
+      this.activeIndex = (this.activeIndex - 1 + this.images.length) % this.images.length;
+    } else if (event.key === 'Escape') {
+      this.displayModal = false;
+    }
   }
 
 

@@ -89,6 +89,7 @@ export default function CheckoutPage() {
       price: item.product.price,
       image: item.product.image || '',
       available: item.product.available,
+      quantity: item.quantity,
     }));
 
     const orderDto: OrderDto = {
@@ -103,11 +104,8 @@ export default function CheckoutPage() {
       status: 'CREATED',
     };
 
-    const amountInCents = Math.round(total * 100);
-
     const checkoutRequest: CheckoutRequest = {
       orderDto,
-      amount: amountInCents,
       itemProduct: `Pedido de ${name}`,
       method,
     };

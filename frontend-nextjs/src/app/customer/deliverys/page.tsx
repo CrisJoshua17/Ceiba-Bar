@@ -20,7 +20,7 @@ import Link from 'next/link';
 
 export default function CustomerDeliveriesPage() {
   const router = useRouter();
-  const { authenticated, profile, fetchProfile, initialized } = useAuthStore();
+  const { authenticated, user, profile, fetchProfile, initialized } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -39,10 +39,24 @@ export default function CustomerDeliveriesPage() {
   const [submittingRating, setSubmittingRating] = useState(false);
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole !== 'CUSTOMER') {
+        if (user?.primaryRole === 'ADMIN') {
+          router.push('/admin/dashboard');
+        } else if (user?.primaryRole === 'DRIVER') {
+          router.push('/drivers/dashboard');
+        }
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
+
+  useEffect(() => {
+    if (authenticated && user?.primaryRole === 'CUSTOMER' && !profile) {
+      fetchProfile();
+    }
+  }, [authenticated, user, profile, fetchProfile]);
 
   const loadOrders = async () => {
     const customerId = profile?.customer?.id;
@@ -123,8 +137,17 @@ export default function CustomerDeliveriesPage() {
 
   // Filter orders by search & tab
   const filteredOrders = orders.filter((o) => {
-    const matchesSearch = o.id?.toString().includes(searchQuery.trim());
-    if (!matchesSearch) return false;
+    const s = searchQuery.toLowerCase().trim();
+    if (s) {
+      const matchesId = o.id?.toString().includes(s);
+      const matchesStatus = o.status?.toLowerCase().includes(s);
+      const matchesProducts = o.products?.some((p) => p.name.toLowerCase().includes(s));
+      const matchesAddress = o.address?.toLowerCase().includes(s);
+
+      if (!matchesId && !matchesStatus && !matchesProducts && !matchesAddress) {
+        return false;
+      }
+    }
 
     if (activeTab === 'all') return true;
     if (activeTab === 'active') {

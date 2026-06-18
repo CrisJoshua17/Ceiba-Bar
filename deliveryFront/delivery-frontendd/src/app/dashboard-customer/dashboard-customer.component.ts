@@ -1,15 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { CardModule } from 'primeng/card';
-import { NavbarAdminComponent } from '../navbar-admin/navbar-admin.component';
 import { NavbarCustomerComponent } from '../navbar-customer/navbar-customer.component';
+import { UsersService } from '../services/users.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard-customer',
-  imports: [NavbarCustomerComponent, CardModule, RouterLink, ],
+  imports: [NavbarCustomerComponent, RouterLink, CommonModule],
   templateUrl: './dashboard-customer.component.html',
   styleUrl: './dashboard-customer.component.scss'
 })
-export class DashboardCustomerComponent {
+export class DashboardCustomerComponent implements OnInit {
+  private usersService = inject(UsersService);
+  userData = this.usersService.userData;
 
+  ngOnInit() {
+    if (!this.userData()) {
+      this.usersService.getUserInfo().subscribe();
+    }
+  }
 }

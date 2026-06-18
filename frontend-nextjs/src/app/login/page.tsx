@@ -24,7 +24,7 @@ export default function LoginPage() {
   }, [initialized, authenticated, user, router]);
 
   const handleLogin = () => {
-    login(window.location.origin + '/customer/dashboard');
+    login(window.location.origin + '/login');
   };
 
   return (

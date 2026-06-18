@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { useCartStore } from '@/store/useCartStore';
@@ -25,9 +25,14 @@ export function NavbarCustomer() {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const cartItemsCount = useCartStore((state) => state.getCartItemsCount());
   const { authenticated, user, logout } = useAuthStore();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleLogout = () => {
     setSidebarOpen(false);
@@ -122,7 +127,7 @@ export function NavbarCustomer() {
               onClick={() => setCartOpen(true)}
             >
               <ShoppingCart className="w-4 h-4" />
-              {cartItemsCount > 0 && (
+              {mounted && cartItemsCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-ceiba-coral text-[8px] font-bold text-white">
                   {cartItemsCount}
                 </span>

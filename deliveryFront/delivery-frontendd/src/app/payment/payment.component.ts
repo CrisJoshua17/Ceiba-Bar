@@ -1,9 +1,7 @@
 import { Component, computed, inject } from '@angular/core';
 import { NavbarCustomerComponent } from '../navbar-customer/navbar-customer.component';
-import { CardModule } from 'primeng/card';
 import { TableModule } from 'primeng/table';
 import { CurrencyPipe } from '@angular/common';
-import { PanelModule } from 'primeng/panel';
 import { ButtonModule } from 'primeng/button';
 import { CartService } from '../services/cart.service';
 import { CartItem, ProductsDtoTable, ProductDto, OrderDto, CheckoutRequest } from '../model/Dtos';
@@ -15,10 +13,8 @@ import { PaymentsService } from '../services/payments.service';
   selector: 'app-payment',
   standalone: true,
   imports: [ NavbarCustomerComponent,
-  CardModule,
   TableModule,
   CurrencyPipe,
-  PanelModule,
   ReactiveFormsModule,
   ButtonModule],
   templateUrl: './payment.component.html',
@@ -102,7 +98,8 @@ form = this.fb.group({
       description: item.product.description,
       price: item.product.price,
       image: item.product.image || '',
-      available: item.product.available
+      available: item.product.available,
+      quantity: item.quantity
     }));
 
     // Construir OrderDto
@@ -118,12 +115,8 @@ form = this.fb.group({
       status: 'CREATED'
     };
 
-    // Calcular monto en centavos (Stripe usa centavos)
-    const amountInCents = Math.round(this.cartTotal() * 100);
-
     const checkoutRequest: CheckoutRequest = {
       orderDto: orderDto,
-      amount: amountInCents,
       itemProduct: `Pedido de ${formValues.name}`,
       method: 'STRIPE'
     };
@@ -158,7 +151,8 @@ form = this.fb.group({
       description: item.product.description,
       price: item.product.price,
       image: item.product.image || '',
-      available: item.product.available
+      available: item.product.available,
+      quantity: item.quantity
     }));
 
     const orderDto: OrderDto = {
@@ -173,11 +167,8 @@ form = this.fb.group({
       status: 'CREATED'
     };
 
-    const amountInCents = Math.round(this.cartTotal() * 100);
-
     const checkoutRequest: CheckoutRequest = {
       orderDto: orderDto,
-      amount: amountInCents,
       itemProduct: `Pedido de ${formValues.name}`,
       method: 'PAYPAL'
     };

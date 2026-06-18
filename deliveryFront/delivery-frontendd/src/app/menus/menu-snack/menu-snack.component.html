@@ -1,87 +1,108 @@
 <app-navbar-home></app-navbar-home>
 
-<div class="menu-container">
-    <p-dataview #dv [value]="products" [layout]="layout">
-        <ng-template #header>
-            <div class="header-controls">
-                <h2 class="header-title text-center text-black">Menu Snacks</h2>
-                <p-selectbutton [(ngModel)]="layout" [options]="options" [allowEmpty]="false">
-                    <ng-template #item let-item>
-                        <i class="pi" [ngClass]="{ 'pi-bars': item === 'list', 'pi-table': item === 'grid' }"></i>
-                    </ng-template>
-                </p-selectbutton>
-            </div>
+<div class="w-full min-h-[calc(100vh-82px)] bg-gradient-to-b from-ceiba-cream/40 via-transparent to-transparent p-4 sm:p-8">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Header Controls -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-ceiba-line pb-4">
+      <div class="text-left">
+        <h2 class="text-3xl font-black text-ceiba-ink m-0 tracking-tight">Menú de Snacks</h2>
+        <p class="text-xs text-ceiba-ink/60 mt-1 m-0">Acompaña tu bebida favorita con las mejores botanas y snacks de la casa.</p>
+      </div>
+      
+      <p-selectbutton [(ngModel)]="layout" [options]="options" [allowEmpty]="false" 
+        styleClass="bg-white border border-ceiba-line p-1 rounded-xl shadow-xs">
+        <ng-template #item let-item>
+          <i class="pi" [ngClass]="{ 'pi-bars': item === 'list', 'pi-table': item === 'grid' }"></i>
         </ng-template>
+      </p-selectbutton>
+    </div>
 
-        <!-- Vista de Lista -->
-        <ng-template #list let-items>
-            <div class="list-view">
-                <div *ngFor="let item of items; let first = first" class="list-item" [class.with-border]="!first">
-                    <div class="item-image-container">
-                        <img class="item-image" [src]="item.image" [alt]="item.name" />
-                        <p-tag [value]="item.inventoryStatus" [severity]="getSeverity(item)" class="status-tag"
-                            [style.left.px]="4" [style.top.px]="4" />
-                    </div>
+    <!-- Vista de Lista -->
+    <div *ngIf="layout === 'list'" class="flex flex-col gap-4 p-2 animate-fade-in">
+      <!-- Estado Vacío -->
+      <div *ngIf="!products || products.length === 0" class="text-center py-16 bg-white/60 border border-ceiba-line rounded-2xl">
+        <i class="pi pi-info-circle text-4xl text-ceiba-ink/30 mb-3"></i>
+        <p class="font-bold text-sm text-ceiba-ink/60 m-0">No hay snacks disponibles en este momento.</p>
+      </div>
 
-                    <div class="item-content">
-                        <div class="item-info">
-                            <div class="item-details">
-                                <span class="item-type">{{ item.type }}</span>
-                                <div class="item-name">{{ item.name }}</div>
-                            </div>
+      <!-- Items de la Lista -->
+      <div *ngFor="let item of products" 
+        class="flex flex-col sm:flex-row gap-5 bg-white/80 border border-ceiba-line p-4 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
+        
+        <!-- Contenedor de Imagen -->
+        <div class="relative w-full sm:w-44 aspect-video sm:aspect-square rounded-xl overflow-hidden border border-ceiba-line/50 flex-shrink-0 bg-ceiba-cream shadow-inner">
+          <img class="w-full h-full object-cover" [src]="item.image" [alt]="item.name" />
+          <span class="absolute top-2 left-2 font-bold text-[9px] px-2.5 py-1 rounded-lg tracking-wider uppercase shadow-xs border"
+            [ngClass]="{
+              'bg-ceiba-leaf/10 text-ceiba-leaf border-ceiba-leaf/20': item.available,
+              'bg-ceiba-coral/10 text-ceiba-coral border-ceiba-coral/20': !item.available
+            }">
+            {{ item.available ? 'Disponible' : 'Agotado' }}
+          </span>
+        </div>
 
-                        </div>
+        <!-- Detalles y Contenido -->
+        <div class="flex-1 flex flex-col justify-between text-left">
+          <div class="space-y-1">
+            <span class="text-[10px] font-bold text-ceiba-leaf-dark uppercase tracking-widest">Snack</span>
+            <h3 class="text-lg font-black text-ceiba-ink m-0 leading-snug">{{ item.name }}</h3>
+            <p class="text-xs text-ceiba-ink/70 leading-relaxed mt-2 m-0">{{ item.description }}</p>
+          </div>
 
-                        <div class="item-actions">
-                            <span class="item-price">{{ item.price | currency: 'MXN' }}</span>
-                            <div class="action-buttons">
-                                <button pButton icon="pi pi-shopping-cart" label="Comprar"
-                                    [disabled]="item.available === false" (click)="addToCart(item)"
-                                    class="buy-button"></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
+          <div class="flex items-center justify-between mt-4 pt-3 border-t border-ceiba-line/40">
+            <span class="text-base font-black text-ceiba-leaf-dark">${{ item.price }} MXN</span>
+            <button pButton icon="pi pi-shopping-cart" label="Comprar"
+              [disabled]="!item.available" (click)="addToCart(item)"
+              class="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white rounded-xl py-2 px-5 font-bold border-none transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:shadow-md"></button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-        <!-- Vista de Grid -->
-        <ng-template #grid let-items>
-            <div class="grid-view">
-                <div *ngFor="let product of items" class="grid-item">
-                    <div class="product-card">
-                        <div class="product-image-wrapper">
-                            <div class="product-image-container">
-                                <img class="product-image" [src]="product.image" [alt]="product.name" />
-                                <p-tag [value]="product.inventoryStatus" [severity]="getSeverity(product)"
-                                    class="status-tag" [style.left.px]="4" [style.top.px]="4" />
-                            </div>
-                        </div>
+    <!-- Vista de Grid -->
+    <div *ngIf="layout === 'grid'" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-2 animate-fade-in">
+      <!-- Estado Vacío -->
+      <div *ngIf="!products || products.length === 0" class="col-span-full text-center py-16 bg-white/60 border border-ceiba-line rounded-2xl">
+        <i class="pi pi-info-circle text-4xl text-ceiba-ink/30 mb-3"></i>
+        <p class="font-bold text-sm text-ceiba-ink/60 m-0">No hay snacks disponibles en este momento.</p>
+      </div>
 
-                        <div class="product-details">
-                            <div class="product-header">
-                                <div class="product-info">
-                                    <span class="product-type">{{ product.type }}</span>
-                                    <div class="product-name">{{ product.name }}</div>
-                                </div>
-                            </div>
+      <!-- Items del Grid -->
+      <div *ngFor="let product of products" 
+        class="bg-white/80 border border-ceiba-line rounded-2xl overflow-hidden shadow-xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col h-full group">
+        
+        <!-- Imagen -->
+        <div class="relative aspect-video w-full overflow-hidden bg-ceiba-cream border-b border-ceiba-line/40">
+          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" [src]="product.image" [alt]="product.name" />
+          <span class="absolute top-3 left-3 font-bold text-[9px] px-2.5 py-1 rounded-lg tracking-wider uppercase shadow-sm border"
+            [ngClass]="{
+              'bg-ceiba-leaf/10 text-ceiba-leaf border-ceiba-leaf/20': product.available,
+              'bg-ceiba-coral/10 text-ceiba-coral border-ceiba-coral/20': !product.available
+            }">
+            {{ product.available ? 'Disponible' : 'Agotado' }}
+          </span>
+        </div>
 
-                            <div class="product-footer">
-                                <span class="product-price">{{ product.price | currency: 'MXN' }}</span>
-                                <div class="product-actions">
-                                    <button pButton icon="pi pi-shopping-cart" label="Comprar"
-                                        (click)="addToCart(product)" [disabled]="product.available === false"
-                                        class="buy-button-full"></button>
+        <!-- Información y Botones -->
+        <div class="p-5 flex-1 flex flex-col justify-between text-left">
+          <div class="space-y-2">
+            <span class="text-[9px] font-bold text-ceiba-leaf-dark uppercase tracking-widest">Snack</span>
+            <h3 class="text-base font-black text-ceiba-ink truncate m-0 leading-snug">{{ product.name }}</h3>
+            <p class="text-xs text-ceiba-ink/70 line-clamp-3 leading-relaxed mt-2 min-h-[54px] m-0">{{ product.description }}</p>
+          </div>
 
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </ng-template>
-    </p-dataview>
+          <div class="flex items-center justify-between mt-6 pt-4 border-t border-ceiba-line/50">
+            <span class="text-base font-black text-ceiba-leaf-dark">${{ product.price }} MXN</span>
+            <button pButton icon="pi pi-shopping-cart" label="Comprar"
+              [disabled]="!product.available" (click)="addToCart(product)"
+              class="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white rounded-xl py-2.5 px-4 font-bold border-none transition-all flex items-center gap-2 cursor-pointer shadow-xs hover:shadow-md"></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
-
 
 <p-toast></p-toast>

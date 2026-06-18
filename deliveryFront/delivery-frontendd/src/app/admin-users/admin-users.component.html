@@ -4,7 +4,7 @@
   <p-card>
     <ng-template #header>
       <div class="cardheader">
-        <h2 class="d-flex justify-content-center align-items-center">
+        <h2 class="flex justify-center items-center">
           Dashboard De Administración de Usuarios
           <i class="pi pi-user-edit mx-3" style="font-size: 2rem"></i>
         </h2>
@@ -23,7 +23,7 @@
         <!-- ===================== TAB ADMIN ===================== -->
         <p-tabpanel value="0">
 
-          <div class="my-3 d-flex align-items-center gap-2">
+          <div class="my-3 flex items-center gap-2">
             <input pInputText type="text" class="w-75 myInput" placeholder="Buscar administrador..."
               [ngModel]="searchAdmins()" (ngModelChange)="searchAdmins.set($event)" />
             <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchAdmins()"
@@ -79,7 +79,7 @@
         <!-- ===================== TAB DRIVERS ===================== -->
         <p-tabpanel value="1">
 
-          <div class="my-3 d-flex align-items-center gap-2">
+          <div class="my-3 flex items-center gap-2">
             <input pInputText type="text" class="w-75 myInput" placeholder="Buscar conductor..."
               [ngModel]="searchDrivers()" (ngModelChange)="searchDrivers.set($event)" />
             <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchDrivers()"
@@ -134,7 +134,7 @@
         <!-- ===================== TAB CUSTOMERS ===================== -->
         <p-tabpanel value="2">
 
-          <div class="my-3 d-flex align-items-center gap-2">
+          <div class="my-3 flex items-center gap-2">
             <input pInputText type="text" class="w-75 myInput" placeholder="Buscar cliente..."
               [ngModel]="searchCustomers()" (ngModelChange)="searchCustomers.set($event)" />
             <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchCustomers()"

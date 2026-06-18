@@ -18,16 +18,14 @@ public interface PayPalClient {
             @RequestHeader("Authorization") String authorization,
             @RequestBody String grantType);
 
-    @PostMapping("/v2/checkout/orders")
+    @PostMapping(value = "/v2/checkout/orders", headers = "Content-Type=application/json")
     ResponseEntity<Map<String, Object>> createOrder(
             @RequestHeader("Authorization") String bearerToken,
-            @RequestHeader("Content-Type") String contentType,
             @RequestBody Map<String, Object> orderPayload);
 
-    @PostMapping("/v2/checkout/orders/{id}/capture")
+    @PostMapping(value = "/v2/checkout/orders/{id}/capture", headers = "Content-Type=application/json")
     ResponseEntity<Map<String, Object>> captureOrder(
             @RequestHeader("Authorization") String bearerToken,
-            @RequestHeader("Content-Type") String contentType,
             @PathVariable("id") String orderId);
             
     @GetMapping("/v2/checkout/orders/{id}")

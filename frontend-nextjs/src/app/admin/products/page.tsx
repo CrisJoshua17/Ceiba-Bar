@@ -22,7 +22,7 @@ import Link from 'next/link';
 
 export default function AdminProductsPage() {
   const router = useRouter();
-  const { authenticated, initialized } = useAuthStore();
+  const { authenticated, user, initialized } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [products, setProducts] = useState<ProductsDtoTable[]>([]);
@@ -43,10 +43,16 @@ export default function AdminProductsPage() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole === 'CUSTOMER') {
+        router.push('/customer/dashboard');
+      } else if (user?.primaryRole === 'DRIVER') {
+        router.push('/drivers/dashboard');
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
 
   const loadProducts = async () => {
     setLoading(true);
@@ -64,10 +70,11 @@ export default function AdminProductsPage() {
   };
 
   useEffect(() => {
-    if (authenticated) {
+    if (authenticated && user?.primaryRole === 'ADMIN') {
       loadProducts();
     }
-  }, [authenticated]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authenticated, user]);
 
   const handleOpenCreate = () => {
     setEditingId(null);

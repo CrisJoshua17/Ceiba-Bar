@@ -171,6 +171,7 @@ export interface ProductDto {
   price: number;
   image: string;
   available?: boolean;
+  quantity?: number; // <-- Cantidad de este producto en el checkout
 }
 
 export interface OrderDto {
@@ -196,7 +197,7 @@ export interface OrderDto {
 
 export interface CheckoutRequest {
   orderDto: OrderDto;
-  amount: number;
+  amount?: number; // <-- Opcional, el backend lo recalcula de forma segura
   itemProduct: string;
   method?: string;
 }

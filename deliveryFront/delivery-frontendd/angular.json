@@ -37,14 +37,11 @@
     }
             ],
             "styles": [
-              
               "node_modules/aos/dist/aos.css",
-               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/tailwind.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-            ]
+            "scripts": []
           },
           "configurations": {
             "production": {
@@ -116,12 +113,10 @@
             ],
             "styles": [
               "node_modules/aos/dist/aos.css",
-               "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/tailwind.css",
               "src/styles.scss"
             ],
-            "scripts": [
-              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
-            ]
+            "scripts": []
           }
         }
       }

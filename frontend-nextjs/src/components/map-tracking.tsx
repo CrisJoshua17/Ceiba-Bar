@@ -17,6 +17,27 @@ interface MapTrackingProps {
   orderId: number;
 }
 
+// Custom marker icons (defined outside component using local assets to avoid Flaticon hotlink blockage)
+const getDriverIcon = () => L.icon({
+  iconUrl: '/assets/images/delivery-truck.png', // Delivery Truck
+  iconSize: [40, 40],
+  iconAnchor: [20, 20],
+});
+
+const getDestIcon = () => L.icon({
+  iconUrl: '/assets/images/marker-icon.png', // Blue/Standard Pin
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -32],
+});
+
+const getDeliveredIcon = () => L.icon({
+  iconUrl: '/assets/images/marker-shadow.png', // Delivered Pin / Shadow
+  iconSize: [36, 36],
+  iconAnchor: [18, 36],
+  popupAnchor: [0, -32],
+});
+
 export default function MapTracking({ orderId }: MapTrackingProps) {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -30,27 +51,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
   const [address, setAddress] = useState('');
   const [addressSent, setAddressSent] = useState(false);
   const [sendingAddress, setSendingAddress] = useState(false);
-
-  // Custom marker icons
-  const driverIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/7542/7542670.png', // Delivery Truck
-    iconSize: [40, 40],
-    iconAnchor: [20, 20],
-  });
-
-  const destIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png', // Red Pin
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -32],
-  });
-
-  const deliveredIcon = L.icon({
-    iconUrl: 'https://cdn-icons-png.flaticon.com/512/190/190411.png', // Green check mark/success
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],
-    popupAnchor: [0, -32],
-  });
+  const [isMapReady, setIsMapReady] = useState(false);
 
   // Query order details
   const { data: order, isLoading: loadingOrder } = useQuery({
@@ -65,10 +66,13 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
     refetchInterval: 15000, // Refresh order status every 15s
   });
 
-  // Init leaflet map
+  // Init leaflet map (re-run once loadingOrder completes to ensure container ref is in DOM)
   useEffect(() => {
+    if (loadingOrder) return;
     if (!mapContainerRef.current || mapRef.current) return;
 
+    let timer: any;
+    let timer2: any;
     try {
       // Create map
       const map = L.map(mapContainerRef.current).setView([19.4326, -99.1332], 14);
@@ -80,7 +84,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
       }).addTo(map);
 
       // Create driver marker
-      const driverMarker = L.marker([19.4326, -99.1332], { icon: driverIcon })
+      const driverMarker = L.marker([19.4326, -99.1332], { icon: getDriverIcon() })
         .addTo(map)
         .bindPopup('<b>Repartidor</b><br/>Ubicación actual')
         .openPopup();
@@ -95,49 +99,63 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
       }).addTo(map);
       routeLineRef.current = routeLine;
 
-      // Force refresh size
-      setTimeout(() => {
-        map.invalidateSize();
-      }, 200);
+      setIsMapReady(true);
+
+      // Force refresh size dynamically to address zero-height styling issue during mount
+      timer = setTimeout(() => {
+        if (mapRef.current) {
+          map.invalidateSize();
+        }
+      }, 100);
+
+      timer2 = setTimeout(() => {
+        if (mapRef.current) {
+          map.invalidateSize();
+        }
+      }, 800);
     } catch (error) {
       console.error('Error initializing Leaflet map:', error);
     }
 
     return () => {
+      clearTimeout(timer);
+      clearTimeout(timer2);
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
+        setIsMapReady(false);
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadingOrder]);
 
-  // Update order fields
+  // Update order fields and auto-start delivery if needed
   useEffect(() => {
     if (order) {
       if (order.address) {
         setAddress(order.address);
-      }
-      if (order.status === 'EN_CAMINO' || order.status === 'PREPARING') {
-        setAddressSent(true);
-        setStatus(order.status === 'PREPARING' ? 'Preparando pedido...' : 'Repartidor en camino...');
+        
+        if (order.status === 'EN_CAMINO' || order.status === 'PREPARING') {
+          setAddressSent(true);
+          setStatus(order.status === 'PREPARING' ? 'Preparando pedido...' : 'Repartidor en camino...');
+        } else if ((order.status === 'PAGADO' || order.status === 'CREATED') && !addressSent && !sendingAddress) {
+          // Si tiene dirección pero no ha iniciado, lo iniciamos automáticamente
+          sendAddress(order.address);
+        }
       }
     }
-  }, [order]);
+  }, [order, addressSent, sendingAddress]);
 
   // Connect WebSocket & fetch latest coords
   useEffect(() => {
-    if (!mapRef.current || !addressSent) return;
+    if (!isMapReady || !addressSent) return;
 
     // Load destination coordinate
     const fetchLatestTracking = async () => {
       try {
         const response = await api.get(`/api/tracking/${orderId}/latest`);
-        if (response.data?.success && response.data?.data) {
-          const t = response.data.data;
-          if (t.deliveryLat && t.deliveryLng) {
-            setupDestination(t.deliveryLat, t.deliveryLng);
-          }
+        const t = response.data;
+        if (t && t.deliveryLat && t.deliveryLng) {
+          setupDestination(t.deliveryLat, t.deliveryLng);
         }
       } catch (err) {
         console.error('Error loading latest tracking info:', err);
@@ -184,7 +202,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [addressSent, orderId]);
+  }, [isMapReady, addressSent, orderId]);
 
   const setupDestination = (lat: number, lng: number) => {
     const map = mapRef.current;
@@ -197,7 +215,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
         map.removeLayer(destinationMarkerRef.current);
       }
 
-      const destMarker = L.marker(destLatLng, { icon: destIcon })
+      const destMarker = L.marker(destLatLng, { icon: getDestIcon() })
         .addTo(map)
         .bindPopup('<b>Destino de Entrega</b>')
         .openPopup();
@@ -242,7 +260,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
 
         if (driverStatus === 'ENTREGADO') {
           setStatus('¡Pedido Entregado! 🎉');
-          destinationMarkerRef.current.setIcon(deliveredIcon);
+          destinationMarkerRef.current.setIcon(getDeliveredIcon());
           destinationMarkerRef.current.bindPopup('<b>¡Entregado! 🎉</b>').openPopup();
           driverMarker.bindPopup('<b>¡Pedido Entregado! 🎉</b>').openPopup();
           toast.success('El pedido ha sido entregado exitosamente.');
@@ -265,8 +283,9 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
     }
   };
 
-  const sendAddress = async () => {
-    if (!address.trim()) return;
+  const sendAddress = async (addrToUse?: string) => {
+    const targetAddress = addrToUse || address;
+    if (!targetAddress.trim()) return;
 
     setSendingAddress(true);
     setStatus('Iniciando envío...');
@@ -274,7 +293,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
     try {
       const response = await api.post(
         `/api/delivery/${orderId}/address`,
-        { address },
+        { address: targetAddress },
         { headers: { 'Content-Type': 'application/json' } }
       );
       
@@ -286,11 +305,9 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
       setTimeout(async () => {
         try {
           const trackingResp = await api.get(`/api/tracking/${orderId}/latest`);
-          if (trackingResp.data?.success && trackingResp.data?.data) {
-            const t = trackingResp.data.data;
-            if (t.deliveryLat && t.deliveryLng) {
-              setupDestination(t.deliveryLat, t.deliveryLng);
-            }
+          const t = trackingResp.data;
+          if (t && t.deliveryLat && t.deliveryLng) {
+            setupDestination(t.deliveryLat, t.deliveryLng);
           }
         } catch (e) {
           console.warn('Destination coords not ready yet, waiting for GPS websocket updates.');
@@ -357,7 +374,7 @@ export default function MapTracking({ orderId }: MapTrackingProps) {
                   />
                 </div>
                 <Button
-                  onClick={sendAddress}
+                  onClick={() => sendAddress()}
                   disabled={sendingAddress || !address.trim()}
                   className="w-full bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white font-bold py-5 rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-xs hover:shadow-md"
                 >

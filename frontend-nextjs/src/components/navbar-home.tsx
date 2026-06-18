@@ -66,11 +66,13 @@ export function NavbarHome() {
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const cartItemsCount = useCartStore((state) => state.getCartItemsCount());
   const { authenticated, user, logout } = useAuthStore();
 
   useEffect(() => {
+    setMounted(true);
     const handleScroll = () => {
       if (window.scrollY > 10) {
         setIsScrolled(true);
@@ -221,7 +223,7 @@ export function NavbarHome() {
               onClick={() => setCartOpen(true)}
             >
               <ShoppingCart className="w-5 h-5" />
-              {cartItemsCount > 0 && (
+              {mounted && cartItemsCount > 0 && (
                 <span className="absolute -top-1.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-ceiba-coral text-[10px] font-bold text-white shadow-sm animate-pulse">
                   {cartItemsCount}
                 </span>
@@ -266,7 +268,7 @@ export function NavbarHome() {
               onClick={() => setCartOpen(true)}
             >
               <ShoppingCart className="w-4 h-4" />
-              {cartItemsCount > 0 && (
+              {mounted && cartItemsCount > 0 && (
                 <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-ceiba-coral text-[8px] font-bold text-white">
                   {cartItemsCount}
                 </span>

@@ -4,7 +4,7 @@
     <p-card>
         <ng-template #header>
             <div class="cardheader">
-                <h2 class="d-flex justify-content-center align-items-center">
+                <h2 class="flex justify-center items-center">
                     Dashboard De Administración de Productos
                     <i class="pi pi-shopping-cart mx-3" style="font-size: 2rem"></i>
                 </h2>
@@ -24,7 +24,7 @@
             <p-tabpanels>
                 <!-- ===================== TAB BEBIDAS ALCOHOLICAS ===================== -->
                 <p-tabpanel value="0">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput" placeholder="Buscar bebida alcohólica..."
                             [ngModel]="searchAlcholicDrinks()" (ngModelChange)="searchAlcholicDrinks.set($event)" />
                         <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchAlcholicDrinks()"
@@ -89,7 +89,7 @@
 
                 <!-- ===================== TAB BEBIDAS NO ALCOHOLICAS ===================== -->
                 <p-tabpanel value="1">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput" placeholder="Buscar bebida no alcohólica..."
                             [ngModel]="searchNonAlcholicDrinks()"
                             (ngModelChange)="searchNonAlcholicDrinks.set($event)" />
@@ -155,7 +155,7 @@
 
                 <!-- ===================== TAB SNACKS ===================== -->
                 <p-tabpanel value="2">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput" placeholder="Buscar snack..."
                             [ngModel]="searchSnacks()" (ngModelChange)="searchSnacks.set($event)" />
                         <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchSnacks()"
@@ -216,7 +216,7 @@
 
                 <!-- ===================== TAB RECETARIO ===================== -->
                 <p-tabpanel value="3">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput" placeholder="Buscar receta..."
                             [ngModel]="searchReceipts()" (ngModelChange)="searchReceipts.set($event)" />
                         <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchReceipts()"
@@ -279,7 +279,7 @@
 
                 <!-- ===================== TAB PRODUCTOS DISPONIBLES ===================== -->
                 <p-tabpanel value="4">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput" placeholder="Buscar producto disponible..."
                             [ngModel]="searchProductsAvalible()" (ngModelChange)="searchProductsAvalible.set($event)" />
                         <p-button icon="pi pi-times" severity="secondary" [disabled]="!searchProductsAvalible()"
@@ -337,7 +337,7 @@
 
                 <!-- ===================== TAB PRODUCTOS NO DISPONIBLES ===================== -->
                 <p-tabpanel value="5">
-                    <div class="my-3 d-flex align-items-center gap-2">
+                    <div class="my-3 flex items-center gap-2">
                         <input pInputText type="text" class="w-75 myInput"
                             placeholder="Buscar producto no disponible..." [ngModel]="searchProductsNoAvalible()"
                             (ngModelChange)="searchProductsNoAvalible.set($event)" />

@@ -1,31 +1,153 @@
 <app-navbar-admin></app-navbar-admin>
 
-<div class="container1 grid-center">
-  <div class="option-card" [routerLink]="['/admin/users']">
-    <button class="option-btn">
-      <i class="pi pi-users" style="font-size: 2.0rem"></i>
-    </button>
-    <p class="option-label">Usuarios</p>
-  </div>
+<div class="flex flex-col min-h-[calc(100vh-80px)] bg-ceiba-paper text-ceiba-ink">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+    <!-- Welcome Block -->
+    <div class="bg-white border border-ceiba-line p-8 rounded-3xl shadow-xs text-left relative overflow-hidden flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-3 relative z-10">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-ceiba-leaf/10 text-ceiba-leaf text-xs font-bold tracking-wider uppercase">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+          Administración Central
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-ceiba-ink">
+          Panel de Control Admin
+        </h1>
+        <p class="text-xs text-ceiba-ink/65 max-w-md leading-relaxed">
+          Monitorea de forma centralizada a los usuarios del sistema, la disponibilidad del menú digital y el flujo de repartidores en CDMX.
+        </p>
+      </div>
 
-  <div class="option-card" [routerLink]="['/admin/products']">
-    <button class="option-btn">
-      <i class="pi pi-shopping-cart" style="font-size: 2.0rem"></i>
-    </button>
-    <p class="option-label">Productos</p>
-  </div>
+      <div class="flex items-center gap-3 bg-ceiba-cream px-5 py-3 rounded-2xl border border-ceiba-line z-10">
+        <div class="p-2 bg-ceiba-leaf/10 rounded-xl text-ceiba-leaf">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+        </div>
+        <div>
+          <h4 class="font-extrabold text-xs">Monitoreo Activo</h4>
+          <p class="text-[10px] text-ceiba-ink/60">Todo en tiempo real</p>
+        </div>
+      </div>
+    </div>
 
-  <div class="option-card" [routerLink]="['/admin/orders']">
-    <button class="option-btn">
-      <i class="pi pi-truck" style="font-size: 2.0rem"></i>
-    </button>
-    <p class="option-label">Entregas</p>
-  </div>
+    <!-- Info Cards Grid -->
+    <div class="grid md:grid-cols-3 gap-6">
+      <!-- Gestionar Usuarios -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="flex justify-between items-center">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-blue-500/10 text-blue-600">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </div>
+              <div *ngIf="loadingStats()" class="h-6 w-8 bg-ceiba-cream animate-pulse rounded-lg"></div>
+              <span *ngIf="!loadingStats()" class="text-2xl font-black text-ceiba-ink/35 group-hover:text-ceiba-leaf/80 transition-colors">
+                {{ usersCount() }}
+              </span>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Gestionar Usuarios
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Consulta, edita o elimina usuarios registrados, asigna roles de repartidores y administradores.
+              </p>
+            </div>
+          </div>
 
-  <div class="option-card" [routerLink]="['/my-profile']">
-    <button class="option-btn">
-      <i class="pi pi-user" style="font-size: 2.0rem"></i>
-    </button>
-    <p class="option-label">Perfil</p>
-  </div>
+          <a [routerLink]="['/admin/users']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Gestionar
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Gestionar Productos -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="flex justify-between items-center">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-emerald-500/10 text-emerald-600">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </div>
+              <div *ngIf="loadingStats()" class="h-6 w-8 bg-ceiba-cream animate-pulse rounded-lg"></div>
+              <span *ngIf="!loadingStats()" class="text-2xl font-black text-ceiba-ink/35 group-hover:text-ceiba-leaf/80 transition-colors">
+                {{ productsCount() }}
+              </span>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Gestionar Productos
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Agrega nuevos cócteles, botanas o recetarios. Sube fotos de productos y ajusta precios y disponibilidad.
+              </p>
+            </div>
+          </div>
+
+          <a [routerLink]="['/admin/products']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Gestionar
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Pedidos & Entregas -->
+      <div class="bg-white border border-ceiba-line rounded-3xl overflow-hidden shadow-xs hover:shadow-lg transition-all group flex flex-col h-full">
+        <div class="p-8 flex flex-col justify-between flex-1 space-y-6">
+          <div class="space-y-4 text-left">
+            <div class="flex justify-between items-center">
+              <div class="w-12 h-12 rounded-2xl flex items-center justify-center bg-amber-500/10 text-amber-600">
+                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <div *ngIf="loadingStats()" class="h-6 w-8 bg-ceiba-cream animate-pulse rounded-lg"></div>
+              <span *ngIf="!loadingStats()" class="text-2xl font-black text-ceiba-ink/35 group-hover:text-ceiba-leaf/80 transition-colors">
+                {{ ordersCount() }}
+              </span>
+            </div>
+            <div class="space-y-2">
+              <h3 class="font-extrabold text-lg text-ceiba-ink group-hover:text-ceiba-leaf transition-colors">
+                Pedidos & Entregas
+              </h3>
+              <p class="text-xs text-ceiba-ink/70 leading-relaxed min-h-[48px]">
+                Visualiza órdenes de clientes, monitorea su estatus y asigna manualmente repartidores disponibles.
+              </p>
+            </div>
+          </div>
+
+          <a [routerLink]="['/admin/orders']" class="w-full">
+            <button class="w-full py-3.5 bg-ceiba-cream hover:bg-ceiba-ink hover:text-white text-ceiba-ink rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer group-hover:shadow-xs">
+              Gestionar
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-ceiba-ink text-ceiba-paper py-10 mt-auto border-t border-ceiba-line/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-ceiba-paper/50">
+      © 2026 Ceiba Bar. Todos los derechos reservados.
+    </div>
+  </footer>
 </div>

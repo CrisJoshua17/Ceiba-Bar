@@ -25,7 +25,7 @@ export class NavbarCustomerComponent {
 
   full = computed(() => !!this.usersService.userData());
 
-  constructor(private usersService: UsersService, private router: Router,public cartService: CartService,private cdr: ChangeDetectorRef) {}
+  constructor(public usersService: UsersService, private router: Router,public cartService: CartService,private cdr: ChangeDetectorRef) {}
 
 cerrarSesion() {
     this.usersService.logout();

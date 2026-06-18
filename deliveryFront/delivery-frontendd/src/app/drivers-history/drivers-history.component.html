@@ -42,7 +42,8 @@
                     <th>Cliente</th>
                     <th>Email</th>
                     <th>Dirección</th>
-                    <th class="text-center">Calificación</th>
+                    <th class="text-center">Estado</th>
+                    <th class="text-center">Acciones</th>
                 </tr>
             </ng-template>
 
@@ -56,20 +57,15 @@
                             {{ order.address }}
                         </div>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <span class="status-badge" [ngClass]="getStatusClass(order.status)">
-                            {{ order.status }}
+                            {{ getStatusLabel(order.status) }}
                         </span>
                     </td>
                     <td>
-                        <div class="d-flex justify-content-center gap-2">
-                            <!-- Acciones según estado actual -->
-                            @if (order.status === 'EN_CAMINO') {
-                            <button pButton icon="pi pi-check" label="Entregado" class="p-button-sm p-button-success"
-                                (click)="showDialog(order)"></button>
-                            } @else {
-                            <span class="text-muted small italic">Sin acciones</span>
-                            }
+                        <div class="flex flex-wrap items-center justify-center gap-2">
+                             <button pButton icon="pi pi-eye" label="Detalles" class="p-button-sm p-button-secondary p-button-outlined"
+                                 (click)="showDialog(order)"></button>
                         </div>
                     </td>
                 </tr>

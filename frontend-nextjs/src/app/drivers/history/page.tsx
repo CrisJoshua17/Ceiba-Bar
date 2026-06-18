@@ -16,7 +16,7 @@ import { Search, Loader2, MapPin, Truck, Eye, History } from 'lucide-react';
 
 export default function DriverHistoryPage() {
   const router = useRouter();
-  const { authenticated, profile, fetchProfile, initialized } = useAuthStore();
+  const { authenticated, user, profile, fetchProfile, initialized } = useAuthStore();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [deliveries, setDeliveries] = useState<DeliveryDto[]>([]);
@@ -27,10 +27,24 @@ export default function DriverHistoryPage() {
   const [selectedDelivery, setSelectedDelivery] = useState<DeliveryDto | null>(null);
 
   useEffect(() => {
-    if (initialized && !authenticated) {
-      router.push('/login');
+    if (initialized) {
+      if (!authenticated) {
+        router.push('/login');
+      } else if (user?.primaryRole !== 'DRIVER') {
+        if (user?.primaryRole === 'ADMIN') {
+          router.push('/admin/dashboard');
+        } else {
+          router.push('/customer/dashboard');
+        }
+      }
     }
-  }, [initialized, authenticated, router]);
+  }, [initialized, authenticated, user, router]);
+
+  useEffect(() => {
+    if (authenticated && user?.primaryRole === 'DRIVER' && !profile) {
+      fetchProfile();
+    }
+  }, [authenticated, user, profile, fetchProfile]);
 
   const loadDeliveries = async () => {
     const driverId = profile?.driver?.id;
