@@ -113,8 +113,8 @@ services:
         ]
       interval: 15s
       timeout: 10s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 90s
 
   # Message Broker (Saga Coreografiada)
   rabbitmq:
@@ -180,8 +180,8 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 90s
 
   # API Gateway (punto de entrada principal)
   gateway:
@@ -209,8 +209,8 @@ services:
         ]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 90s
 
   # Usuarios
   usuarios:
@@ -326,6 +326,51 @@ services:
     networks:
       - delivery-network
 
+  # ==================== FRONTENDS ====================
+  frontend-angular:
+    build:
+      context: ../deliveryFront/delivery-frontendd
+      dockerfile: Dockerfile
+    container_name: delivery-frontend-angular
+    ports:
+      - "4200:80"
+    networks:
+      - delivery-network
+
+  frontend-nextjs:
+    build:
+      context: ../frontend-nextjs
+      dockerfile: Dockerfile
+    container_name: delivery-frontend-nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - delivery-network
+
+  # ==================== MONITOREO ====================
+  prometheus:
+    image: prom/prometheus
+    container_name: delivery-prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - delivery-network
+
+  grafana:
+    image: grafana/grafana
+    container_name: delivery-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - delivery-network
+
 networks:
   delivery-network:
     driver: bridge
@@ -337,3 +382,4 @@ volumes:
   keycloak_db_data:
   rabbitmq_data:
   redis_data:
+  grafana_data:
