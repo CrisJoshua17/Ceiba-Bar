@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { Tracking } from '../model/Tracking';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UsersService } from '../services/users.service';
-import { BASE_ENDPOINT_MICRO_ORDERS, BASE_ENDPOINT_MICRO_DELIVERY, BASE_ENDPOINT_MICRO_TRACKING, WS_TRACKING } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { ButtonModule } from 'primeng/button';
 import { ToastModule } from 'primeng/toast';
 
@@ -75,7 +75,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     if (userData && userData.user) {
       this.isGuest = false;
       // Si está logueado, verificamos si la orden le pertenece
-      this.http.get<any>(`${BASE_ENDPOINT_MICRO_ORDERS}/${this.orderId}`).subscribe({
+      this.http.get<any>(`${environment.endpoints.orders}/${this.orderId}`).subscribe({
         next: (response) => {
           if (response.success) {
             const order = response.data;
@@ -128,7 +128,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   verifyGuest() {
     if (!this.emailInput.trim()) return;
     this.verifying = true;
-    this.http.get<any>(`${BASE_ENDPOINT_MICRO_ORDERS}/${this.orderId}/verify?email=${this.emailInput}`).subscribe({
+    this.http.get<any>(`${environment.endpoints.orders}/${this.orderId}/verify?email=${this.emailInput}`).subscribe({
       next: (resp) => {
         if (resp.success) {
           this.isVerified = true;
@@ -243,7 +243,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.status = 'Enviando dirección...';
 
     this.http.post(
-      `${BASE_ENDPOINT_MICRO_DELIVERY}/${this.orderId}/address`,
+      `${environment.endpoints.delivery}/${this.orderId}/address`,
       { address: this.address },
       { responseType: 'text' }
     ).subscribe({
@@ -288,7 +288,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.http.get<Tracking>(`${BASE_ENDPOINT_MICRO_TRACKING}/${this.orderId}/latest`)
+    this.http.get<Tracking>(`${environment.endpoints.tracking}/${this.orderId}/latest`)
       .subscribe({
         next: (data) => {
           console.log('🎯 Datos del destino:', data);
@@ -356,7 +356,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     console.log('🔌 Conectando WebSocket para orderId:', this.orderId);
 
-    this.ws$ = webSocket(`${WS_TRACKING}?orderId=${this.orderId}`);
+    this.ws$ = webSocket(`${environment.wsTracking}?orderId=${this.orderId}`);
 
     this.ws$.pipe(
       takeUntil(this.destroy$),

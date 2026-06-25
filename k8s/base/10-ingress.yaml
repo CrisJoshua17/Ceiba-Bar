@@ -1,0 +1,53 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ceiba-bar-ingress
+  namespace: ceiba-bar
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    # Permite el soporte de WebSockets a través del Gateway
+    nginx.ingress.kubernetes.io/websocket-services: "gateway"
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: ceiba-bar.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-angular
+                port:
+                  number: 80
+    - host: nextjs.ceiba-bar.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-nextjs
+                port:
+                  number: 3000
+    - host: api.ceiba-bar.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: gateway
+                port:
+                  number: 8090
+    - host: auth.ceiba-bar.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: keycloak
+                port:
+                  number: 8080

@@ -11,6 +11,17 @@ public class GatewayConfig {
         @Bean
         public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
                 return builder.routes()
+                                // ========== IMAGES ROUTING (Evitar colisión de prefijos /images) ==========
+                                .route("products-images", r -> r
+                                                .path("/api/products/images/**")
+                                                .filters(f -> f.rewritePath("/api/products/images/(?<remaining>.*)", "/images/${remaining}"))
+                                                .uri("lb://micro-productos"))
+
+                                .route("users-images", r -> r
+                                                .path("/api/users/images/**")
+                                                .filters(f -> f.rewritePath("/api/users/images/(?<remaining>.*)", "/images/${remaining}"))
+                                                .uri("lb://micro-usuarios"))
+
                                 // ========== PUBLIC PRODUCTS (Mover al inicio para evitar colisiones)
                                 // ==========
                                 .route("products-public", r -> r

@@ -10,7 +10,7 @@ import { CarouselModule } from 'primeng/carousel';
 import { ButtonModule } from "primeng/button";
 import { ProductsService } from "../services/products.service";
 import { ProductsDtoTable } from "../model/Dtos";
-import { BASE_PATH_IMAGES_PRODUCTS } from "../utils/enviroments/enviroment";
+import { environment } from '../../environments/environment';
 import { CartService } from "../services/cart.service";
 import { ToastModule } from "primeng/toast";
 import { MessagesService } from "../services/messages.service";
@@ -115,7 +115,7 @@ constructor(private imagesService: ImagesService, private cdr:ChangeDetectorRef,
     return imagePath;
   }
   
-  const baseUrl = BASE_PATH_IMAGES_PRODUCTS;
+  const baseUrl = environment.imageBasePathProducts;
   const fullUrl = `${baseUrl}${imagePath.startsWith('/') ? imagePath : '/' + imagePath}`;
   
  

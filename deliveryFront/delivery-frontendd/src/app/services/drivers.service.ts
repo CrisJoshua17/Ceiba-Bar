@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BASE_ENDPOINT_MICRO_DRIVERS, BASE_ENDPOINT_MICRO_USERS, API_GATEWAY } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { ApiResponseAll, UserInfo, UserRole } from '../model/Dtos';
 import { tap } from 'rxjs';
 
@@ -20,9 +20,9 @@ export class DriversService {
 
   constructor(private http:HttpClient) { }
 
-public baseEndpoint = BASE_ENDPOINT_MICRO_USERS;
-public baseEndpointDrivers = BASE_ENDPOINT_MICRO_DRIVERS;
-private driversEndpoint = `${API_GATEWAY}/api/drivers`;
+public baseEndpoint = environment.endpoints.users;
+public baseEndpointDrivers = environment.endpoints.drivers;
+private driversEndpoint = environment.endpoints.drivers;
 
  // Signal para drivers de micro_users (UserInfo con UUID)
   public driversDataSignal: WritableSignal<UserInfo[] | null> = signal<UserInfo[] | null>(null);

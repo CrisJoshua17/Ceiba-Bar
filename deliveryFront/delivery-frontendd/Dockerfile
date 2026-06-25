@@ -4,7 +4,14 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install --legacy-peer-deps
 COPY . .
-RUN npm run build -- --configuration production
+
+# ARG para seleccionar el perfil de compilación.
+# Valores posibles: production | k8s | development
+# Por defecto: k8s (para Minikube local)
+ARG NG_CONFIG=k8s
+
+# Usar npx ng directamente para evitar problemas con npm run build
+RUN npx ng build --configuration=${NG_CONFIG}
 
 # ========== STAGE 2: Serve ==========
 FROM nginx:alpine

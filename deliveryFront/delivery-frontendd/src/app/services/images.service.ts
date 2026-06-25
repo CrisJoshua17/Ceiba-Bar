@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BASE_PATH_IMAGES_PRODUCTS } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -98,7 +98,7 @@ getGalleryImages(){
     return imagePath;
   }
   
-  const baseUrl = BASE_PATH_IMAGES_PRODUCTS;
+  const baseUrl = environment.imageBasePathProducts;
   const fullUrl = `${baseUrl}${imagePath.startsWith('/') ? imagePath : '/' + imagePath}`;
   
  

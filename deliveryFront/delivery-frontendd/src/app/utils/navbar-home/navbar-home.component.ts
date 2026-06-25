@@ -10,7 +10,7 @@ import { CartService } from '../../services/cart.service';
 import { CartItem } from '../../model/Dtos';
 import { DataViewModule } from 'primeng/dataview';
 import { PaginatorModule } from 'primeng/paginator';
-import { BASE_PATH_IMAGES_PRODUCTS } from '../../utils/enviroments/enviroment';
+import { environment } from '../../../environments/environment';
 
 
 @Component({
@@ -79,6 +79,6 @@ export class NavbarHomeComponent {
       return imagePath;
     }
     const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
-    return `${BASE_PATH_IMAGES_PRODUCTS}${normalizedPath}`;
+    return `${environment.imageBasePathProducts}${normalizedPath}`;
   }
 }

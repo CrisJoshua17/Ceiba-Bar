@@ -1,0 +1,32 @@
+{
+  "orderDto": {
+    "id": 1,
+    "userId": "b9b5a734-5e0c-4ce4-8758-90e237b96171",
+    "customerId": 3,
+    "customerName": "coca coca Test",
+    "customerEmail": "coca@hotmail.com",
+    "address": "Cerrada vasco de quiroga 2286, carlos a madrazp, alvaro obregon, 01320",
+    "destinationLat": 19.3326,
+    "destinationLng": -99.1332,
+    "products": [
+      {
+        "id": 3,
+        "name": "Piña Colada",
+        "description": "Cóctel tropical de coco y piña",
+        "price": 11.0,
+        "image": "http://localhost:8087/images/coctel3.jpg",
+        "available": true
+      }
+    ],
+    "status": "CREATED",
+    "subtotal": 11.0,
+    "deliveryFee": 0.0,
+    "discount": 0.0,
+    "tip": 0.0,
+    "total": 11.0,
+    "paymentMethod": "stripe"
+  },
+  "amount": 1100,
+  "itemProduct": "Piña Colada",
+  "method": "stripe"
+}

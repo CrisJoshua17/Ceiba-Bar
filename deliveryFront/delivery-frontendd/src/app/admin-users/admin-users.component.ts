@@ -12,7 +12,7 @@ import { MessagesService } from '../services/messages.service';
 import { UserAdminDto, UsersDtoTable, UserRole } from '../model/Dtos';
 import { DialogModule } from 'primeng/dialog';
 import { AvatarModule } from 'primeng/avatar';
-import { BASE_PATH_IMAGES } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { FileUploadModule, FileSelectEvent, FileUpload } from 'primeng/fileupload';
 import {  ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
@@ -65,7 +65,7 @@ export class AdminUsersComponent implements OnInit {
   visible: boolean = false;
   selectedUser: UsersDtoTable | null = null;
   userForm: FormGroup;
-   private baseUrl = BASE_PATH_IMAGES;
+   private baseUrl = environment.imageBasePathUsers;
    selectedFile: File | null = null;
    createSelectedFile: File | null = null;
      imagePreview: string | null = null;

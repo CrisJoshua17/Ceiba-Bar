@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
 import { UsersService } from '../services/users.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { LoadingService } from '../services/loading.service';
-import { BASE_PATH_IMAGES } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { UserInfo } from '../model/Dtos';
 
 
@@ -62,7 +62,7 @@ export class NavbarAdminComponent {
     if (!imagePath) return defaultImage;
     if (imagePath.startsWith('http')) return imagePath;
 
-    const base = BASE_PATH_IMAGES;
+    const base = environment.imageBasePathUsers;
     const normalized = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
     return `${base}${normalized}`;
   }

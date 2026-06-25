@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, WritableSignal, signal } from '@angular/core';
-import { BASE_ENDPOINT_MICRO_AUTH, BASE_ENDPOINT_MICRO_PRODUCTS, BASE_ENDPOINT_MICRO_USERS } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { ApiResponse, ApiResponseAll, ProductRequest, ProductsDtoTable } from '../model/Dtos';
 
 @Injectable({
@@ -15,8 +15,8 @@ export class ProductsService {
 
 
 
-public baseEndpointAuth =BASE_ENDPOINT_MICRO_AUTH;
-public baseEndpointProducts =BASE_ENDPOINT_MICRO_PRODUCTS;
+public baseEndpointAuth = environment.endpoints.auth;
+public baseEndpointProducts = environment.endpoints.products;
 
 
 // 1. Signal para almacenar y compartir los datos del producto

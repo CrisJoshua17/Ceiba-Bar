@@ -14,7 +14,7 @@ import { FileSelectEvent, FileUpload, FileUploadModule } from 'primeng/fileuploa
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { MessageModule } from 'primeng/message';
 import { Drink, DrinkType, ProductsDtoTable, ReceiptDto, SnacksDto, UsersDtoTable } from '../model/Dtos';
-import { BASE_PATH_IMAGES, BASE_PATH_IMAGES_PRODUCTS } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { ProductsService } from '../services/products.service';
 import { MessagesService } from '../services/messages.service';
 
@@ -84,7 +84,7 @@ filteredNonAlcholicDrinks = computed(() => {
   visible: boolean = false;
   selectedProduct: ProductsDtoTable | null = null;
   productForm: FormGroup;
-  private baseUrl = BASE_PATH_IMAGES_PRODUCTS;
+  private baseUrl = environment.imageBasePathProducts;
   selectedFile: File | null = null;
   createSelectedFile: File | null = null;
   imagePreview: string | null = null;

@@ -1,9 +1,8 @@
 // ============================================================
 // ENVIRONMENT — DEVELOPMENT
 // ============================================================
-// Valores por defecto para desarrollo local con Docker Compose.
-// Para producción, Angular reemplaza este archivo por
-// environment.prod.ts durante `ng build --configuration production`.
+// Valores por defecto para desarrollo local (ng serve).
+// Los microservicios deben correr con mvn spring-boot:run o Docker Compose.
 // ============================================================
 
 export const environment = {
@@ -19,10 +18,23 @@ export const environment = {
     clientId: 'ceiba-frontend-angular',
   },
 
+  // --- Endpoints (derivados del Gateway) ---
+  endpoints: {
+    auth:     'http://localhost:8090/api/auth',
+    customers:'http://localhost:8090/api/customers',
+    users:    'http://localhost:8090/api/users',
+    products: 'http://localhost:8090/api/products',
+    payments: 'http://localhost:8090/api/payments',
+    orders:   'http://localhost:8090/api/orders',
+    drivers:  'http://localhost:8090/api/drivers',
+    delivery: 'http://localhost:8090/api/delivery',
+    tracking: 'http://localhost:8090/api/tracking',
+  },
+
   // --- WebSocket ---
   wsTracking: 'ws://localhost:8090/ws/tracking',
 
   // --- Imágenes ---
-  imageBasePathUsers: 'http://localhost:8089',
+  imageBasePathUsers:    'http://localhost:8089',
   imageBasePathProducts: 'http://localhost:8087',
 };

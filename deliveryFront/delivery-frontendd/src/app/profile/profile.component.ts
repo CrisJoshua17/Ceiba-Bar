@@ -15,7 +15,7 @@ import { Address, CreateAddressDto, UserAdminDto, UserData } from '../model/Dtos
 import { ToastModule } from 'primeng/toast';
 import { MessageModule } from 'primeng/message';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { BASE_PATH_IMAGES } from '../utils/enviroments/enviroment';
+import { environment } from '../../environments/environment';
 import { NavbarCustomerComponent } from '../navbar-customer/navbar-customer.component';
 import { NavbarSimpleComponent } from '../utils/navbar-simple/navbar-simple.component';
 import { NavbarDriverComponent } from '../navbar-driver/navbar-driver.component';
@@ -67,7 +67,7 @@ export class ProfileComponent implements OnInit {
   rol!: string;
   addresses: Address[] = [];
   selectAddress: Address | null = null;
-  private baseUrl = BASE_PATH_IMAGES;
+  private baseUrl = environment.imageBasePathUsers;
 
   visible = false;
 
