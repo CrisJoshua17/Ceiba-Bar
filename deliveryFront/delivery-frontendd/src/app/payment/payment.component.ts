@@ -109,8 +109,6 @@ form = this.fb.group({
       customerName: `${formValues.name} ${formValues.lastName}`,
       customerEmail: formValues.email ?? '',
       address: `${formValues.street}, ${formValues.colonia}, ${formValues.delegacion}, ${formValues.cp}`,
-      destinationLat: 0, 
-      destinationLng: 0, 
       products: productsDto,
       status: 'CREATED'
     };
@@ -118,7 +116,9 @@ form = this.fb.group({
     const checkoutRequest: CheckoutRequest = {
       orderDto: orderDto,
       itemProduct: `Pedido de ${formValues.name}`,
-      method: 'STRIPE'
+      method: 'STRIPE',
+      successUrl: window.location.origin + '/payments/pago-exitoso',
+      cancelUrl: window.location.origin + '/payments/pago-cancelado'
     };
 
     this.paymentsService.createCheckoutSession(checkoutRequest).subscribe({
@@ -161,8 +161,6 @@ form = this.fb.group({
       customerName: `${formValues.name} ${formValues.lastName}`,
       customerEmail: formValues.email ?? '',
       address: `${formValues.street}, ${formValues.colonia}, ${formValues.delegacion}, ${formValues.cp}`,
-      destinationLat: 0, 
-      destinationLng: 0, 
       products: productsDto,
       status: 'CREATED'
     };
@@ -170,7 +168,9 @@ form = this.fb.group({
     const checkoutRequest: CheckoutRequest = {
       orderDto: orderDto,
       itemProduct: `Pedido de ${formValues.name}`,
-      method: 'PAYPAL'
+      method: 'PAYPAL',
+      successUrl: window.location.origin + '/payments/pago-exitoso',
+      cancelUrl: window.location.origin + '/payments/pago-cancelado'
     };
 
     this.paymentsService.createCheckoutSession(checkoutRequest).subscribe({

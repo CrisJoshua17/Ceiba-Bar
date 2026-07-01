@@ -210,11 +210,14 @@ export class AdminUsersComponent implements OnInit {
 
     const term = searchTerm.toLowerCase().trim();
     return users.filter(user => {
+      const nameStr = user.name ? user.name.toLowerCase() : '';
+      const lastNameStr = user.lastName ? user.lastName.toLowerCase() : '';
+      const emailStr = user.email ? user.email.toLowerCase() : '';
       const phoneStr = user.phone ? user.phone.toString().toLowerCase() : '';
       return (
-        user.name.toLowerCase().includes(term) ||
-        user.lastName.toLowerCase().includes(term) ||
-        user.email.toLowerCase().includes(term) ||
+        nameStr.includes(term) ||
+        lastNameStr.includes(term) ||
+        emailStr.includes(term) ||
         phoneStr.includes(term)
       );
     });

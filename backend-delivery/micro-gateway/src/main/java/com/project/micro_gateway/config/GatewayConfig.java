@@ -1,5 +1,8 @@
 package com.project.micro_gateway.config;
 
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
@@ -9,8 +12,40 @@ import org.springframework.context.annotation.Configuration;
 public class GatewayConfig {
 
         @Bean
+        public GlobalFilter stripInternalApiKeyHeader() {
+                return (exchange, chain) -> {
+                        ServerHttpRequest request = exchange.getRequest().mutate()
+                                        .headers(headers -> headers.remove("X-Internal-Api-Key"))
+                                        .build();
+                        return chain.filter(exchange.mutate().request(request).build());
+                };
+        }
+
+        @Bean
         public RouteLocator customRouteLocator(RouteLocatorBuilder builder) {
                 return builder.routes()
+                                // ========== BLOCK INTERNAL ENDPOINTS FROM OUTSIDE ==========
+                                .route("block-internal-users", r -> r
+                                                .path("/api/users/internal/**")
+                                                .filters(f -> f.setStatus(HttpStatus.FORBIDDEN))
+                                                .uri("no-op://localhost"))
+                                .route("block-internal-drivers", r -> r
+                                                .path("/api/drivers/internal/**")
+                                                .filters(f -> f.setStatus(HttpStatus.FORBIDDEN))
+                                                .uri("no-op://localhost"))
+                                .route("block-internal-customers", r -> r
+                                                .path("/api/customers/internal/**")
+                                                .filters(f -> f.setStatus(HttpStatus.FORBIDDEN))
+                                                .uri("no-op://localhost"))
+                                .route("block-internal-orders", r -> r
+                                                .path("/api/orders/internal/**")
+                                                .filters(f -> f.setStatus(HttpStatus.FORBIDDEN))
+                                                .uri("no-op://localhost"))
+                                .route("block-internal-deliveries", r -> r
+                                                .path("/api/delivery/internal/**")
+                                                .filters(f -> f.setStatus(HttpStatus.FORBIDDEN))
+                                                .uri("no-op://localhost"))
+
                                 // ========== IMAGES ROUTING (Evitar colisión de prefijos /images) ==========
                                 .route("products-images", r -> r
                                                 .path("/api/products/images/**")

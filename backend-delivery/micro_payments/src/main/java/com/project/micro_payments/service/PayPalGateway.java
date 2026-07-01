@@ -65,9 +65,14 @@ public class PayPalGateway implements PaymentGateway {
         
         orderPayload.put("purchase_units", List.of(purchaseUnit));
         
+        String customSuccessUrl = (payment.getSuccessUrl() != null && !payment.getSuccessUrl().isBlank()) 
+                ? payment.getSuccessUrl() : successUrl;
+        String customCancelUrl = (payment.getCancelUrl() != null && !payment.getCancelUrl().isBlank()) 
+                ? payment.getCancelUrl() : cancelUrl;
+
         Map<String, Object> applicationContext = new HashMap<>();
-        applicationContext.put("return_url", successUrl + "?method=paypal");
-        applicationContext.put("cancel_url", cancelUrl);
+        applicationContext.put("return_url", customSuccessUrl + (customSuccessUrl.contains("?") ? "&" : "?") + "method=paypal");
+        applicationContext.put("cancel_url", customCancelUrl);
         applicationContext.put("user_action", "PAY_NOW");
         orderPayload.put("payment_source", Map.of("paypal", Map.of("experience_context", applicationContext)));
 

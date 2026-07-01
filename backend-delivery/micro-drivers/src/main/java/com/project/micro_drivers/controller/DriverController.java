@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 
 import com.project.micro_drivers.model.Driver;
@@ -80,7 +81,7 @@ public class DriverController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveDriver(@RequestBody Driver driver) {
+    public ResponseEntity<?> saveDriver(@Valid @RequestBody Driver driver) {
         Map<String, Object> response = new HashMap<>();
         try {
             Driver driverSave = service.createDriver(driver);
@@ -100,7 +101,7 @@ public class DriverController {
     }
 
     @PutMapping("/{driverId}")
-    public ResponseEntity<?> updateUser(@PathVariable Long driverId, @RequestBody Driver driver) {
+    public ResponseEntity<?> updateUser(@PathVariable Long driverId, @Valid @RequestBody Driver driver) {
         Map<String, Object> response = new HashMap<>();
         try {
             Driver updatedDriver = service.update(driver);
@@ -206,7 +207,7 @@ public class DriverController {
 
     // === ACTUALIZAR MI PERFIL ===
     @PutMapping("/my-profile")
-    public ResponseEntity<?> updateMyProfile(@RequestBody Driver driverUpdate) {
+    public ResponseEntity<?> updateMyProfile(@Valid @RequestBody Driver driverUpdate) {
         Map<String, Object> response = new HashMap<>();
         try {
             var authentication = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
@@ -247,6 +248,16 @@ public class DriverController {
     @GetMapping("/internal/user/{userId}")
     public Driver findByUserId(@PathVariable String userId) {
         return service.findByUserId(userId).orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @GetMapping("/internal/{id}")
+    public Driver getDriverByIdInternal(@PathVariable Long id) {
+        return service.findById(id).orElseThrow(() -> new RuntimeException("Driver no encontrado con ID: " + id));
+    }
+
+    @PutMapping("/internal/{id}/increment-deliveries")
+    public ResponseEntity<?> incrementDeliveriesInternal(@PathVariable Long id) {
+        return incrementDeliveries(id);
     }
 
     /**

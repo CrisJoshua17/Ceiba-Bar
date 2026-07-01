@@ -19,4 +19,8 @@ public class CheckoutRequest {
     private String method; // "stripe" o "paypal"
     
     private String idempotencyKey; // Opcional: llave única para evitar cobros duplicados
+
+    private String successUrl; // URL dinámica de éxito
+
+    private String cancelUrl; // URL dinámica de cancelación
 }

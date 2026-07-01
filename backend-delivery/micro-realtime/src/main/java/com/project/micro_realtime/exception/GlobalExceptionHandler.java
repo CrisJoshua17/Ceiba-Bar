@@ -37,6 +37,29 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), status);
     }
 
+    @ExceptionHandler(org.springframework.web.bind.support.WebExchangeBindException.class)
+    public Mono<ResponseEntity<Map<String, Object>>> handleValidationExceptions(org.springframework.web.bind.support.WebExchangeBindException ex) {
+        Map<String, String> errors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors().forEach((error) -> {
+            String fieldName = error.getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        String joinedMessages = errors.entrySet().stream()
+                .map(entry -> entry.getKey() + ": " + entry.getValue())
+                .collect(java.util.stream.Collectors.joining(", "));
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", false);
+        response.put("message", "Validación fallida: " + joinedMessages);
+        response.put("errors", errors);
+        response.put("timestamp", java.time.LocalDateTime.now());
+        response.put("status", HttpStatus.BAD_REQUEST.value());
+
+        return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response));
+    }
+
     private Mono<ResponseEntity<Map<String, Object>>> buildErrorResponse(String message, HttpStatus status) {
         Map<String, Object> response = new HashMap<>();
         response.put("success", false);

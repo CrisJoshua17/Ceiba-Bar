@@ -23,6 +23,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("/api/users/images/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/users/init-admin").permitAll()
                         .requestMatchers("/api/users/internal/**").permitAll()

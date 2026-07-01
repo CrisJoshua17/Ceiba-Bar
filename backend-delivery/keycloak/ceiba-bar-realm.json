@@ -727,6 +727,36 @@
     } ],
     "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
+  }, {
+    "id" : "f3a47b19-fcfb-4a57-bebd-5e8dd9ff1629",
+    "clientId" : "micro-users-backend",
+    "name" : "micro-users-backend",
+    "description" : "Backend microservice Keycloak Client for User Management",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "VQjAAjxcBUNKr7JmXOKeCUqQAkFdhmu3",
+    "redirectUris" : [ ],
+    "webOrigins" : [ ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : false,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : false,
+    "serviceAccountsEnabled" : true,
+    "publicClient" : false,
+    "frontchannelLogout" : false,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "client.secret.creation.time" : "1780884456"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
+    "defaultClientScopes" : [ "web-origins", "acr", "profile", "roles", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "offline_access", "microprofile-jwt" ]
   } ],
   "clientScopes" : [ {
     "id" : "41952ef0-df94-4f26-a367-e3449c753ea4",
@@ -1961,5 +1991,14 @@
   },
   "clientPolicies" : {
     "policies" : [ ]
-  }
+  },
+  "users" : [ {
+    "id" : "7e2a9b3d-8f9f-430f-bb51-bc14df8b71d4",
+    "username" : "service-account-micro-users-backend",
+    "enabled" : true,
+    "serviceAccountClientId" : "micro-users-backend",
+    "clientRoles" : {
+      "realm-management" : [ "realm-admin" ]
+    }
+  } ]
 }

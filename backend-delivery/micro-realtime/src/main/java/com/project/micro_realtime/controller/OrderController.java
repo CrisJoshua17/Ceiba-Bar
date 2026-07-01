@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.project.micro_realtime.dto.OrderResponseDto;
 
@@ -35,7 +36,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public Mono<ResponseEntity<?>> create(@RequestBody com.project.micro_realtime.dto.OrderCreationDto dto) {
+    public Mono<ResponseEntity<?>> create(@Valid @RequestBody com.project.micro_realtime.dto.OrderCreationDto dto) {
         Order order = new Order();
         order.setCustomerId(dto.getCustomerId());
         order.setUserId(dto.getUserId());
@@ -58,7 +59,7 @@ public class OrderController {
         order.setTotal(dto.getTotal() != null ? java.math.BigDecimal.valueOf(dto.getTotal()) : java.math.BigDecimal.ZERO);
         order.setPaymentMethod(dto.getPaymentMethod());
         order.setStatus(dto.getStatus() != null ? dto.getStatus() : OrderStatus.CREATED);
-
+ 
         if (dto.getProducts() != null) {
             java.util.List<com.project.micro_realtime.model.OrderItem> items = new java.util.ArrayList<>();
             for (com.project.micro_realtime.dto.ProductDto prod : dto.getProducts()) {
@@ -75,9 +76,14 @@ public class OrderController {
             }
             order.setItems(items);
         }
-
+ 
         return orderService.createOrder(order)
                 .flatMap(createdOrder -> successResponse("Orden creada exitosamente", createdOrder, HttpStatus.CREATED));
+    }
+ 
+    @PostMapping("/internal")
+    public Mono<ResponseEntity<?>> createInternal(@Valid @RequestBody com.project.micro_realtime.dto.OrderCreationDto dto) {
+        return create(dto);
     }
 
     @GetMapping("/{id}")

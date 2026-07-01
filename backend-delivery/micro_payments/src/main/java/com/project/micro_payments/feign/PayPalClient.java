@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.Map;
 
-@FeignClient(name = "paypalClient", url = "https://api-m.sandbox.paypal.com")
+@FeignClient(name = "paypalClient", url = "${paypal.base-url:https://api-m.sandbox.paypal.com}")
 public interface PayPalClient {
 
     @PostMapping(value = "/v1/oauth2/token", consumes = "application/x-www-form-urlencoded")

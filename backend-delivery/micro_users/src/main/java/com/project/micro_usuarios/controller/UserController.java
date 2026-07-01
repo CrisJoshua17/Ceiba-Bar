@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.Valid;
 
 import com.project.micro_usuarios.Feign.CustomerClient;
 import com.project.micro_usuarios.Feign.DriverClient;
@@ -47,16 +48,25 @@ public class UserController {
     private final ImagesService imagesService;
     private final KeycloakAdminService keycloakAdminService;
 
+    @org.springframework.beans.factory.annotation.Value("${app.init-admin.name:Joshua}")
+    private String initAdminName;
+    @org.springframework.beans.factory.annotation.Value("${app.init-admin.lastName:Alvarez}")
+    private String initAdminLastName;
+    @org.springframework.beans.factory.annotation.Value("${app.init-admin.email:cristopher17@hotmail.com}")
+    private String initAdminEmail;
+    @org.springframework.beans.factory.annotation.Value("${app.init-admin.password:170498}")
+    private String initAdminPassword;
+
     // === ENDPOINT PARA DESARROLLO - Crear primer admin ===
     @PostMapping("/init-admin")
     public ResponseEntity<?> initAdmin() {
         Map<String, Object> response = new HashMap<>();
         try {
             User admin = new User();
-            admin.setName("Joshua");
-            admin.setLastName("Alvarez");
-            admin.setEmail("cristopher17@hotmail.com");
-            admin.setPassword("170498");
+            admin.setName(initAdminName);
+            admin.setLastName(initAdminLastName);
+            admin.setEmail(initAdminEmail);
+            admin.setPassword(initAdminPassword);
             admin.setRole(Role.ADMIN);
 
             User userSave = service.createUser(admin);
@@ -79,10 +89,16 @@ public class UserController {
 
     // === REGISTRO PÚBLICO - Siempre asigna CUSTOMER ===
     @PostMapping("/register")
-    public ResponseEntity<?> registerCustomer(@RequestBody User user) {
+    public ResponseEntity<?> registerCustomer(@Valid @RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
             user.setRole(Role.CUSTOMER);
+
+            // 1. Crear en Keycloak primero
+            String keycloakId = keycloakAdminService.createUserInKeycloak(user);
+            user.setId(keycloakId);
+
+            // 2. Guardar en BD Local
             User userSave = service.createUser(user);
 
             // SOLO esta llamada después de crear el usuario
@@ -109,7 +125,7 @@ public class UserController {
     }
 
     @PostMapping("/drivers")
-    public ResponseEntity<?> createDriver(@RequestBody User user) {
+    public ResponseEntity<?> createDriver(@Valid @RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
 
@@ -146,7 +162,7 @@ public class UserController {
     }
 
     @PostMapping("/admins")
-    public ResponseEntity<?> createAdmin(@RequestBody User user) {
+    public ResponseEntity<?> createAdmin(@Valid @RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
 
@@ -286,6 +302,13 @@ public class UserController {
     }
 
     // === ENDPOINTS INTERNOS PARA COMUNICACIÓN ENTRE MICROSERVICIOS ===
+    @GetMapping("/internal/role/{role}")
+    public List<UserDto> findByRoleInternal(@PathVariable Role role) {
+        return service.findAllByRole(role).stream()
+                .map(this::convertToDto)
+                .toList();
+    }
+
     @GetMapping("/internal/email/{email}")
     public UserDto findByEmailForAuth(@PathVariable String email) {
         User user = service.findByEmail(email)
@@ -301,7 +324,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> saveUser(@RequestBody User user) {
+    public ResponseEntity<?> saveUser(@Valid @RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
         try {
 

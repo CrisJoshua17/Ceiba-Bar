@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.project.micro_payments.dto.OrderDto;
 
-@FeignClient(name = "micro-realtime", path = "/api/orders")
+@FeignClient(name = "micro-realtime", path = "/api/orders/internal")
 public interface OrderClient {
 
     @PostMapping

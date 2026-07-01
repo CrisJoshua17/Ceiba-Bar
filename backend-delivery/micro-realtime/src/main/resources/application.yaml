@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/orders_db
     username: postgres
-    password: Haikyuu1212
+    password: ${DB_PASSWORD:Haikyuu1212}
     driver-class-name: org.postgresql.Driver
 
   flyway:

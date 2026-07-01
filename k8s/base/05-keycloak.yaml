@@ -62,22 +62,28 @@ spec:
           volumeMounts:
             - name: realm-import-vol
               mountPath: /opt/keycloak/data/import
+          startupProbe:
+            httpGet:
+              path: /realms/master
+              port: 8080
+            failureThreshold: 60
+            periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /realms/master
               port: 8080
-            initialDelaySeconds: 200
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 10
-            failureThreshold: 25
+            failureThreshold: 5
           livenessProbe:
             httpGet:
               path: /realms/master
               port: 8080
-            initialDelaySeconds: 240
+            initialDelaySeconds: 10
             periodSeconds: 15
             timeoutSeconds: 10
-            failureThreshold: 25
+            failureThreshold: 5
       volumes:
         - name: realm-import-vol
           configMap:

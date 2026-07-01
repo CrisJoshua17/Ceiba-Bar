@@ -33,15 +33,21 @@ public class DataInitializer {
 
     @PostConstruct
     public void init() {
+        try {
+            Files.createDirectories(uploadsDir);
+            copyAllSeedImages();
+        } catch (Exception e) {
+            log.error("❌ Error creando directorio o copiando imágenes: {}", e.getMessage());
+        }
+
         long total = drinkRepository.count() + snackRepository.count() + recetarioRepository.count();
         if (total > 0) {
-            log.info("✅ Productos ya existen en BD ({} registros), saltando seed.", total);
+            log.info("✅ Productos ya existen en BD ({} registros), saltando seed de base de datos.", total);
             return;
         }
 
         log.info("🌱 Iniciando seed de productos...");
         try {
-            Files.createDirectories(uploadsDir);
             seedDrinks();
             seedSnacks();
             seedRecetario();
@@ -49,6 +55,18 @@ public class DataInitializer {
                     drinkRepository.count(), snackRepository.count(), recetarioRepository.count());
         } catch (Exception e) {
             log.error("❌ Error durante el seed: {}", e.getMessage(), e);
+        }
+    }
+
+    private void copyAllSeedImages() {
+        String[] images = {
+            "coctel1.jpg", "coctel2.jpg", "coctel3.jpg", "coctel4.jpg",
+            "coctel5.jpg", "coctel6.jpg", "coctel7.jpg", "coctel8.jpg",
+            "coctel9.jpg", "tarros.png", "mojitos.png"
+        };
+        log.info("📁 Verificando copia de imágenes de semilla al sistema de archivos...");
+        for (String img : images) {
+            copyImage(img);
         }
     }
 

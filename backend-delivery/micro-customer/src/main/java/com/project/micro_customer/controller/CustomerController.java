@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 
 import com.project.micro_customer.model.Address;
@@ -134,7 +135,7 @@ public class CustomerController {
 
     // AGREGAR UNA DIRECCIÓN
     @PostMapping("/my-profile/addresses")
-    public ResponseEntity<?> addAddress(@RequestBody Address newAddress) {
+    public ResponseEntity<?> addAddress(@Valid @RequestBody Address newAddress) {
         Map<String, Object> response = new HashMap<>();
         try {
             String userId = getUserIdFromToken();
@@ -251,7 +252,7 @@ public class CustomerController {
 
     // CREAR CUSTOMER (solo admin - para casos especiales)
     @PostMapping
-    public ResponseEntity<?> saveCustomer(@RequestBody Customer customer) {
+    public ResponseEntity<?> saveCustomer(@Valid @RequestBody Customer customer) {
         Map<String, Object> response = new HashMap<>();
         try {
 

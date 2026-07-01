@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import jakarta.validation.Valid;
 
 
 import com.project.micro_productos.model.Drink;
@@ -190,7 +191,7 @@ public class ProductController {
 
     // === CREAR PRODUCTO (CON O SIN FOTO) ===
     @PostMapping()
-    public ResponseEntity<?> create(@ModelAttribute ProductRequest request,
+    public ResponseEntity<?> create(@Valid @ModelAttribute ProductRequest request,
             @RequestHeader(value = "Authorization") String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {
@@ -274,7 +275,7 @@ public class ProductController {
     // === ACTUALIZAR PRODUCTO (CON O SIN FOTO) ===
     @PutMapping("/{id}")
     public ResponseEntity<?> update(@PathVariable Long id,
-            @ModelAttribute ProductRequest request,
+            @Valid @ModelAttribute ProductRequest request,
             @RequestHeader(value = "Authorization") String authHeader) {
         Map<String, Object> response = new HashMap<>();
         try {

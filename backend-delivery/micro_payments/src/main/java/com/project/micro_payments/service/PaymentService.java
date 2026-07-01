@@ -94,6 +94,8 @@ public class PaymentService {
                 .status(PaymentStatus.PENDING)
                 .idempotencyKey(req.getIdempotencyKey())
                 .tempOrderData(objectMapper.writeValueAsString(req.getOrderDto()))
+                .successUrl(req.getSuccessUrl())
+                .cancelUrl(req.getCancelUrl())
                 .build();
         payment.setCreatedAt(java.time.LocalDateTime.now());
         paymentRepository.save(payment);

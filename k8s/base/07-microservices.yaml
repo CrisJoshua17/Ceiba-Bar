@@ -55,6 +55,36 @@ spec:
                 secretKeyRef:
                   name: ceiba-secrets
                   key: postgres-password
+            - name: KEYCLOAK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: keycloak-client-secret
+            - name: INIT_ADMIN_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: init-admin-name
+            - name: INIT_ADMIN_LASTNAME
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: init-admin-lastname
+            - name: INIT_ADMIN_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: init-admin-email
+            - name: INIT_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: init-admin-password
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: internal-api-key
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -129,6 +159,11 @@ spec:
                 secretKeyRef:
                   name: ceiba-secrets
                   key: postgres-password
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: internal-api-key
           readinessProbe:
             httpGet:
               path: /actuator/health
@@ -203,6 +238,11 @@ spec:
                 secretKeyRef:
                   name: ceiba-secrets
                   key: postgres-password
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: internal-api-key
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
@@ -412,6 +452,11 @@ spec:
                 secretKeyRef:
                   name: ceiba-secrets
                   key: postgres-password
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: internal-api-key
             - name: RABBITMQ_HOST
               valueFrom:
                 configMapKeyRef:
@@ -540,6 +585,11 @@ spec:
                 secretKeyRef:
                   name: ceiba-secrets
                   key: postgres-password
+            - name: INTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ceiba-secrets
+                  key: internal-api-key
             - name: MONGO_USER
               valueFrom:
                 secretKeyRef:

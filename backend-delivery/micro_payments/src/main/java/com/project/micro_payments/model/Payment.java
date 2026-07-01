@@ -82,4 +82,10 @@ public class Payment extends BaseEntity {
     @Column(name = "paypal_capture_id")
     private String paypalCaptureId;
 
+    @jakarta.persistence.Transient
+    private String successUrl;
+
+    @jakarta.persistence.Transient
+    private String cancelUrl;
+
 }

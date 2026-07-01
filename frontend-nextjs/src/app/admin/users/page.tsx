@@ -11,9 +11,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Search, Loader2, Trash2, ArrowLeft, Users, ShieldAlert } from 'lucide-react';
+import { Search, Loader2, Trash2, ArrowLeft, Users, ShieldAlert, Plus } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function AdminUsersPage() {
   const router = useRouter();
@@ -23,6 +26,60 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UsersDtoTable[]>([]);
   const [loading, setLoading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  // User creation states
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createRole, setCreateRole] = useState<'ADMIN' | 'DRIVER' | 'CUSTOMER'>('CUSTOMER');
+  const [newName, setNewName] = useState('');
+  const [newLastName, setNewLastName] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newPhone, setNewPhone] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [creating, setCreating] = useState(false);
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newName || !newLastName || !newEmail || !newPassword) {
+      toast.error('Por favor, completa todos los campos obligatorios.');
+      return;
+    }
+
+    setCreating(true);
+    try {
+      let endpoint = '';
+      if (createRole === 'ADMIN') endpoint = '/api/users/admins';
+      else if (createRole === 'DRIVER') endpoint = '/api/users/drivers';
+      else endpoint = '/api/users/register';
+
+      const payload = {
+        name: newName,
+        lastName: newLastName,
+        email: newEmail,
+        phone: parseInt(newPhone, 10) || null,
+        password: newPassword,
+      };
+
+      const response = await api.post(endpoint, payload);
+      if (response.data?.success) {
+        toast.success('Usuario creado correctamente!');
+        setCreateOpen(false);
+        // Reset form
+        setNewName('');
+        setNewLastName('');
+        setNewEmail('');
+        setNewPhone('');
+        setNewPassword('');
+        loadUsers();
+      } else {
+        toast.error(response.data?.message || 'Error al crear usuario.');
+      }
+    } catch (err: any) {
+      console.error('Error creating user:', err);
+      toast.error(err.response?.data?.message || 'Error al conectar con el servidor.');
+    } finally {
+      setCreating(false);
+    }
+  };
 
   useEffect(() => {
     if (initialized) {
@@ -95,10 +152,10 @@ export default function AdminUsersPage() {
     const s = searchQuery.toLowerCase().trim();
     if (!s) return true;
     return (
-      u.name?.toLowerCase().includes(s) ||
-      u.lastName?.toLowerCase().includes(s) ||
-      u.email?.toLowerCase().includes(s) ||
-      u.phone?.includes(s)
+      (u.name || '').toLowerCase().includes(s) ||
+      (u.lastName || '').toLowerCase().includes(s) ||
+      (u.email || '').toLowerCase().includes(s) ||
+      String(u.phone || '').includes(s)
     );
   });
 
@@ -125,15 +182,24 @@ export default function AdminUsersPage() {
             </p>
           </div>
 
-          <div className="relative w-full md:max-w-xs">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ceiba-ink/40" />
-            <Input
-              type="text"
-              placeholder="Buscar por nombre, email..."
-              className="pl-10 bg-white border-ceiba-line rounded-xl text-xs py-5 focus-visible:ring-ceiba-leaf"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:max-w-md">
+            <div className="relative flex-1 w-full">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-ceiba-ink/40" />
+              <Input
+                type="text"
+                placeholder="Buscar por nombre, email..."
+                className="pl-10 bg-white border-ceiba-line rounded-xl text-xs py-5 focus-visible:ring-ceiba-leaf"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
+            <Button
+              className="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white rounded-xl py-5 px-4 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm w-full sm:w-auto"
+              onClick={() => setCreateOpen(true)}
+            >
+              <Plus className="w-4 h-4" />
+              Crear Usuario
+            </Button>
           </div>
         </div>
 
@@ -198,6 +264,122 @@ export default function AdminUsersPage() {
           </div>
         )}
       </main>
+
+      {/* Create User Dialog */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="bg-white border-ceiba-line rounded-3xl sm:max-w-md text-ceiba-ink p-6">
+          <DialogHeader className="border-b border-ceiba-line pb-3">
+            <DialogTitle className="text-lg font-bold flex items-center gap-2">
+              Crear Nuevo Usuario
+            </DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateUser} className="space-y-4 py-4 text-left">
+            {/* Select Role */}
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold">Rol de Usuario</Label>
+              <Select value={createRole} onValueChange={(val: any) => setCreateRole(val || 'CUSTOMER')}>
+                <SelectTrigger className="border-ceiba-line rounded-xl focus:ring-ceiba-leaf">
+                  <SelectValue placeholder="Selecciona un rol" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-ceiba-line">
+                  <SelectItem value="CUSTOMER">Cliente</SelectItem>
+                  <SelectItem value="DRIVER">Repartidor</SelectItem>
+                  <SelectItem value="ADMIN">Administrador</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Name */}
+            <div className="space-y-1.5">
+              <Label htmlFor="name" className="text-xs font-bold">Nombre *</Label>
+              <Input
+                id="name"
+                type="text"
+                placeholder="Nombre"
+                required
+                className="border-ceiba-line rounded-xl focus-visible:ring-ceiba-leaf py-5 text-xs"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+              />
+            </div>
+
+            {/* Last Name */}
+            <div className="space-y-1.5">
+              <Label htmlFor="lastName" className="text-xs font-bold">Apellido *</Label>
+              <Input
+                id="lastName"
+                type="text"
+                placeholder="Apellido"
+                required
+                className="border-ceiba-line rounded-xl focus-visible:ring-ceiba-leaf py-5 text-xs"
+                value={newLastName}
+                onChange={(e) => setNewLastName(e.target.value)}
+              />
+            </div>
+
+            {/* Email */}
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="text-xs font-bold">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="email@ejemplo.com"
+                required
+                className="border-ceiba-line rounded-xl focus-visible:ring-ceiba-leaf py-5 text-xs"
+                value={newEmail}
+                onChange={(e) => setNewEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Phone */}
+            <div className="space-y-1.5">
+              <Label htmlFor="phone" className="text-xs font-bold">Teléfono (Opcional)</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="Solo números"
+                className="border-ceiba-line rounded-xl focus-visible:ring-ceiba-leaf py-5 text-xs"
+                value={newPhone}
+                onChange={(e) => setNewPhone(e.target.value.replace(/\D/g, ''))}
+              />
+            </div>
+
+            {/* Password */}
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="text-xs font-bold">Contraseña *</Label>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                required
+                minLength={6}
+                className="border-ceiba-line rounded-xl focus-visible:ring-ceiba-leaf py-5 text-xs"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+
+            <DialogFooter className="border-t border-ceiba-line pt-3 flex items-center justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="border-ceiba-line text-ceiba-ink rounded-xl"
+                onClick={() => setCreateOpen(false)}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                disabled={creating}
+                className="bg-ceiba-leaf hover:bg-ceiba-leaf-dark text-white font-bold rounded-xl"
+              >
+                {creating ? 'Creando...' : 'Crear Usuario'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="bg-ceiba-ink text-ceiba-paper py-10 mt-auto border-t border-ceiba-line/10">

@@ -18,7 +18,7 @@ public interface UserClient {
     @GetMapping("/api/users/internal/{id}")
     UserDto getUserByIdInternal(@PathVariable Long id);
 
-    @GetMapping("/api/users/role/{role}")
+    @GetMapping("/api/users/internal/role/{role}")
     List<UserDto> findAllByRole(@PathVariable Role role);
 
 }

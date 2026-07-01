@@ -66,10 +66,15 @@ public class StripeGateway implements PaymentGateway {
                                 .build())
                 .build();
                 
+        String customSuccessUrl = (payment.getSuccessUrl() != null && !payment.getSuccessUrl().isBlank()) 
+                ? payment.getSuccessUrl() : successUrl;
+        String customCancelUrl = (payment.getCancelUrl() != null && !payment.getCancelUrl().isBlank()) 
+                ? payment.getCancelUrl() : cancelUrl;
+
         SessionCreateParams params = SessionCreateParams.builder()
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(successUrl + "?session_id={CHECKOUT_SESSION_ID}")
-                .setCancelUrl(cancelUrl)
+                .setSuccessUrl(customSuccessUrl + (customSuccessUrl.contains("?") ? "&" : "?") + "session_id={CHECKOUT_SESSION_ID}")
+                .setCancelUrl(customCancelUrl)
                 .addLineItem(lineItem)
                 .putMetadata("orderId", metadataOrderId)
                 .putMetadata("paymentId", payment.getId().toString())

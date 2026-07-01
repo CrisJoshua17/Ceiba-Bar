@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 import com.project.micro_realtime.dto.DriverDto;
 
-@FeignClient(name = "micro-drivers", path = "/api/drivers")
+@FeignClient(name = "micro-drivers", path = "/api/drivers/internal")
 public interface DriverClient {
 
     @GetMapping("/{id}")
-    DriverDto getDriverById(@PathVariable Long id);
+    DriverDto getDriverById(@PathVariable("id") Long id);
 
     @PutMapping("/{id}/increment-deliveries")
-    void incrementDeliveries(@PathVariable Long id);
+    void incrementDeliveries(@PathVariable("id") Long id);
 }

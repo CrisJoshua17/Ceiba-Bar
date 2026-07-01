@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5433/drivers_db
     username: postgres
-    password: Haikyuu1212
+    password: ${DB_PASSWORD:Haikyuu1212}
     driver-class-name: org.postgresql.Driver
 
   flyway:
@@ -23,3 +23,7 @@ spring:
     show-sql: true
     properties:
       hibernate.format_sql: true
+
+# API Key interna para comunicacion inter-servicio
+internal:
+  api-key: ${INTERNAL_API_KEY:ceiba-bar-internal-secret-2026}

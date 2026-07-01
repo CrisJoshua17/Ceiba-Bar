@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
 import com.project.micro_payments.dto.ApiResponse;
 import com.project.micro_payments.dto.CheckoutRequest;
@@ -21,7 +22,7 @@ public class CheckoutController {
     private final PaymentService paymentService;
 
     @PostMapping("/checkout")
-    public ResponseEntity<ApiResponse<String>> createCheckout(@RequestBody CheckoutRequest req) {
+    public ResponseEntity<ApiResponse<String>> createCheckout(@Valid @RequestBody CheckoutRequest req) {
         ApiResponse<String> response = new ApiResponse<>();
         try {
             String url = paymentService.initiatePayment(req);

@@ -181,8 +181,8 @@ export interface OrderDto {
   customerName: string;
   customerEmail: string;
   address: string;
-  destinationLat: number;
-  destinationLng: number;
+  destinationLat?: number;
+  destinationLng?: number;
   products: ProductDto[];
   status?: string;
   rating?: number;
@@ -200,6 +200,8 @@ export interface CheckoutRequest {
   amount?: number; // <-- Opcional, el backend lo recalcula de forma segura
   itemProduct: string;
   method?: string;
+  successUrl?: string;
+  cancelUrl?: string;
 }
 
 export interface AssignDriverRequest {

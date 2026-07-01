@@ -98,8 +98,6 @@ export default function CheckoutPage() {
       customerName: `${name} ${lastName}`,
       customerEmail: email,
       address: `${street}, ${colonia}, ${delegacion}, ${cp}`,
-      destinationLat: 0,
-      destinationLng: 0,
       products: productsDto,
       status: 'CREATED',
     };
@@ -108,6 +106,8 @@ export default function CheckoutPage() {
       orderDto,
       itemProduct: `Pedido de ${name}`,
       method,
+      successUrl: `${window.location.origin}/payments/pago-exitoso`,
+      cancelUrl: `${window.location.origin}/payments/pago-cancelado`,
     };
 
     try {

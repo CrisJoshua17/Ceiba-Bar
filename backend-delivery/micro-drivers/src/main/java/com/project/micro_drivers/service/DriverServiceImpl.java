@@ -29,17 +29,20 @@ public class DriverServiceImpl implements DriverService {
     private final PendingAssignmentRepository pendingAssignmentRepository;
     private final OutboxRepository outboxRepository;
     private final DriverAssignmentStrategy driverAssignmentStrategy;
+    private final com.project.micro_drivers.Feign.UserClient userClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public DriverServiceImpl(
             DriverRepository repository,
             PendingAssignmentRepository pendingAssignmentRepository,
             OutboxRepository outboxRepository,
-            @Qualifier("nearest") DriverAssignmentStrategy driverAssignmentStrategy) {
+            @Qualifier("nearest") DriverAssignmentStrategy driverAssignmentStrategy,
+            com.project.micro_drivers.Feign.UserClient userClient) {
         this.repository = repository;
         this.pendingAssignmentRepository = pendingAssignmentRepository;
         this.outboxRepository = outboxRepository;
         this.driverAssignmentStrategy = driverAssignmentStrategy;
+        this.userClient = userClient;
     }
 
     @Override
@@ -59,6 +62,26 @@ public class DriverServiceImpl implements DriverService {
 
     @Override
     public List<Driver> findAll() {
+        try {
+            List<com.project.micro_drivers.model.dto.UserDto> users = userClient.findAllByRole(com.project.micro_drivers.model.dto.Role.DRIVER);
+            if (users != null) {
+                for (com.project.micro_drivers.model.dto.UserDto user : users) {
+                    if (user.getId() != null && repository.findByUserId(user.getId()).isEmpty()) {
+                        log.info("Sincronizando chofer faltante desde micro_usuarios: {}", user.getEmail());
+                        Driver driver = new Driver();
+                        driver.setUserId(user.getId());
+                        driver.setUserEmail(user.getEmail());
+                        driver.setAvailable(true);
+                        driver.setRating(0.0);
+                        driver.setTotalDeliveries(0);
+                        driver.setRegistrationDate(LocalDateTime.now());
+                        repository.save(driver);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.error("Error sincronizando drivers desde micro-usuarios: {}", e.getMessage());
+        }
         return repository.findAll();
     }
 
