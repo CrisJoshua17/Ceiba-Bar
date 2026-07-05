@@ -11,10 +11,10 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.micro_payments.dto.OrderDto;
 import com.project.micro_payments.model.Payment;
-import com.project.micro_payments.model.StripeEventProcessed;
+import com.project.micro_payments.model.ProcessedEvent;
 import com.project.micro_payments.feign.OrderClient;
 import com.project.micro_payments.repository.PaymentRepository;
-import com.project.micro_payments.repository.StripeEventProcessedRepository;
+import com.project.micro_payments.repository.ProcessedEventRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -39,7 +39,7 @@ public class StripeGateway implements PaymentGateway {
     private String cancelUrl;
 
     private final PaymentRepository paymentRepository;
-    private final StripeEventProcessedRepository stripeEventProcessedRepository;
+    private final ProcessedEventRepository processedEventRepository;
     private final OrderClient orderClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -109,10 +109,14 @@ public class StripeGateway implements PaymentGateway {
     @Transactional
     public void handleWebhookEvent(Event event) {
         String eventId = event.getId();
-        if (stripeEventProcessedRepository.existsById(eventId)) {
+        if (processedEventRepository.existsById(eventId)) {
             return;
         }
-        stripeEventProcessedRepository.save(new StripeEventProcessed(eventId, Instant.now()));
+        processedEventRepository.save(ProcessedEvent.builder()
+                .id(eventId)
+                .provider("STRIPE")
+                .processedAt(Instant.now())
+                .build());
         
         if ("checkout.session.completed".equals(event.getType())) {
             Session session = (Session) event.getDataObjectDeserializer().getObject().orElse(null);

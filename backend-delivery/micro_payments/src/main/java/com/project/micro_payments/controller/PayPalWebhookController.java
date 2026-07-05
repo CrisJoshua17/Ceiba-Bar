@@ -14,7 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.micro_payments.dto.OrderDto;
 import com.project.micro_payments.feign.OrderClient;
 import com.project.micro_payments.model.Payment;
+import com.project.micro_payments.model.ProcessedEvent;
 import com.project.micro_payments.repository.PaymentRepository;
+import com.project.micro_payments.repository.ProcessedEventRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class PayPalWebhookController {
 
     private final PaymentRepository paymentRepository;
+    private final ProcessedEventRepository processedEventRepository;
     private final OrderClient orderClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -34,6 +37,10 @@ public class PayPalWebhookController {
         
         try {
             JsonNode rootNode = objectMapper.readTree(payload);
+            String eventId = rootNode.path("id").asText();
+            if (eventId != null && !eventId.isEmpty() && processedEventRepository.existsById(eventId)) {
+                return ResponseEntity.ok("Event already processed");
+            }
             String eventType = rootNode.path("event_type").asText();
             
             // "CHECKOUT.ORDER.APPROVED" happens when the user approves the payment on PayPal.
@@ -60,6 +67,14 @@ public class PayPalWebhookController {
                         payment.setStatus(com.project.micro_payments.model.enums.PaymentStatus.COMPLETED);
                         payment.setUpdatedAt(java.time.LocalDateTime.now());
                         paymentRepository.save(payment);
+                        
+                        if (eventId != null && !eventId.isEmpty()) {
+                            processedEventRepository.save(ProcessedEvent.builder()
+                                    .id(eventId)
+                                    .provider("PAYPAL")
+                                    .processedAt(java.time.Instant.now())
+                                    .build());
+                        }
                         
                         // Emitir la orden
                         if (payment.getTempOrderData() != null) {

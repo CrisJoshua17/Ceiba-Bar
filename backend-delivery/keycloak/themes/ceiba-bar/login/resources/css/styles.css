@@ -1,0 +1,331 @@
+/* Importar fuentes modernas desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Ubuntu:wght@300;400;500;700&display=swap');
+
+:root {
+  /* Ceiba Design System Variables */
+  --ceiba-ink: #10263f;
+  --ceiba-paper: #fcfaf6;
+  --ceiba-cream: #f4efe7;
+  --ceiba-leaf: #2f7d62;
+  --ceiba-leaf-hover: #225a47;
+  --ceiba-leaf-bright: #3da884; /* Verde brillante para fondos oscuros */
+  --ceiba-leaf-bright-hover: #4ec29b;
+  --ceiba-coral: #e07a5f;
+  --ceiba-coral-hover: #c9654b;
+  --ceiba-line: #e5e0d8;
+  --ceiba-muted: #8e9ca8; /* Ajustado para mejor visibilidad */
+  --radius: 14px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Restablecer y Estilos Base - Modo Claro por Defecto */
+body {
+  font-family: 'Outfit', 'Ubuntu', sans-serif;
+  background-color: var(--ceiba-cream); /* Fondo general de la página en tono crema */
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(47, 125, 98, 0.06) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(224, 122, 95, 0.04) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--ceiba-paper); /* Color base del texto claro sobre la tarjeta azul */
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* Contenedor Principal de la Tarjeta (Azul Marino Ink) */
+.login-card {
+  background-color: var(--ceiba-ink); /* Tarjeta en tono azul marino */
+  border: 1px solid #1d3e63;
+  box-shadow: 0 25px 50px rgba(16, 38, 63, 0.25), 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 460px;
+  padding: 40px;
+  box-sizing: border-box;
+  margin: 20px;
+  transition: var(--transition);
+}
+
+.login-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 30px 60px rgba(16, 38, 63, 0.35);
+}
+
+/* Cabecera / Marca */
+.brand-header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.brand-logo-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.brand-icon {
+  background-color: var(--ceiba-leaf);
+  color: var(--ceiba-paper);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+  box-shadow: 0 4px 10px rgba(47, 125, 98, 0.2);
+  letter-spacing: -0.5px;
+}
+
+.brand-name {
+  font-family: 'Outfit', sans-serif;
+  color: var(--ceiba-paper);
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.brand-subtitle {
+  font-size: 14px;
+  color: var(--ceiba-muted);
+  margin: 4px 0 0 0;
+}
+
+/* Títulos y Secciones */
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: var(--ceiba-paper);
+  text-align: center;
+}
+
+/* Formularios y Agrupadores */
+.form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--ceiba-paper);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.9;
+}
+
+/* Entradas de Texto / Input */
+.form-input {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  padding: 12px 16px;
+  border: 1px solid #1d3e63;
+  background-color: #0b1a2b; /* Fondo oscuro elegante para los inputs */
+  color: var(--ceiba-paper);
+  border-radius: var(--radius);
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: var(--transition);
+}
+
+.form-input:focus {
+  border-color: var(--ceiba-leaf-bright);
+  box-shadow: 0 0 0 3px rgba(61, 168, 132, 0.25);
+}
+
+.form-input::placeholder {
+  color: #5e6b77;
+}
+
+/* Contenedor de contraseña con toggle */
+.password-container {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 38px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ceiba-muted);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.password-toggle:hover {
+  color: var(--ceiba-paper);
+}
+
+/* Checkboxes y Enlaces Auxiliares */
+.form-actions-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--ceiba-muted);
+  user-select: none;
+}
+
+.checkbox-input {
+  margin-right: 8px;
+  accent-color: var(--ceiba-leaf-bright);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.link-forgot {
+  color: var(--ceiba-leaf-bright);
+  text-decoration: none;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.link-forgot:hover {
+  color: var(--ceiba-leaf-bright-hover);
+  text-decoration: underline;
+}
+
+/* Botones */
+.btn-primary {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  background-color: var(--ceiba-leaf-bright);
+  color: #ffffff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(61, 168, 132, 0.15);
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.btn-primary:hover {
+  background-color: var(--ceiba-leaf-bright-hover);
+  box-shadow: 0 6px 16px rgba(61, 168, 132, 0.25);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Mensajes de feedback (Alerta, Error, Info) */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.4;
+  border-width: 1px;
+  border-style: solid;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.alert-error {
+  background-color: rgba(224, 122, 95, 0.1);
+  border-color: rgba(224, 122, 95, 0.3);
+  color: #ff9e84;
+}
+
+.alert-success {
+  background-color: rgba(47, 125, 98, 0.12);
+  border-color: rgba(47, 125, 98, 0.3);
+  color: #63d6b0;
+}
+
+/* Enlaces de registro / Inicio de sesión en el pie */
+.card-footer {
+  text-align: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #1d3e63;
+  font-size: 14px;
+  color: var(--ceiba-muted);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card-footer-link {
+  color: var(--ceiba-leaf-bright);
+  text-decoration: none;
+  font-weight: 600;
+  margin-left: 5px;
+  transition: var(--transition);
+}
+
+.card-footer-link:hover {
+  color: var(--ceiba-leaf-bright-hover);
+  text-decoration: underline;
+}
+
+/* Estilos de inputs de registro en dos columnas */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 480px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* Soporte para Modo Oscuro en Navegadores */
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #0b1a2b; /* Fondo aún más oscuro en dark mode */
+    background-image: 
+      radial-gradient(at 0% 0%, rgba(47, 125, 98, 0.1) 0px, transparent 50%),
+      radial-gradient(at 100% 100%, rgba(224, 122, 95, 0.05) 0px, transparent 50%);
+  }
+
+  .login-card {
+    background-color: rgba(16, 38, 63, 0.85); /* Tarjeta azul traslúcida en fondo negro */
+    border-color: #1d3e63;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.45);
+  }
+}
